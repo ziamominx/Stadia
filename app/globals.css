@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Terracotta Light Mode (Default) */
+    --bg-primary: #faf8f5;
+    --bg-surface: #ffffff;
+    --bg-elevated: #f4efe6;
+    --bg-card: #ffffff;
+    --border-subtle: #e7e1d7;
+    --border-hover: #d2c8ba;
+    --text-primary: #1c1917;
+    --text-secondary: #57534e;
+    --text-muted: #78716c;
+    --terracotta-primary: #c25e3e;
+    --terracotta-hover: #a84325;
+    --terracotta-tint: rgba(194, 94, 62, 0.08);
+    --terracotta-border: rgba(194, 94, 62, 0.25);
+    --terracotta-text: #b84c2a;
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  html.dark {
+    /* Terracotta Dark Mode */
+    --bg-primary: #08080a;
+    --bg-surface: #0e0e12;
+    --bg-elevated: #141418;
+    --bg-card: #0e0e12;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.16);
+    --text-primary: #ededed;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
+    --terracotta-primary: #d97757;
+    --terracotta-hover: #c25e3e;
+    --terracotta-tint: rgba(217, 119, 87, 0.12);
+    --terracotta-border: rgba(217, 119, 87, 0.28);
+    --terracotta-text: #e07a5f;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    letter-spacing: -0.015em;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Tabular figures for live operations data */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Terracotta Utility Classes */
+.bg-terracotta {
+  background-color: var(--terracotta-primary);
+}
+.bg-terracotta-tint {
+  background-color: var(--terracotta-tint);
+}
+.border-terracotta {
+  border-color: var(--terracotta-border);
+}
+.text-terracotta {
+  color: var(--terracotta-text);
+}
+
+/* Vercel-style interactive button & card animations */
+.btn-press {
+  transition: transform 120ms var(--ease-out), background-color 160ms ease, border-color 160ms ease, opacity 160ms ease;
+  will-change: transform;
+}
+.btn-press:active {
+  transform: scale(0.98);
+}
+
+.card-hover {
+  transition: transform 180ms var(--ease-out), border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+  will-change: transform;
+}
+.card-hover:hover {
+  border-color: var(--border-hover);
+  background-color: var(--bg-elevated);
+}
+
+/* Modern soft shadows */
+.shadow-soft {
+  box-shadow: 0 1px 3px rgba(35, 25, 20, 0.04), 0 4px 12px rgba(35, 25, 20, 0.03);
+}
+
+/* Subtle fade in for page loads */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 220ms var(--ease-out) both;
+}
+
+/* Leaflet map styles */
+.leaflet-container {
+  font-family: inherit !important;
+  border-radius: 1rem;
+}
+
+/* Modern minimal scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-subtle);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
