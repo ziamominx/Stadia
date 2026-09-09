@@ -1,8 +1,6 @@
-# Vercel Deployment Ignore
-server/
-client/
-data/
+# Database ignore
 *.db
 *.db-journal
 *.db-shm
 *.db-wal
+data/
