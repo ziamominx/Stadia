@@ -1,6 +1,11 @@
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Built-in Next.js route handlers in app/api serve all endpoints natively on Vercel and production
+  outputFileTracingRoot: __dirname,
   async rewrites() {
     if (process.env.USE_EXPRESS_PROXY === 'true') {
       return [
