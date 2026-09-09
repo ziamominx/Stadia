@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @layer base {
   :root {
-    /* Terracotta Light Mode (Default) */
+    /* Terracotta White Mode (Default) */
     --bg-primary: #faf8f5;
     --bg-surface: #ffffff;
     --bg-elevated: #f4efe6;
@@ -17,6 +18,19 @@
     --terracotta-tint: rgba(194, 94, 62, 0.08);
     --terracotta-border: rgba(194, 94, 62, 0.25);
     --terracotta-text: #b84c2a;
+
+    --status-green: #15803d;
+    --status-green-bg: rgba(21, 128, 61, 0.1);
+    --status-green-border: rgba(21, 128, 61, 0.25);
+
+    --status-amber: #b45309;
+    --status-amber-bg: rgba(180, 83, 9, 0.1);
+    --status-amber-border: rgba(180, 83, 9, 0.25);
+
+    --status-rose: #be123c;
+    --status-rose-bg: rgba(190, 18, 60, 0.1);
+    --status-rose-border: rgba(190, 18, 60, 0.25);
+
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);
   }
@@ -37,13 +51,25 @@
     --terracotta-tint: rgba(217, 119, 87, 0.12);
     --terracotta-border: rgba(217, 119, 87, 0.28);
     --terracotta-text: #e07a5f;
+
+    --status-green: #22c55e;
+    --status-green-bg: rgba(34, 197, 94, 0.12);
+    --status-green-border: rgba(34, 197, 94, 0.3);
+
+    --status-amber: #f59e0b;
+    --status-amber-bg: rgba(245, 158, 11, 0.12);
+    --status-amber-border: rgba(245, 158, 11, 0.3);
+
+    --status-rose: #ef4444;
+    --status-rose-bg: rgba(239, 68, 68, 0.12);
+    --status-rose-border: rgba(239, 68, 68, 0.3);
   }
 
   html {
     scroll-behavior: smooth;
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     letter-spacing: -0.015em;
     transition: background-color 200ms ease, color 200ms ease;
   }
@@ -76,13 +102,13 @@
   color: var(--terracotta-text);
 }
 
-/* Vercel-style interactive button & card animations */
+/* Button & Interactive animations */
 .btn-press {
   transition: transform 120ms var(--ease-out), background-color 160ms ease, border-color 160ms ease, opacity 160ms ease;
   will-change: transform;
 }
 .btn-press:active {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 .card-hover {
@@ -94,16 +120,16 @@
   background-color: var(--bg-elevated);
 }
 
-/* Modern soft shadows */
+/* Modern soft architectural shadows */
 .shadow-soft {
-  box-shadow: 0 1px 3px rgba(35, 25, 20, 0.04), 0 4px 12px rgba(35, 25, 20, 0.03);
+  box-shadow: 0 1px 3px rgba(35, 25, 20, 0.05), 0 4px 14px rgba(35, 25, 20, 0.04);
 }
 
 /* Subtle fade in for page loads */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -111,8 +137,17 @@
   }
 }
 
-.fade-in {
-  animation: fadeIn 220ms var(--ease-out) both;
+.animate-fadeIn {
+  animation: fadeIn 200ms var(--ease-out) both;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
 }
 
 /* Leaflet map styles */
@@ -121,10 +156,10 @@
   border-radius: 1rem;
 }
 
-/* Modern minimal scrollbars */
+/* Minimal architectural scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;

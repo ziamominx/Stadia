@@ -1,9 +1,13 @@
 node_modules/
 dist/
+.next/
+out/
+build/
 *.db
 *.db-journal
 *.db-shm
 *.db-wal
+*.log
 .env
 .DS_Store
 .freebuff/

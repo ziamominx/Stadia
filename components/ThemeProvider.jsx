@@ -6,6 +6,7 @@ const ThemeContext = createContext({
   theme: 'light',
   toggleTheme: () => {},
   setTheme: () => {},
+  mounted: false,
 });
 
 export function ThemeProvider({ children }) {
