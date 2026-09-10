@@ -364,8 +364,49 @@ export function seed() {
     updShuttle.run(cap, s.id);
   }
 
+  // ── Seed Mega-Events, Accommodation Zones, Transit Corridors, Hospitality ────
+  db.exec(`
+    INSERT OR IGNORE INTO mega_events (id, title, event_type, venue, venue_city, date_time, expected_attendance, status) VALUES
+    (1, 'FIFA Women''s World Cup 2026: India vs Australia (Opening Match)', 'sports_match', 'DY Patil Stadium, Nerul', 'Navi Mumbai', '2026-10-12T19:30:00.000Z', 55000, 'scheduled'),
+    (2, 'Coldplay: Music of the Spheres Mega Stadium Tour', 'mega_concert', 'DY Patil Stadium, Nerul', 'Navi Mumbai', '2026-10-18T18:00:00.000Z', 62000, 'scheduled'),
+    (3, 'Global AI & Sustainable Urbanism Summit 2026', 'global_summit', 'CIDCO Exhibition & Convention Center', 'Vashi, Navi Mumbai', '2026-10-24T09:00:00.000Z', 38000, 'scheduled'),
+    (4, 'Grand Cultural Festival & Global Heritage Expo', 'cultural_festival', 'Central Park Mega Grounds', 'Kharghar, Navi Mumbai', '2026-11-02T17:30:00.000Z', 75000, 'scheduled');
+
+    INSERT OR IGNORE INTO accommodation_zones (id, name, code, lat, lng, total_rooms, booked_rooms, avg_rate, surge_multiplier, is_overflow_recommended, transit_link_desc, shuttle_service_available) VALUES
+    (1, 'Core Nerul Stadium Zone', 'CORE_NERUL', 19.0439, 73.0189, 3200, 3040, 16500, 1.85, 0, 'Walking distance (< 1.2 km) to North & East gates', 1),
+    (2, 'Vashi Luxury & Commercial Hub', 'VASHI_PREMIUM', 19.0757, 72.9984, 4800, 4220, 13500, 1.45, 0, 'Harbour Line direct rail (8 mins) + Dedicated Shuttle corridor', 1),
+    (3, 'Belapur Business Corridor', 'BELAPUR_BIZ', 19.0317, 73.0364, 5500, 3410, 7200, 1.05, 1, 'Navi Mumbai Metro Line 1 & Express Shuttle Corridor (12 mins, Free Pass)', 1),
+    (4, 'Kharghar Green Valley Hub', 'KHARGHAR_GREEN', 19.0470, 73.0690, 6200, 2790, 4800, 0.95, 1, 'Metro Line 1 direct feeder + Park & Ride Central Park Hub (₹3,000+ nightly savings)', 1),
+    (5, 'Panvel Multimodal Transit Zone', 'PANVEL_HUB', 18.9894, 73.1175, 4000, 2100, 3900, 0.90, 1, 'Direct express rail link & Expressway fast-track transitway', 1);
+
+    INSERT OR IGNORE INTO transit_corridors (id, name, mode, capacity_per_hr, current_load_pct, status, from_location, to_location) VALUES
+    (1, 'Navi Mumbai Metro Line 1 (Belapur-Nerul Feeder)', 'metro', 18000, 68, 'nominal', 'Belapur Terminal', 'DY Patil South Concourse'),
+    (2, 'Sion-Panvel Expressway Stadium Corridor', 'highway', 22000, 88, 'heavy', 'Vashi Bridge Toll', 'Nerul Interchange'),
+    (3, 'Harbour Line Suburban Rail (CSMT-Nerul-Panvel)', 'suburban_rail', 35000, 76, 'nominal', 'Mankhurd Hub', 'Nerul Station Platform 2/3'),
+    (4, 'Palm Beach Road Scenic Transit Corridor', 'highway', 14000, 54, 'nominal', 'Vashi Sector 17', 'Nerul West Parking P4'),
+    (5, 'Dedicated Electric Feeder Shuttle Loop', 'park_ride_feeder', 8500, 72, 'nominal', 'Belapur CBD / Kharghar Valley', 'East Gates C & D Shuttle Drop');
+
+    INSERT OR IGNORE INTO hospitality_merchants (id, name, zone, category, capacity, discount_pct, voucher_code, egress_delay_mins, description) VALUES
+    (1, 'Sector 15 Fan District & Craft Gastropub Row', 'Nerul Sector 15', 'dining', 2400, 25, 'FANZONE25', 60, 'Live match screen replays, rooftop craft beers, artisanal snacks. 8-min walk from West Gate G.'),
+    (2, 'DY Patil Sports Village Live Acoustic Lounge', 'Nerul Campus', 'entertainment', 1800, 20, 'AFTERMATCH20', 75, 'Post-event acoustic chillout sets, gourmet food trucks, and calm egress waiting area.'),
+    (3, 'Vashi Inorbit Gastro & Night Market Fiesta', 'Vashi Hub', 'dining', 3500, 30, 'VASHIDINE30', 90, 'Global street food festival, DJ lounge, with free express night shuttles to Vashi hotels.'),
+    (4, 'Belapur CBD Waterfront Promenade Cafes', 'Belapur Waterfront', 'dining', 2800, 25, 'BELAPUR25', 90, 'Breezy waterside dining with dedicated return shuttle stops to Belapur business hotels.');
+
+    INSERT OR REPLACE INTO simulation_state (key, value) VALUES
+    ('active_scenario', 'baseline'),
+    ('surge_pct', '0'),
+    ('rain_delay_hours', '0'),
+    ('gate_disruption_gate_id', 'none'),
+    ('transit_outage_corridor_id', 'none'),
+    ('last_updated', datetime('now'));
+  `);
+
   const summary = {
     matches: matchIds.length,
+    megaEvents: db.prepare('SELECT COUNT(*) AS c FROM mega_events').get().c,
+    accommodationZones: db.prepare('SELECT COUNT(*) AS c FROM accommodation_zones').get().c,
+    transitCorridors: db.prepare('SELECT COUNT(*) AS c FROM transit_corridors').get().c,
+    hospitalityMerchants: db.prepare('SELECT COUNT(*) AS c FROM hospitality_merchants').get().c,
     gates: gates.length,
     parking: parkingZones.length,
     hotels: hotels.length,

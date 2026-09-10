@@ -17,6 +17,21 @@ matchesRouter.get('/', (req, res) => {
   res.json(matches);
 });
 
+// GET /api/matches/:id — single match detail
+matchesRouter.get('/:id', (req, res) => {
+  const match = db
+    .prepare(
+      `SELECT m.*, COUNT(t.id) AS tickets_sold
+       FROM matches m
+       LEFT JOIN tickets t ON t.match_id = m.id
+       WHERE m.id = ?
+       GROUP BY m.id`,
+    )
+    .get(req.params.id);
+  if (!match) return res.status(404).json({ error: 'Match not found' });
+  res.json(match);
+});
+
 // GET /api/matches/:id/seats — seat map + availability
 matchesRouter.get('/:id/seats', (req, res) => {
   const match = db.prepare('SELECT * FROM matches WHERE id = ?').get(req.params.id);

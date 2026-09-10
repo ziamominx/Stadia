@@ -15,7 +15,7 @@ Two experiences in one app:
 ## Why a single ticketing channel?
 
 Mega-events run on a single official ticketing partner — the way BookMyShow or Paytm Insider
-hold exclusive rights for specific large events in India. FanFlow is architected to be that
+hold exclusive rights for specific large events in India. STADIA is architected to be that
 single system of record for this tournament: every ticket, and therefore every visitor's
 location and travel data, flows through one platform. That centralisation is what makes
 real-time crowd orchestration possible — split ticket sources across multiple vendors and the

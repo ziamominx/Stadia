@@ -1,14 +1,16 @@
+import { inr } from '../lib/format.js';
+
 const CX = 320;
 const CY = 270;
 const R_OUT = 230;
 const R_IN = 148;
 
 const TIER_COLORS = [
-  { min: 4000, fill: '#f59e0b', label: '₹4,000+ · Pitchside', chip: 'bg-amber-500' },
-  { min: 3000, fill: '#10b981', label: '₹3,000+ · Premium', chip: 'bg-emerald-500' },
-  { min: 2400, fill: '#0ea5e9', label: '₹2,400+ · Grandstand', chip: 'bg-sky-500' },
-  { min: 2000, fill: '#6366f1', label: '₹2,000+ · Upper West', chip: 'bg-indigo-500' },
-  { min: 0, fill: '#64748b', label: '₹1,200+ · Upper East', chip: 'bg-slate-500' },
+  { min: 4000, fill: '#fbbf24', label: '₹4,000+ · Pitchside', chip: 'bg-amber-400' },
+  { min: 3000, fill: '#a78bfa', label: '₹3,000+ · Premium', chip: 'bg-violet-400' },
+  { min: 2400, fill: '#22d3ee', label: '₹2,400+ · Grandstand', chip: 'bg-cyan-400' },
+  { min: 2000, fill: '#38bdf8', label: '₹2,000+ · Upper West', chip: 'bg-sky-400' },
+  { min: 0, fill: '#64748b', label: '₹1,200+ · Upper East', chip: 'bg-slate-400' },
 ];
 
 function tierOf(price) {
@@ -44,13 +46,22 @@ export default function SeatMap({ blocks, selectedId, onSelect }) {
   const step = 360 / 12;
 
   return (
-    <div className="rounded-2xl border border-slate-700/50 bg-navy-900/60 p-4">
-      <svg viewBox="0 0 640 540" className="w-full" role="img" aria-label="Stadium seat map">
+    <div className="panel relative overflow-hidden rounded-2xl p-4 sm:p-6">
+      <div className="absolute -top-24 left-1/2 h-64 w-[480px] -translate-x-1/2 rounded-full bg-cyber-500/10 blur-3xl" />
+      <svg viewBox="0 0 640 540" className="relative w-full" role="img" aria-label="Stadium seat map">
+        <defs>
+          <radialGradient id="pitch-glow" cx="50%" cy="50%" r="55%">
+            <stop offset="0%" stopColor="#12b256" />
+            <stop offset="85%" stopColor="#0a7a3a" />
+            <stop offset="100%" stopColor="#07552a" />
+          </radialGradient>
+        </defs>
+
         {/* pitch */}
-        <ellipse cx={CX} cy={CY} rx={110} ry={62} fill="#17803c" stroke="#0b1424" strokeWidth={2} />
-        <ellipse cx={CX} cy={CY} rx={110} ry={62} fill="none" stroke="#ffffff22" strokeWidth={1} />
-        <line x1={CX - 110} y1={CY} x2={CX + 110} y2={CY} stroke="#ffffff22" strokeWidth={1} />
-        <text x={CX} y={CY + 5} textAnchor="middle" fontSize="12" fontWeight="700" fill="#ffffffcc">
+        <ellipse cx={CX} cy={CY} rx={112} ry={64} fill="url(#pitch-glow)" stroke="rgba(255,255,255,0.22)" strokeWidth="1.2" />
+        <line x1={CX - 112} y1={CY} x2={CX + 112} y2={CY} stroke="rgba(255,255,255,0.14)" strokeWidth="1" />
+        <circle cx={CX} cy={CY} r="3.5" fill="rgba(255,255,255,0.5)" />
+        <text x={CX} y={CY + 5} textAnchor="middle" fontSize="11" fontWeight="800" fill="rgba(255,255,255,0.82)" letterSpacing="2.5">
           DY PATIL STADIUM · NERUL
         </text>
 
@@ -61,34 +72,32 @@ export default function SeatMap({ blocks, selectedId, onSelect }) {
           const tier = tierOf(b.price);
           const soldOut = b.available <= 0;
           const selected = selectedId === b.id;
-          const fill = soldOut ? '#334155' : tier.fill;
+          const fill = soldOut ? '#1b2436' : tier.fill;
           const [lx, ly] = polar((R_IN + R_OUT) / 2, a0 + step / 2);
           return (
             <g
               key={b.id}
               onClick={() => !soldOut && onSelect(b)}
               className={soldOut ? 'cursor-not-allowed' : 'cursor-pointer'}
+              style={{ transition: 'transform 0.2s ease' }}
             >
+              <title>
+                {`Block ${b.block_name} · ${inr(b.price)} · ${b.available} seats left${soldOut ? ' · SOLD OUT' : ''}`}
+              </title>
               <path
                 d={slicePath(a0, a1)}
                 fill={fill}
-                fillOpacity={soldOut ? 0.25 : 0.82}
-                stroke={selected ? '#fbbf24' : '#0b1424'}
-                strokeWidth={selected ? 3 : 1.5}
+                fillOpacity={soldOut ? 0.18 : selected ? 0.95 : 0.62}
+                stroke={selected ? '#7dd3fc' : '#030509'}
+                strokeWidth={selected ? 3 : 1.4}
+                style={selected ? { filter: 'drop-shadow(0 0 10px rgba(125,211,252,0.75))' } : undefined}
               />
               <g pointerEvents="none">
-                <text
-                  x={lx}
-                  y={ly - 4}
-                  textAnchor="middle"
-                  fontSize="13"
-                  fontWeight="800"
-                  fill="#ffffff"
-                >
+                <text x={lx} y={ly - 4} textAnchor="middle" fontSize="13" fontWeight="800" fill="#ffffff">
                   {b.block_name}
                 </text>
-                <text x={lx} y={ly + 10} textAnchor="middle" fontSize="9" fontWeight="600" fill="#ffffffcc">
-                  {soldOut ? 'SOLD OUT' : `₹${b.price.toLocaleString('en-IN')}`}
+                <text x={lx} y={ly + 10} textAnchor="middle" fontSize="9" fontWeight="700" fill={soldOut ? '#64748b' : 'rgba(255,255,255,0.85)'}>
+                  {soldOut ? 'SOLD OUT' : inr(b.price)}
                 </text>
               </g>
             </g>
@@ -98,12 +107,14 @@ export default function SeatMap({ blocks, selectedId, onSelect }) {
         {/* gates */}
         {GATE_DOTS.map((g) => {
           const [x, y] = polar(R_OUT + 16, g.angle);
-          const [lx, ly] = polar(R_OUT + 34, g.angle);
+          const [lx, ly] = polar(R_OUT + 35, g.angle);
           const color = g.side === 'local' ? '#38bdf8' : '#fb7185';
           return (
             <g key={g.letter}>
-              <circle cx={x} cy={y} r={6} fill={color} stroke="#0b1424" strokeWidth={2} />
-              <text x={lx} y={ly + 3} textAnchor="middle" fontSize="10" fontWeight="800" fill={color}>
+              <circle cx={x} cy={y} r={6.5} fill={color} stroke="#030509" strokeWidth="2">
+                <animate attributeName="opacity" values="1;0.6;1" dur="2.6s" repeatCount="indefinite" />
+              </circle>
+              <text x={lx} y={ly + 3} textAnchor="middle" fontSize="10.5" fontWeight="800" fill={color}>
                 {g.letter}
               </text>
             </g>
@@ -111,17 +122,17 @@ export default function SeatMap({ blocks, selectedId, onSelect }) {
         })}
       </svg>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-slate-800 pt-3">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-white/[0.07] pt-3.5">
         {TIER_COLORS.map((t) => (
-          <span key={t.label} className="inline-flex items-center gap-1.5 text-[11px] text-slate-400">
+          <span key={t.label} className="inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-slate-400">
             <span className={`h-2.5 w-2.5 rounded-sm ${t.chip}`} /> {t.label}
           </span>
         ))}
-        <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-400">
-          <span className="h-2.5 w-2.5 rounded-full bg-sky-400" /> Local gate (N/W)
+        <span className="ml-auto inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-slate-400">
+          <span className="h-2.5 w-2.5 rounded-full bg-sky-400" /> Local gate · N/W
         </span>
-        <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-400">
-          <span className="h-2.5 w-2.5 rounded-full bg-rose-400" /> Outstation gate (E/S)
+        <span className="inline-flex items-center gap-1.5 text-[10.5px] font-semibold text-slate-400">
+          <span className="h-2.5 w-2.5 rounded-full bg-rose-400" /> Outstation gate · E/S
         </span>
       </div>
     </div>

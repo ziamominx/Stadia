@@ -141,6 +141,70 @@ CREATE TABLE IF NOT EXISTS tourist_spots (
   image_emoji TEXT
 );
 
+CREATE TABLE IF NOT EXISTS mega_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  title TEXT NOT NULL,
+  event_type TEXT NOT NULL CHECK (event_type IN ('sports_match','mega_concert','global_summit','cultural_festival')),
+  venue TEXT NOT NULL,
+  venue_city TEXT NOT NULL DEFAULT 'Navi Mumbai',
+  date_time TEXT NOT NULL,
+  expected_attendance INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'scheduled'
+);
+
+CREATE TABLE IF NOT EXISTS accommodation_zones (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  code TEXT NOT NULL UNIQUE,
+  lat REAL NOT NULL,
+  lng REAL NOT NULL,
+  total_rooms INTEGER NOT NULL,
+  booked_rooms INTEGER NOT NULL,
+  avg_rate INTEGER NOT NULL,
+  surge_multiplier REAL NOT NULL DEFAULT 1.0,
+  is_overflow_recommended INTEGER NOT NULL DEFAULT 0,
+  transit_link_desc TEXT NOT NULL,
+  shuttle_service_available INTEGER NOT NULL DEFAULT 1
+);
+
+CREATE TABLE IF NOT EXISTS transit_corridors (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  mode TEXT NOT NULL CHECK (mode IN ('metro','suburban_rail','highway','park_ride_feeder')),
+  capacity_per_hr INTEGER NOT NULL,
+  current_load_pct INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'nominal',
+  from_location TEXT NOT NULL,
+  to_location TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS hospitality_merchants (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  zone TEXT NOT NULL,
+  category TEXT NOT NULL CHECK (category IN ('dining','fan_park','entertainment')),
+  capacity INTEGER NOT NULL,
+  discount_pct INTEGER NOT NULL,
+  voucher_code TEXT NOT NULL,
+  egress_delay_mins INTEGER NOT NULL DEFAULT 45,
+  description TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS simulation_state (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS active_interventions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  scenario_id TEXT NOT NULL,
+  action_type TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  impact_metric TEXT NOT NULL,
+  applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE INDEX IF NOT EXISTS idx_tickets_match ON tickets(match_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_block ON tickets(seat_block_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_entry_gate ON tickets(entry_gate_id);

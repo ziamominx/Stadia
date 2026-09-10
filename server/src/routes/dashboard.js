@@ -206,7 +206,7 @@ dashboardRouter.get('/flow', (req, res) => {
       distanceM: Math.round(c.minD * 1000),
       lat: (c.bestPair.pa.lat + c.bestPair.pb.lat) / 2,
       lng: (c.bestPair.pa.lng + c.bestPair.pb.lng) / 2,
-      note: `Local ${c.l.kind.replace('_', ' ')} and outstation ${c.o.kind.replace('_', ' ')} approach within ${Math.round(c.minD * 1000)} m — flag for marshalling barriers.`,
+      note: `${c.l.kind === 'local_parking' ? 'Local parking' : 'Local rail'} and outstation shuttle approaches converge within ${Math.round(c.minD * 1000)} m — flag for marshalling barriers.`,
     });
   }
 
@@ -298,6 +298,30 @@ dashboardRouter.get('/revenue', (req, res) => {
   });
 });
 
+// GET /api/dashboard/routing/decisions — recent load-aware reassignments
+// (the proof-of-intelligence feed behind the command center's
+// "Routing Intelligence" panel).
+dashboardRouter.get('/routing/decisions', (req, res) => {
+  const rows = db
+    .prepare(
+      `SELECT unique_ticket_id, routing_decision, created_at FROM tickets
+       WHERE routing_decision LIKE '%"reassigned":true%'
+       ORDER BY id DESC LIMIT 8`,
+    )
+    .all();
+  const decisions = rows
+    .map((r) => {
+      try {
+        const d = JSON.parse(r.routing_decision);
+        return { ticketId: r.unique_ticket_id, createdAt: r.created_at, ...d };
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+  res.json({ decisions, total: decisions.length });
+});
+
 // GET /api/dashboard/overview — everything at once for the organizer page
 dashboardRouter.get('/overview', (req, res) => {
   const gates = db
@@ -341,6 +365,11 @@ dashboardRouter.get('/overview', (req, res) => {
     .all();
   const byType = Object.fromEntries(revenueRows.map((r) => [r.type, { count: r.count, total: r.total }]));
 
+  // Tickets whose route was visibly reassigned by the load-aware engine.
+  const rerouted = db
+    .prepare("SELECT COUNT(*) AS c FROM tickets WHERE routing_decision LIKE '%\"reassigned\":true%'")
+    .get().c;
+
   res.json({
     gates: gatesWithLoad,
     parking: parkingWithLoad,
@@ -353,5 +382,6 @@ dashboardRouter.get('/overview', (req, res) => {
     },
     tickets: db.prepare('SELECT COUNT(*) AS c FROM tickets').get().c,
     matches: db.prepare('SELECT COUNT(*) AS c FROM matches').get().c,
+    rerouted,
   });
 });

@@ -33,7 +33,17 @@ export const api = {
   parking: () => request('GET', '/dashboard/parking'),
   shuttles: () => request('GET', '/dashboard/shuttles'),
   revenue: () => request('GET', '/dashboard/revenue'),
+  routingDecisions: () => request('GET', '/dashboard/routing/decisions'),
   tourism: () => request('GET', '/tourism'),
+  ecosystem: () => request('GET', '/orchestration/ecosystem'),
+  scenarios: () => request('GET', '/orchestration/scenarios'),
+  triggerScenario: (scenarioId) => request('POST', '/orchestration/scenarios/trigger', { scenarioId }),
+  applyIntervention: (payload) => request('POST', '/orchestration/interventions/apply', payload),
+  resetOrchestration: () => request('POST', '/orchestration/reset'),
+  hospitalityZones: () => request('GET', '/hospitality/zones'),
+  hospitalityMerchants: () => request('GET', '/hospitality/merchants'),
+  itineraryEvents: () => request('GET', '/itinerary/events'),
+  planItinerary: (payload) => request('POST', '/itinerary/plan', payload),
 };
 
 export function useApi(fn, deps = []) {

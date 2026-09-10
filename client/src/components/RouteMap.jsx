@@ -62,5 +62,5 @@ export default function RouteMap({ route, height = 'h-80' }) {
     };
   }, []);
 
-  return <div ref={containerRef} className={`${height} w-full overflow-hidden rounded-xl border border-slate-700/50`} />;
+  return <div ref={containerRef} className={`${height} w-full overflow-hidden rounded-xl border border-white/10 shadow-lg shadow-black/30`} />;
 }
