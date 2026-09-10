@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useApi, api } from '../api.js';
 import { kickoffDate, kickoffTime, pct, teamFlag, clockTime, timeBefore, shortName } from '../lib/format.js';
@@ -335,51 +334,9 @@ export default function Landing() {
                     View match →
                   </span>
                 </div>
-                <div className="text-lg font-black text-white">
-                  {m.home_team} <span className="text-neutral-500 font-normal">vs</span> {m.away_team}
-                </div>
-                <div className="pt-2">
-                  <Link
-                    to={`/match/${m.id}`}
-                    className="block w-full text-center rounded-full bg-white/10 hover:bg-white/20 py-2 text-xs font-bold text-white transition"
-                  >
-                    Select Seats &amp; Routing
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Executive Pitch Banner */}
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="rounded-3xl border border-neutral-800/80 bg-gradient-to-br from-[#111114] to-[#18181f] p-8 sm:p-12 shadow-2xl space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-bold text-emerald-400 uppercase">
-            <Zap className="h-3.5 w-3.5" />
-            Hackathon Solution Architecture
-          </div>
-          <h2 className="text-2xl sm:text-4xl font-black text-white max-w-3xl leading-tight">
-            How Stadia Nexus Solves the Mega-Event Capacity Dilemma
-          </h2>
-          <p className="text-sm text-neutral-400 max-w-3xl leading-relaxed">
-            Major events fail not from lack of total capacity, but from <strong>uncoordinated localized saturation</strong>. By breaking down information barriers between event ticketing, hotel allotments, and transit dispatchers, Stadia Nexus autonomously predicts bottlenecks, redirects surplus demand to peripheral hubs, and guarantees a world-class experience for visitors and city authorities.
-          </p>
-
-          <div className="flex flex-wrap gap-4 pt-2">
-            <Link
-              to="/command-center"
-              className="rounded-full bg-white px-7 py-3 text-xs font-bold text-black hover:bg-neutral-200 transition"
-            >
-              Launch Operations Room
-            </Link>
-            <Link
-              to="/simulator"
-              className="rounded-full border border-neutral-800 bg-neutral-900 px-7 py-3 text-xs font-bold text-white hover:bg-neutral-800 transition"
-            >
-              Stress-Test Simulator
-            </Link>
-          </div>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
