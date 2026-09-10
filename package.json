@@ -3,15 +3,23 @@
   "private": true,
   "version": "1.0.0",
   "description": "FIFA Women's World Cup India — Hospitality & Crowd Orchestration Platform",
+  "type": "module",
   "workspaces": [
     "server",
     "client"
   ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "concurrently -n server,client -c blue,green \"npm run dev -w server\" \"npm run dev -w client\"",
     "seed": "npm run seed -w server",
     "build": "npm run build -w client",
     "start": "npm run start -w server"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "express": "^4.21.2"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
