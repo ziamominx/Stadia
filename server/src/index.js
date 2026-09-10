@@ -34,6 +34,9 @@ app.use(express.json({ limit: '1mb' }));
 
 app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
+app.use('/api/orchestration', orchestrationRouter);
+app.use('/api/hospitality', hospitalityRouter);
+app.use('/api/itinerary', itineraryRouter);
 app.use('/api/matches', matchesRouter);
 app.use('/api/hotels', hotelsRouter);
 app.use('/api/bookings', bookingsRouter);
