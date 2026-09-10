@@ -3,6 +3,7 @@ import { useApi, api } from '../api.js';
 import { kickoffDate, kickoffTime, pct, teamFlag, clockTime, timeBefore, shortName } from '../lib/format.js';
 import LiveBadge from '../components/LiveBadge.jsx';
 import CountUp from '../components/CountUp.jsx';
+import LiveGeospatialLayersHome from './LiveGeospatialLayersHome.jsx';
 
 function IntelCard({ delay, label, value, sub, accent = 'cyan' }) {
   const styles = {
@@ -64,12 +65,14 @@ export default function Landing() {
     <div>
       {/* ── HERO ─────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-b border-white/[0.07]">
-        <div className="bg-grid absolute inset-0" />
-        <div className="absolute -top-40 left-1/4 h-[480px] w-[720px] rounded-full bg-cyber-500/15 blur-[130px]" />
-        <div className="absolute -bottom-52 right-0 h-[420px] w-[560px] rounded-full bg-violet-500/10 blur-[130px]" />
+        {/* Stadium hero background — faint, bounded to this hero section only. */}
+        <div className="absolute inset-0 h-full w-full" style={{ backgroundImage: 'url(/stadium-hero.png)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: 0.10, filter: 'grayscale(30%) contrast(108%)', zIndex: 0 }} />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink-950/70 to-transparent z-[1]" />
+        <div className="absolute -top-40 left-1/4 h-[480px] w-[720px] rounded-full bg-cyber-500/15 blur-[130px] z-[2]" />
+        <div className="absolute -bottom-52 right-0 h-[420px] w-[560px] rounded-full bg-violet-500/10 blur-[130px] z-[2]" />
         <HeroFlow />
 
-        <div className="relative mx-auto max-w-7xl px-4 pb-24 pt-16 sm:px-6 sm:pt-24">
+        <div className="relative z-[3] mx-auto max-w-7xl px-4 pb-24 pt-16 sm:px-6 sm:pt-24">
           <div className="max-w-3xl">
             <p className="fade-up inline-flex flex-wrap items-center gap-2 rounded-full border border-cyber-400/35 bg-cyber-400/10 px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-cyber-300">
               <span className="live-dot" /> FIFA Women’s World Cup · India 2026
@@ -256,9 +259,12 @@ export default function Landing() {
             </Link>
           </div>
 
-          <StadiumPlan />
+
         </div>
       </section>
+
+      {/* ── LIVE GEOSPATIAL LAYERS ────────────────────────────────── */}
+      <LiveGeospatialLayersHome />
 
       {/* ── MATCH TIMELINE ──────────────────────────────────────────── */}
       <section id="matches" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20">
@@ -420,6 +426,18 @@ export default function Landing() {
                   <div className="mt-0.5 text-[10px] text-slate-600">{s.sub}</div>
                 </div>
               ))}
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-4">
+              <a href="/#matches" className="panel panel-hover rounded-2xl p-5 text-center">
+                <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyber-400">Explore matches</p>
+                <p className="mt-2 text-lg font-black text-white">See the full fixture list</p>
+                <p className="text-[10px] text-slate-500">Nine matches across 3 weeks</p>
+              </a>
+              <a href="/#matches" className="panel panel-hover rounded-2xl p-5 text-center">
+                <p className="text-[11px] font-extrabold uppercase tracking-widest text-rose-400">Book more tickets</p>
+                <p className="mt-2 text-lg font-black text-white">Pick your next match</p>
+                <p className="text-[10px] text-slate-500">Book once, plan the whole journey</p>
+              </a>
             </div>
           </div>
         </div>

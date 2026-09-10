@@ -130,9 +130,33 @@ function GateMap({ gates, segments, mixingPoints, flowSide }) {
     }
   }, [segments, mixingPoints, flowSide]);
 
-  return <div ref={ref} className="map-dark-tiles h-[480px] w-full overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/40" />;
-}
+  // Ensure the Leaflet instance recalculates after mount — the container can
+  // be a fixed pixel height or hidden on first render (e.g. inside a tab),
+  // and Leaflet needs an explicit invalidateSize() in both cases.
+  useEffect(() => {
+    if (!ref.current || !mapRef.current) return;
+    const map = mapRef.current;
+    // Defer once to let the browser finish laying out the fixed container.
+    const raf = requestAnimationFrame(() => {
+      try { map.invalidateSize({ pan: false }); } catch {}
+    });
+    const ro = new ResizeObserver(() => {
+      try { map.invalidateSize({ pan: false }); } catch {}
+    });
+    ro.observe(ref.current);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, []);
 
+  return (
+    <div
+      ref={ref}
+      className="map-dark-tiles relative w-full overflow-hidden rounded-2xl border border-white/10 shadow-2xl shadow-black/40"
+      style={{ height: '440px', aspectRatio: 'unset' }}    />
+  );
+}
 export default function OrganizerGates() {
   const { data: gates, loading, error } = useApi(api.gates);
   const { data: forecast } = useApi(api.gateForecastSummary);
