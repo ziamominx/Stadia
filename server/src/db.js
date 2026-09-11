@@ -3,12 +3,13 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import fs from 'node:fs';
 
+const isVercel = Boolean(process.env.VERCEL);
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const dataDir = join(__dirname, '..', 'data');
+const dataDir = isVercel ? '/tmp' : join(__dirname, '..', 'data');
 fs.mkdirSync(dataDir, { recursive: true });
 
 export const db = new Database(join(dataDir, 'fwwc.db'));
-db.pragma('journal_mode = WAL');
+db.pragma(isVercel ? 'journal_mode = DELETE' : 'journal_mode = WAL');
 db.pragma('foreign_keys = ON');
 
 export const SCHEMA = `
