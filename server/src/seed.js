@@ -6,25 +6,26 @@ import { ticketId } from './lib/ids.js';
 import { allSeatLabels } from './lib/seats.js';
 import { hotelReferralAmount, AIRTEL_AMOUNT } from './lib/referrals.js';
 
-const CENTER = { lat: 19.0583, lng: 73.0075 };
+// Real DY Patil Stadium coordinates: 19.04194°N, 73.02667°E (Nerul, Navi Mumbai).
+const CENTER = { lat: 19.04194, lng: 73.02667 };
 
 const GATES = [
-  { name: 'Gate A · North', lat: 19.0601, lng: 73.0075, capacity: 0, side: 'local' },
-  { name: 'Gate B · North-East', lat: 19.0599, lng: 73.0092, capacity: 0, side: 'local' },
-  { name: 'Gate C · East', lat: 19.0583, lng: 73.0097, capacity: 0, side: 'outstation' },
-  { name: 'Gate D · South-East', lat: 19.0567, lng: 73.0092, capacity: 0, side: 'outstation' },
-  { name: 'Gate E · South', lat: 19.0565, lng: 73.0075, capacity: 0, side: 'outstation' },
-  { name: 'Gate F · South-West', lat: 19.0567, lng: 73.0058, capacity: 0, side: 'outstation' },
-  { name: 'Gate G · West', lat: 19.0583, lng: 73.0053, capacity: 0, side: 'local' },
-  { name: 'Gate H · North-West', lat: 19.0599, lng: 73.0058, capacity: 0, side: 'local' },
+  { name: 'Gate A · North', lat: 19.04339, lng: 73.02667, capacity: 0, side: 'local' },
+  { name: 'Gate B · North-East', lat: 19.04296, lng: 73.02775, capacity: 0, side: 'local' },
+  { name: 'Gate C · East', lat: 19.04194, lng: 73.0282, capacity: 0, side: 'outstation' },
+  { name: 'Gate D · South-East', lat: 19.04092, lng: 73.02775, capacity: 0, side: 'outstation' },
+  { name: 'Gate E · South', lat: 19.04049, lng: 73.02667, capacity: 0, side: 'outstation' },
+  { name: 'Gate F · South-West', lat: 19.04092, lng: 73.02559, capacity: 0, side: 'outstation' },
+  { name: 'Gate G · West', lat: 19.04194, lng: 73.02514, capacity: 0, side: 'local' },
+  { name: 'Gate H · North-West', lat: 19.04296, lng: 73.02559, capacity: 0, side: 'local' },
 ];
 
 const PARKING = [
-  { name: 'P1 · Nerul West Grounds', lat: 19.0611, lng: 73.0063, capacity: 0, nearest_gate: 'Gate A · North' },
-  { name: 'P2 · Sector 14 Multi-Level', lat: 19.0609, lng: 73.0099, capacity: 0, nearest_gate: 'Gate B · North-East' },
-  { name: 'P3 · DY Patil College Grounds', lat: 19.0593, lng: 73.0047, capacity: 0, nearest_gate: 'Gate G · West' },
-  { name: 'P4 · Palm Beach Road Lot', lat: 19.0607, lng: 73.0049, capacity: 0, nearest_gate: 'Gate H · North-West' },
-  { name: 'P5 · Nerul Station Overflow', lat: 19.0618, lng: 73.0080, capacity: 0, nearest_gate: 'Gate A · North' },
+  { name: 'P1 · Nerul West Grounds', lat: 19.04474, lng: 73.02547, capacity: 0, nearest_gate: 'Gate A · North' },
+  { name: 'P2 · Sector 14 Multi-Level', lat: 19.04454, lng: 73.02907, capacity: 0, nearest_gate: 'Gate B · North-East' },
+  { name: 'P3 · DY Patil College Grounds', lat: 19.04294, lng: 73.02387, capacity: 0, nearest_gate: 'Gate G · West' },
+  { name: 'P4 · Palm Beach Road Lot', lat: 19.04434, lng: 73.02407, capacity: 0, nearest_gate: 'Gate H · North-West' },
+  { name: 'P5 · Nerul Station Overflow', lat: 19.04544, lng: 73.02717, capacity: 0, nearest_gate: 'Gate A · North' },
 ];
 
 const HOTELS = [
@@ -108,6 +109,8 @@ export function seed() {
     DELETE FROM hotels; DELETE FROM parking_zones; DELETE FROM gates;
     DELETE FROM shuttles; DELETE FROM seat_blocks;
     DELETE FROM matches; DELETE FROM users;
+    DELETE FROM hospitality_merchants; DELETE FROM transit_corridors;
+    DELETE FROM accommodation_zones; DELETE FROM mega_events;
     DELETE FROM sqlite_sequence;
   `);
 
@@ -373,7 +376,7 @@ export function seed() {
     (4, 'Grand Cultural Festival & Global Heritage Expo', 'cultural_festival', 'Central Park Mega Grounds', 'Kharghar, Navi Mumbai', '2026-11-02T17:30:00.000Z', 75000, 'scheduled');
 
     INSERT OR IGNORE INTO accommodation_zones (id, name, code, lat, lng, total_rooms, booked_rooms, avg_rate, surge_multiplier, is_overflow_recommended, transit_link_desc, shuttle_service_available) VALUES
-    (1, 'Core Nerul Stadium Zone', 'CORE_NERUL', 19.0439, 73.0189, 3200, 3040, 16500, 1.85, 0, 'Walking distance (< 1.2 km) to North & East gates', 1),
+    (1, 'Core Nerul Stadium Zone', 'CORE_NERUL', 19.0439, 73.0245, 3200, 3040, 16500, 1.85, 0, 'Walking distance (< 1.2 km) to North & East gates', 1),
     (2, 'Vashi Luxury & Commercial Hub', 'VASHI_PREMIUM', 19.0757, 72.9984, 4800, 4220, 13500, 1.45, 0, 'Harbour Line direct rail (8 mins) + Dedicated Shuttle corridor', 1),
     (3, 'Belapur Business Corridor', 'BELAPUR_BIZ', 19.0317, 73.0364, 5500, 3410, 7200, 1.05, 1, 'Navi Mumbai Metro Line 1 & Express Shuttle Corridor (12 mins, Free Pass)', 1),
     (4, 'Kharghar Green Valley Hub', 'KHARGHAR_GREEN', 19.0470, 73.0690, 6200, 2790, 4800, 0.95, 1, 'Metro Line 1 direct feeder + Park & Ride Central Park Hub (₹3,000+ nightly savings)', 1),

@@ -6,14 +6,14 @@ export const PARKING_LOAD_LIMIT = 0.85;
 
 // Shuttle drop/pickup points (outstation side of the stadium).
 export const SHUTTLE_ZONES = [
-  { zone: 'Zone 1 · East Gate C', lat: 19.06, lng: 73.0108 },
-  { zone: 'Zone 2 · South Gate E', lat: 19.0555, lng: 73.0075 },
-  { zone: 'Zone 3 · South-East Gate D', lat: 19.0562, lng: 73.01 },
-  { zone: 'Zone 4 · South-West Gate F', lat: 19.0562, lng: 73.005 },
+  { zone: 'Zone 1 · East Gate C', lat: 19.0436, lng: 73.03 },
+  { zone: 'Zone 2 · South Gate E', lat: 19.0391, lng: 73.02667 },
+  { zone: 'Zone 3 · South-East Gate D', lat: 19.0398, lng: 73.0292 },
+  { zone: 'Zone 4 · South-West Gate F', lat: 19.0398, lng: 73.0242 },
 ];
 
 export const TRANSIT_STATIONS = [
-  { name: 'Nerul Railway Station (Harbour Line)', lat: 19.0606, lng: 73.0089 },
+  { name: 'Nerul Railway Station (Harbour Line)', lat: 19.0444, lng: 73.0277 },
   { name: 'CBD Belapur Railway Station', lat: 19.0329, lng: 73.0341 },
   { name: 'Vashi Railway Station', lat: 19.0766, lng: 72.9986 },
 ];

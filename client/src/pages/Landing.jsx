@@ -4,6 +4,7 @@ import { kickoffDate, kickoffTime, pct, teamFlag, clockTime, timeBefore, shortNa
 import LiveBadge from '../components/LiveBadge.jsx';
 import CountUp from '../components/CountUp.jsx';
 import LiveGeospatialLayersHome from './LiveGeospatialLayersHome.jsx';
+import StadiumLayout from '../components/StadiumLayout.jsx';
 
 function IntelCard({ delay, label, value, sub, accent = 'cyan' }) {
   const styles = {
@@ -259,15 +260,14 @@ export default function Landing() {
             </Link>
           </div>
 
-
+          {/* Stadium-only schematic: gates A–H and the two corridors, themed */}
+          <StadiumLayout />
         </div>
       </section>
 
-      {/* ── LIVE GEOSPATIAL LAYERS ────────────────────────────────── */}
-      <LiveGeospatialLayersHome />
-
       {/* ── MATCH TIMELINE ──────────────────────────────────────────── */}
-      <section id="matches" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20">
+      <section id="matches" className="border-y border-white/[0.07] bg-ink-900/50">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyber-400">Fixtures</p>
@@ -344,7 +344,11 @@ export default function Landing() {
             );
           })}
         </div>
+        </div>
       </section>
+
+      {/* ── LIVE GEOSPATIAL LAYERS ────────────────────────────────── */}
+      <LiveGeospatialLayersHome />
 
       {/* ── HOSPITALITY ─────────────────────────────────────────────── */}
       <section id="hospitality" className="border-t border-white/[0.07] bg-ink-900/50">
@@ -428,16 +432,16 @@ export default function Landing() {
               ))}
             </div>
             <div className="mt-6 grid grid-cols-2 gap-4">
-              <a href="/#matches" className="panel panel-hover rounded-2xl p-5 text-center">
+              <Link to="/#matches" className="panel panel-hover rounded-2xl p-5 text-center">
                 <p className="text-[11px] font-extrabold uppercase tracking-widest text-cyber-400">Explore matches</p>
                 <p className="mt-2 text-lg font-black text-white">See the full fixture list</p>
                 <p className="text-[10px] text-slate-500">Nine matches across 3 weeks</p>
-              </a>
-              <a href="/#matches" className="panel panel-hover rounded-2xl p-5 text-center">
+              </Link>
+              <Link to="/#matches" className="panel panel-hover rounded-2xl p-5 text-center">
                 <p className="text-[11px] font-extrabold uppercase tracking-widest text-rose-400">Book more tickets</p>
                 <p className="mt-2 text-lg font-black text-white">Pick your next match</p>
                 <p className="text-[10px] text-slate-500">Book once, plan the whole journey</p>
-              </a>
+              </Link>
             </div>
           </div>
         </div>

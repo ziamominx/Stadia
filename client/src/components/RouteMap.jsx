@@ -38,7 +38,7 @@ export default function RouteMap({ route, height = 'h-80' }) {
     if (pts.length) {
       map.fitBounds(L.latLngBounds(pts.map(([lat, lng]) => [lat, lng])).pad(0.25));
     } else {
-      map.setView([19.0583, 73.0075], 15);
+      map.setView([19.04194, 73.02667], 15);
     }
 
     (route?.markers ?? []).forEach((m) => {

@@ -27,6 +27,11 @@ html {
   color-scheme: dark;
 }
 
+/* Keep hash-targeted sections visible below the sticky navbar. */
+section[id] {
+  scroll-margin-top: 5rem;
+}
+
 body {
   background-color: var(--color-ink-950);
   color: #e7ecf5;
@@ -324,6 +329,13 @@ input[type="range"].slider::-moz-range-thumb {
    tile pane only, so markers/polygons keep their true colors. */
 .map-dark-tiles .leaflet-tile-pane {
   filter: invert(1) hue-rotate(185deg) brightness(0.9) contrast(0.92) saturate(0.75);
+}
+
+/* Trap Leaflet's high z-index panes (tiles 400, markers 600, controls 1000)
+   inside the map container's own stacking context. Without this the map
+   paints OVER the sticky navbar and page chrome while scrolling. */
+.map-dark-tiles {
+  isolation: isolate;
 }
 
 .leaflet-container {

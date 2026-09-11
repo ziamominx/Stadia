@@ -56,7 +56,7 @@ export default function CommandCenter() {
   useEffect(() => {
     if (loading || !mapContainerRef.current || mapInstanceRef.current) return;
 
-    const map = L.map(mapContainerRef.current, { zoomControl: true }).setView([19.052, 73.03], 12);
+    const map = L.map(mapContainerRef.current, { zoomControl: true }).setView([19.04194, 73.02667], 13);
     mapInstanceRef.current = map;
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -69,6 +69,27 @@ export default function CommandCenter() {
     return () => {
       map.remove();
       mapInstanceRef.current = null;
+    };
+  }, [loading]);
+
+  // Leaflet renders at the container size present at init time. When the map
+  // mounts inside a grid column that finishes laying out later (or is resized),
+  // the tiles render larger than the box and overflow it. invalidateSize()
+  // via rAF + ResizeObserver keeps the map locked to its container.
+  useEffect(() => {
+    if (loading || !mapContainerRef.current || !mapInstanceRef.current) return;
+    const map = mapInstanceRef.current;
+    const container = mapContainerRef.current;
+    const raf = requestAnimationFrame(() => {
+      try { map.invalidateSize({ pan: false }); } catch {}
+    });
+    const ro = new ResizeObserver(() => {
+      try { map.invalidateSize({ pan: false }); } catch {}
+    });
+    ro.observe(container);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
     };
   }, [loading]);
 
@@ -142,8 +163,9 @@ export default function CommandCenter() {
     // Dining dispersal merchants
     if (activeLayers.merchants && merchants) {
       merchants.forEach((m) => {
-        const lat = 19.043 + m.id * 0.007;
-        const lng = 73.018 + m.id * 0.004;
+        // Merchants are seeded without coords; fan them around the real stadium.
+        const lat = 19.0365 + m.id * 0.0025;
+        const lng = 73.0235 + m.id * 0.0015;
         const icon = L.divIcon({
           className: '',
           html: `<div style="background:#a78bfa;width:26px;height:26px;border-radius:9999px;display:flex;align-items:center;justify-content:center;font-size:12px;border:2px solid rgba(255,255,255,0.85);box-shadow:0 4px 10px rgba(0,0,0,0.55)">🍽️</div>`,
@@ -306,7 +328,9 @@ export default function CommandCenter() {
               ))}
             </div>
           </div>
-          <div ref={mapContainerRef} className="map-dark-tiles relative h-[480px] w-full overflow-hidden rounded-xl border border-white/10 shadow-lg shadow-black/30" />
+          {/* flex-1 + min-h: the map grows to fill the panel's remaining height
+              exactly, matching the taller right-hand dock — no dead space below. */}
+          <div ref={mapContainerRef} className="map-dark-tiles relative z-0 min-h-[480px] w-full flex-1 overflow-hidden rounded-xl border border-white/10 shadow-lg shadow-black/30" />
         </div>
 
         {/* Tactical dispatch + alerts */}

@@ -39,7 +39,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/[0.07] bg-ink-950">
+    <header className="sticky top-0 z-50 border-b border-white/[0.07] bg-ink-950">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
         <Brand />
 
