@@ -2,10 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import MatchCard from '../components/MatchCard';
 import RoutingDecision from '../components/RoutingDecision';
+import StadiumLayout from '../components/StadiumLayout';
+
+const LiveGeospatialLayersHome = dynamic(
+  () => import('../components/LiveGeospatialLayersHome'),
+  { ssr: false }
+);
 import { 
   Zap, 
   Shield, 
@@ -164,8 +171,9 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Right Col: Floating Live Telemetry Cards */}
-              <div className="lg:col-span-5 relative">
+              {/* Right Col: Stadium Layout & Floating Live Telemetry Cards */}
+              <div className="lg:col-span-5 relative space-y-4">
+                <StadiumLayout />
                 <div className="relative rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-soft space-y-4">
                   
                   {/* Top card bar */}
@@ -423,6 +431,11 @@ export default function HomePage() {
               })}
           </div>
 
+        </section>
+
+        {/* ─── LIVE GEOSPATIAL LAYERS ─── */}
+        <section className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+          <LiveGeospatialLayersHome />
         </section>
 
         {/* ─── MATCH SCHEDULE STRIP & SELECTION ─── */}
