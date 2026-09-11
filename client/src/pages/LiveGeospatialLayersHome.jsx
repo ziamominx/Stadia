@@ -253,7 +253,7 @@ export default function LiveGeospatialLayersHome() {
   );
 
   const mapPanel = (
-    <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/40">
+    <div className="relative isolate rounded-2xl overflow-hidden border border-white/[0.08] shadow-2xl shadow-black/40">
       <div className="relative h-[440px] w-full overflow-hidden rounded-2xl">
         {mapError ? (
           <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-ink-850/60">
@@ -266,7 +266,7 @@ export default function LiveGeospatialLayersHome() {
           <div ref={mapRef} className="map-dark-tiles relative h-full w-full overflow-hidden rounded-2xl" />
         )}
 
-        <div className="pointer-events-auto absolute right-3 top-3 z-[1001] flex flex-wrap gap-2">
+        <div className="pointer-events-auto absolute right-3 top-3 z-20 flex flex-wrap gap-2">
           {layerPills.map((layer) => (
             <button
               key={layer.key}
