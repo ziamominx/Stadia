@@ -22,20 +22,23 @@ import OrganizerShuttles from './pages/OrganizerShuttles.jsx';
 // This handler makes "/#matches" (Book Tickets, Explore matches, Book more
 // tickets) land on the Match timeline section after the page renders.
 //
-// Smooth-scroll design (why not scrollIntoView retries):
-// Calling scrollIntoView repeatedly to "re-affirm" the position restarts the
-// browser's smooth animation mid-flight — that is the stutter/glitch users see.
-// Instead we run ONE self-controlled rAF tween (ease-out, capped duration) and
-// only re-animate later if the section genuinely drifted (late API/images).
+// Smooth-scroll design:
+// The tween re-reads the section's LIVE page position every frame and eases
+// toward that moving target. Late layout growth above the section (API rows,
+// images, the map initializing) would otherwise leave the animation landing
+// short — a visible "stop midway, then jump again". Tracking the live target
+// absorbs those shifts into one continuous glide. A fixed target also caused
+// that exact bug when the drift-correction pass fired a second animation.
 // Deps include location.key so RE-clicking the same "/#matches" link still
 // triggers a fresh smooth scroll instead of doing nothing.
 const NAV_OFFSET = 80; // sticky navbar height; matches scroll-margin-top
 
-function animateScrollTo(targetY, token, state) {
+function animateScrollToEl(el, token, state) {
+  const targetY = () => Math.max(0, el.getBoundingClientRect().top + window.scrollY - NAV_OFFSET);
   const startY = window.scrollY;
-  const dist = targetY - startY;
-  if (Math.abs(dist) < 2) return;
-  const duration = Math.min(900, Math.max(350, Math.abs(dist) * 0.3));
+  const dist = Math.abs(targetY() - startY);
+  if (dist < 2) return;
+  const duration = Math.min(900, Math.max(400, dist * 0.35));
   let startTs;
   const step = (ts) => {
     if (token !== state.token) return; // a newer scroll superseded this one
@@ -43,8 +46,12 @@ function animateScrollTo(targetY, token, state) {
     const p = Math.min(1, (ts - startTs) / duration);
     const eased = 1 - Math.pow(1 - p, 3); // ease-out cubic
     // 'instant' bypasses the CSS scroll-behavior:smooth so it can't fight the tween
-    window.scrollTo({ top: startY + dist * eased, behavior: 'instant' });
-    if (p < 1) requestAnimationFrame(step);
+    window.scrollTo({ top: startY + (targetY() - startY) * eased, behavior: 'instant' });
+    if (p < 1) {
+      requestAnimationFrame(step);
+    } else {
+      window.scrollTo({ top: targetY(), behavior: 'instant' }); // exact final snap
+    }
   };
   requestAnimationFrame(step);
 }
@@ -60,22 +67,18 @@ function ScrollToHash() {
     const state = { token: {} };
     let cancelled = false;
 
-    const idealTop = (el) => el.getBoundingClientRect().top + window.scrollY - NAV_OFFSET;
-
     let attempts = 0;
     const waitForEl = () => {
       if (cancelled) return;
       const el = document.getElementById(id);
       if (el) {
-        animateScrollTo(Math.max(0, idealTop(el)), state.token, state);
-        // One quiet correction after late layout shifts (API rows, images).
-        // Only re-animates if the section actually drifted out of place.
+        animateScrollToEl(el, state.token, state);
+        // Safety net only: one late re-check in case content shifts AFTER the
+        // glide finished. The live-target tween already handles shifts during it.
         setTimeout(() => {
           if (cancelled) return;
-          const el2 = document.getElementById(id);
-          if (!el2) return;
-          const drift = Math.abs(el2.getBoundingClientRect().top - NAV_OFFSET);
-          if (drift > 64) animateScrollTo(Math.max(0, idealTop(el2)), state.token, state);
+          const drift = Math.abs(el.getBoundingClientRect().top - NAV_OFFSET);
+          if (drift > 64) animateScrollToEl(el, state.token, state);
         }, 1100);
       } else if (attempts < 30) {
         attempts += 1;
