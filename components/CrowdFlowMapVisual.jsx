@@ -114,7 +114,7 @@ export default function CrowdFlowMapVisual({
 
         marker.bindPopup(`
           <div style="font-family: monospace; font-size: 11px; color: #111; padding: 4px; max-width: 220px;">
-            <strong style="color: #dc2626;">⚠ MIXING POINT DETECTED</strong><br/>
+            <strong style="color: #dc2626;">MIXING POINT DETECTED</strong><br/>
             <span>Separation: ${mp.distanceM}m</span><br/>
             <span>${mp.note}</span>
           </div>

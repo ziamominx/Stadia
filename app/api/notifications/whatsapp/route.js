@@ -5,7 +5,7 @@ export async function POST(request) {
     const body = await request.json();
     const { phone, ticketId, matchName = 'India vs Australia', gate = 'Gate A · North', seat = 'A1-42' } = body;
 
-    const message = `⚽ *FWWC INDIA 2026 MATCHDAY PASS*\n` +
+    const message = `*FWWC INDIA 2026 MATCHDAY PASS*\n` +
       `Match: ${matchName}\n` +
       `Ticket: ${ticketId}\n` +
       `Assigned Gate: ${gate}\n` +

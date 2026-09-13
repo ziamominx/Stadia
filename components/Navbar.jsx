@@ -1,253 +1,175 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useTheme } from './ThemeProvider';
-import { 
-  Activity, 
-  Ticket, 
-  MapPin, 
-  Hotel, 
-  Compass, 
-  Menu, 
-  X, 
-  Zap, 
-  ArrowUpRight,
-  Search,
-  Sun,
-  Moon,
-  Shield
-} from './Icons';
+import { usePathname, useRouter } from 'next/navigation';
+import { useRole, ROLES } from './RoleContext';
+import { Activity, Sliders, Navigation, Hotel, Shield, ArrowRight, Bus, BarChart3, Ticket } from './Icons';
+
+const ICON_MAP = {
+  Activity,
+  Sliders,
+  Navigation,
+  Hotel,
+  Shield,
+  Bus,
+  BarChart3,
+  Ticket,
+};
 
 export default function Navbar() {
   const pathname = usePathname();
-  const { theme, toggleTheme, mounted } = useTheme();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchTicket, setSearchTicket] = useState('');
-  const [searchOpen, setSearchOpen] = useState(false);
+  const router = useRouter();
+  const { role, setRole, currentRoleConfig } = useRole();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const navItems = [
-    { href: '/', label: 'Overview' },
-    { href: '/matches', label: 'Matches & Tickets' },
-    { href: '/admin', label: 'Admin Panel', badge: 'ADMIN' },
-    { href: '/command-center', label: 'Command Center', badge: 'LIVE' },
-    { href: '/crowd-flow', label: 'Crowd Flow Map' },
-    { href: '/hospitality', label: 'Hospitality' },
-    { href: '/tourism', label: 'Explore City' },
-  ];
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleRoleSelect = (newRoleKey) => {
+    setRole(newRoleKey);
+    setDropdownOpen(false);
+    const newConfig = ROLES[newRoleKey];
+    if (newConfig?.defaultPath) {
+      router.push(newConfig.defaultPath);
+    }
+  };
+
+  const navItems = currentRoleConfig?.navItems || [];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[var(--border-subtle)] bg-[var(--bg-primary)]/90 backdrop-blur-xl transition-colors">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        
+    <header className="sticky top-3 z-50 px-3 sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 rounded-full border border-neutral-800/90 bg-[#0e0e12]/85 px-4 py-2 shadow-2xl backdrop-blur-xl">
         {/* Brand Monogram & Title */}
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--terracotta-primary)] font-black text-white text-sm tracking-tighter shadow-md transition-transform duration-200 group-hover:scale-105">
-              <span>S</span>
-              <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--terracotta-primary)] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[var(--terracotta-primary)]"></span>
+        <Link href="/" className="flex items-center gap-3 pl-1 group shrink-0">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-black font-black text-sm shadow-md transition group-hover:scale-105">
+            ▲
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold tracking-tight text-white">
+                STADIA <span className="text-neutral-400 font-normal">NEXUS</span>
+              </span>
+              <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                LIVE
               </span>
             </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="text-base font-black tracking-tight text-[var(--text-primary)] font-mono group-hover:text-[var(--terracotta-text)] transition-colors">
-                  STADIA
-                </span>
-                <span className="hidden sm:inline-flex items-center rounded-full border border-[var(--terracotta-border)] bg-[var(--terracotta-tint)] px-2 py-0.5 text-[9px] font-mono font-bold tracking-wider text-[var(--terracotta-text)]">
-                  TERRACOTTA MESH
-                </span>
-              </div>
-              <span className="text-[10px] text-[var(--text-muted)] font-mono tracking-tight hidden sm:block">
-                Predictive Crowd &amp; Hospitality Mesh
-              </span>
-            </div>
-          </Link>
-        </div>
+            <span className="text-[10px] text-neutral-400 font-medium truncate max-w-[150px] sm:max-w-none">
+              {currentRoleConfig.tag}
+            </span>
+          </div>
+        </Link>
 
-        {/* Center Pill Navigation */}
-        <nav className="hidden lg:flex items-center gap-1 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-1 shadow-soft">
+        {/* Center Dynamic Pill Navigation based on active persona */}
+        <nav className="hidden lg:flex items-center gap-1">
           {navItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+            const IconComponent = ICON_MAP[item.iconName] || Activity;
+            const isActive = pathname === item.to || (item.to !== '/' && pathname?.startsWith(item.to));
             return (
               <Link
-                key={item.href}
-                href={item.href}
-                className={`relative flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-150 ${
+                key={item.to}
+                href={item.to}
+                className={`flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition-all ${
                   isActive
-                    ? 'bg-[var(--terracotta-tint)] text-[var(--terracotta-text)] border border-[var(--terracotta-border)] shadow-xs font-bold'
-                    : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
+                    ? 'bg-neutral-800 text-white shadow-inner border border-neutral-700/60'
+                    : 'text-neutral-400 hover:bg-neutral-900 hover:text-white'
                 }`}
               >
+                <IconComponent className="h-3.5 w-3.5 opacity-80" />
                 {item.label}
-                {item.badge && (
-                  <span className="flex h-1.5 w-1.5 rounded-full bg-[var(--terracotta-primary)] animate-pulse" />
-                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-2.5">
-          {/* Light / Dark Mode Toggle Button */}
+        {/* Right Section: DEMO MODE · Viewing as Role Dropdown */}
+        <div className="relative flex items-center gap-2" ref={dropdownRef}>
           <button
-            onClick={toggleTheme}
-            aria-label="Toggle White/Dark mode"
-            title={theme === 'dark' ? 'Switch to Terracotta White mode' : 'Switch to Terracotta Dark mode'}
-            className="btn-press flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] shadow-xs transition"
+            type="button"
+            onClick={() => setDropdownOpen((prev) => !prev)}
+            className="flex items-center gap-2 rounded-full border border-neutral-700/80 bg-neutral-900/90 px-3 py-1.5 text-xs font-medium text-white shadow-sm transition hover:border-neutral-500 hover:bg-neutral-800 focus:outline-none"
+            aria-label="Switch demo persona"
           >
-            {mounted && theme === 'dark' ? (
-              <Sun className="h-4 w-4 text-amber-300" />
-            ) : (
-              <Moon className="h-4 w-4 text-[var(--terracotta-primary)]" />
-            )}
+            <span className="hidden md:inline text-[11px] font-semibold text-neutral-400 tracking-wider uppercase">
+              Demo Mode · Viewing as:
+            </span>
+            <span className="flex items-center gap-2 text-white font-semibold">
+              {React.createElement(ICON_MAP[currentRoleConfig.iconName] || Activity, { className: 'h-3.5 w-3.5 text-emerald-400' })}
+              <span className="truncate max-w-[120px] sm:max-w-none">{currentRoleConfig.name}</span>
+            </span>
+            <svg
+              className={`h-3 w-3 text-neutral-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                clipRule="evenodd"
+              />
+            </svg>
           </button>
 
-          {/* Quick Ticket Lookup Toggle */}
-          <div className="relative hidden md:block">
-            {searchOpen ? (
-              <form 
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (searchTicket.trim()) {
-                    window.location.href = `/ticket/${searchTicket.trim()}`;
-                  }
-                }}
-                className="flex items-center"
-              >
-                <input
-                  type="text"
-                  placeholder="Ticket ID (e.g. FWC-1-A1...)"
-                  value={searchTicket}
-                  onChange={(e) => setSearchTicket(e.target.value)}
-                  autoFocus
-                  className="w-44 rounded-full border border-[var(--terracotta-border)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-1 focus:ring-[var(--terracotta-primary)] font-mono"
-                />
-                <button
-                  type="button"
-                  onClick={() => setSearchOpen(false)}
-                  className="ml-1 p-1 text-[var(--text-muted)] hover:text-[var(--text-primary)]"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </form>
-            ) : (
-              <button
-                onClick={() => setSearchOpen(true)}
-                className="flex items-center gap-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-surface)] px-3 py-1.5 text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] shadow-xs transition"
-              >
-                <Search className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-                <span>Find Ticket</span>
-              </button>
-            )}
-          </div>
+          {/* Role Dropdown Menu */}
+          {dropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-neutral-800 bg-[#121217] p-2 shadow-2xl backdrop-blur-2xl z-50">
+              <div className="px-3 py-2 border-b border-neutral-800/80">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
+                  Switch Stakeholder View
+                </p>
+                <p className="text-[11px] text-neutral-500">
+                  Same shared event state, tailored control surface.
+                </p>
+              </div>
 
-          {/* Admin Panel Quick Access */}
-          <Link
-            href="/admin"
-            className="hidden xl:inline-flex items-center gap-1.5 rounded-full border border-[var(--terracotta-border)] bg-[var(--terracotta-tint)] px-3 py-1.5 text-xs font-mono font-bold text-[var(--terracotta-text)] hover:bg-[var(--terracotta-primary)] hover:text-white transition shadow-xs"
-            title="Admin Console - Manage Events & View Analytics"
-          >
-            <Shield className="w-3.5 h-3.5" />
-            <span>Admin</span>
-          </Link>
-
-          {/* Primary CTA */}
-          <Link
-            href="/matches"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-[var(--terracotta-primary)] hover:bg-[var(--terracotta-hover)] px-4 py-1.5 text-xs font-bold text-white shadow-soft transition-all duration-150 active:scale-95"
-          >
-            <Ticket className="w-3.5 h-3.5 text-white" />
-            <span>Book Tickets</span>
-          </Link>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-            className="flex lg:hidden h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-surface)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+              <div className="mt-1 space-y-1">
+                {Object.values(ROLES).map((r) => {
+                  const isSelected = r.id === role;
+                  const Icon = ICON_MAP[r.iconName] || Activity;
+                  return (
+                    <button
+                      key={r.id}
+                      onClick={() => handleRoleSelect(r.id)}
+                      className={`w-full flex items-start gap-3 rounded-xl px-3 py-2.5 text-left transition-all ${
+                        isSelected
+                          ? 'bg-neutral-800/90 text-white border border-neutral-700/70'
+                          : 'text-neutral-300 hover:bg-neutral-900 hover:text-white'
+                      }`}
+                    >
+                      <span className="mt-0.5 p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-emerald-400 shrink-0">
+                        <Icon className="h-3.5 w-3.5" />
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold">{r.name}</span>
+                          {isSelected && (
+                            <span className="text-[10px] font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-500/20">
+                              Active
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-neutral-400 truncate mt-0.5">
+                          {r.tag}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Mobile Navigation Drawer */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden border-b border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 pt-3 pb-5 space-y-2 animate-fadeIn">
-          <div className="mb-3 pt-1">
-            <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (searchTicket.trim()) {
-                  window.location.href = `/ticket/${searchTicket.trim()}`;
-                }
-              }}
-              className="flex items-center gap-2"
-            >
-              <input
-                type="text"
-                placeholder="Lookup Ticket (e.g. FWC-1-A1...)"
-                value={searchTicket}
-                onChange={(e) => setSearchTicket(e.target.value)}
-                className="flex-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-3 py-2 text-xs text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--terracotta-primary)] font-mono"
-              />
-              <button
-                type="submit"
-                className="rounded-lg bg-[var(--terracotta-primary)] px-3 py-2 text-xs text-white font-semibold"
-              >
-                Go
-              </button>
-            </form>
-          </div>
-
-          <div className="grid grid-cols-1 gap-1">
-            {navItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                    isActive
-                      ? 'bg-[var(--terracotta-tint)] text-[var(--terracotta-text)] font-semibold'
-                      : 'text-[var(--text-secondary)] hover:bg-[var(--bg-elevated)] hover:text-[var(--text-primary)]'
-                  }`}
-                >
-                  <span>{item.label}</span>
-                  {item.badge && (
-                    <span className="rounded-full bg-[var(--terracotta-tint)] border border-[var(--terracotta-border)] px-2 py-0.5 text-[10px] font-mono font-bold text-[var(--terracotta-text)]">
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-
-          <div className="pt-2 flex items-center gap-2">
-            <button
-              onClick={toggleTheme}
-              className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] py-2 text-xs font-semibold text-[var(--text-primary)]"
-            >
-              {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-300" /> : <Moon className="w-3.5 h-3.5 text-[var(--terracotta-primary)]" />}
-              <span>{theme === 'dark' ? 'Switch to White Mode' : 'Switch to Dark Mode'}</span>
-            </button>
-            <Link
-              href="/matches"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-[var(--terracotta-primary)] py-2 text-xs font-bold text-white shadow-soft"
-            >
-              <Ticket className="w-3.5 h-3.5 text-white" />
-              <span>Book Tickets</span>
-            </Link>
-          </div>
-        </div>
-      )}
     </header>
   );
 }

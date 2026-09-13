@@ -13,33 +13,33 @@ function fmtTime(iso) {
 export function buildMessage(d) {
   const t = d.ticket;
   const lines = [];
-  lines.push(`🏟️ *FIFA Women's World Cup India 2026*`);
-  lines.push(`🎫 Ticket confirmed: ${t.unique_ticket_id}`);
+  lines.push(`*FIFA Women's World Cup India 2026*`);
+  lines.push(`Ticket confirmed: ${t.unique_ticket_id}`);
   lines.push('');
-  lines.push(`⚽ ${d.match.home_team} vs ${d.match.away_team}`);
-  lines.push(`🕐 ${fmtTime(d.match.kickoff_time)}`);
-  lines.push(`📍 ${d.match.venue}`);
-  lines.push(`💺 Block ${d.block.block_name} · Seat ${t.seat_number}`);
+  lines.push(`${d.match.home_team} vs ${d.match.away_team}`);
+  lines.push(`Kickoff: ${fmtTime(d.match.kickoff_time)}`);
+  lines.push(`Venue: ${d.match.venue}`);
+  lines.push(`Seat: Block ${d.block.block_name} · Seat ${t.seat_number}`);
   lines.push('');
 
   if (t.visitor_type === 'local') {
-    lines.push(`🚪 Entry: ${d.entryGate?.name}`);
-    lines.push(`🚪 Exit: ${d.exitGate?.name}`);
+    lines.push(`Entry: ${d.entryGate?.name}`);
+    lines.push(`Exit: ${d.exitGate?.name}`);
     if (d.parkingZone) {
-      lines.push(`🅿️ Parking: ${d.parkingZone.name}`);
-      lines.push('🚶 Post-match: walk back to your parking zone via the exit gate.');
+      lines.push(`Parking: ${d.parkingZone.name}`);
+      lines.push('Post-match: walk back to your parking zone via the exit gate.');
     } else if (d.transitHint) {
-      lines.push(`🚆 Transit: ${d.transitHint}`);
+      lines.push(`Transit: ${d.transitHint}`);
     }
   } else if (d.hotel && d.shuttle) {
-    lines.push(`🏨 Hotel: ${d.hotel.name} (${d.hotel.zone}, ${d.hotel.tier})`);
-    lines.push(`🚐 Shuttle: ${d.shuttle.zone} · departs ${d.shuttle.departure_time}`);
-    lines.push(`🚪 Entry gate: ${d.entryGate?.name} · Exit gate: ${d.exitGate?.name}`);
-    lines.push(`💳 10% off this hotel booking — code on your ticket page.`);
+    lines.push(`Hotel: ${d.hotel.name} (${d.hotel.zone}, ${d.hotel.tier})`);
+    lines.push(`Shuttle: ${d.shuttle.zone} · departs ${d.shuttle.departure_time}`);
+    lines.push(`Entry gate: ${d.entryGate?.name} · Exit gate: ${d.exitGate?.name}`);
+    lines.push(`10% off hotel booking: code on your ticket page.`);
   }
   lines.push('');
-  lines.push(`📺 10% off Airtel TV FIFA subscription: shown on your ticket page.`);
-  lines.push(`🔗 Manage your plan: ${d.ticket.unique_ticket_id}`);
+  lines.push(`10% off Airtel TV FIFA subscription: shown on your ticket page.`);
+  lines.push(`Manage your plan: ${d.ticket.unique_ticket_id}`);
   return lines.join('\n');
 }
 

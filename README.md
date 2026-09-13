@@ -27,10 +27,10 @@ exists.
 
 | Layer    | Tech |
 | -------- | ---- |
-| Frontend | React 19 + Vite 6, Tailwind CSS 4, Leaflet (OSM, no API key), `qrcode` |
-| Backend  | Node 20 + Express 4 (REST) |
-| Database | SQLite via `better-sqlite3` (same schema ports to Postgres) |
-| Notifications | WhatsApp Cloud API (mock fallback logs to the server console) |
+| Fullstack / Frontend | Next.js 15 (App Router), React 19, Tailwind CSS 4, Leaflet (OSM), `qrcode` |
+| Backend API | Next.js Route Handlers (`app/api/*`) & Express micro-services |
+| Database | SQLite via `better-sqlite3` |
+| Notifications | WhatsApp Cloud API (mock fallback logs to the console) |
 | Auth     | Mock OTP + JWT endpoints (demo-grade only) |
 
 Payments, hotel inventory and the Airtel partnership are **mocked stubs** returning realistic data.
@@ -38,11 +38,11 @@ Payments, hotel inventory and the Airtel partnership are **mocked stubs** return
 ## Quick start
 
 ```bash
-npm install        # installs server + client workspaces
-npm run dev        # starts API (:4000) + Vite dev server (:5173) together
+npm install        # installs platform dependencies
+npm run dev        # starts Next.js App Router dev server on :3000
 ```
 
-Then open **http://localhost:5173**.
+Then open **http://localhost:3000**.
 
 The database auto-seeds the first time the server starts (9 matches, 8 gates, 5 parking zones,
 12 hotels, 4 shuttle zones × 3 slots per match, ~38k sample tickets, ~13k referral events).
@@ -51,8 +51,8 @@ To re-seed from scratch: `npm run seed`.
 ### Production build
 
 ```bash
-npm run build      # builds client into client/dist
-npm start          # Express serves API + built client on :4000
+npm run build      # compiles Next.js App Router production bundle
+npm start          # starts Next.js production server on :3000
 ```
 
 ## Demo script (5 minutes)
@@ -96,22 +96,22 @@ WHATSAPP_TO=<verified recipient number>
 ## Project layout
 
 ```
-server/
-  src/
-    index.js            Express app (routes + static client serving)
-    db.js               SQLite connection + schema (matches, gates, tickets, …)
-    seed.js             Idempotent seed: demo data + ~38k sample tickets
-    routes/             matches, hotels, bookings, notifications, dashboard,
-                        tourism, referrals, auth
-    lib/                assignment (gate/parking/shuttle logic), forecast
-                        (arrival-curve prediction), whatsapp, ticket detail +
-                        route geometry, load model, referrals
-client/
-  src/
-    pages/              Landing, MatchDetail, Checkout, TravelInfo, Confirmation,
-                        Tourism, Organizer, OrganizerGates, OrganizerShuttles
-    components/         SeatMap (SVG), SeatPicker, RouteMap (Leaflet), QRCode, LoadBar
-    api.js              fetch wrapper + useApi hook
+app/                    Next.js 15 App Router pages & route handlers
+  page.jsx              Landing, hero, ingress safety telemetry, corridor visualizer
+  matches/              Match fixtures catalog with filter chips
+  match/[id]/           Interactive SVG stadium seat map & block selector
+  checkout/             Reservation & checkout funnel
+  ticket/[ticketId]/    Travel questionnaire & digital matchday pass confirmation
+  journey-planner/      Trip companion wizard & early arrival incentives
+  hospitality-hub/      Hospitality & dining zone saturation & overflow dispersal
+  simulator/            Stress scenario simulator & AI mitigation actions
+  command-center/       Leaflet tactical command map with multi-layer overlays
+  organizer/            Organizer console (gates, shuttles, KPIs)
+  tourism/              Host city fan discovery & partner experiences
+  api/                  Next.js backend API routes (routes, tickets, events, hotels)
+components/             Shared UI components (Navbar, Footer, SeatMap, RouteMap, etc.)
+lib/                    Domain logic, formatters, SQLite store & data engines
+server/                 Express backend & database seed scripts
 ```
 
 ## Key model decisions

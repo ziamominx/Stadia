@@ -1,109 +1,51 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
-import { Compass, MapPin, Calendar, Clock, ArrowRight, Ticket } from '../../components/Icons';
+import { useApi, api } from '../../lib/api.js';
+import { Compass } from '../../components/Icons.jsx';
 
 export default function TourismPage() {
-  const [destinations, setDestinations] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadTourism() {
-      try {
-        const res = await fetch('/api/tourism');
-        if (res.ok) {
-          const data = await res.json();
-          setDestinations(data);
-        }
-      } catch (err) {
-        console.error('Error loading tourism destinations:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadTourism();
-  }, []);
+  const { data: spots, loading } = useApi(api.tourism);
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] flex flex-col font-sans transition-colors">
-      <Navbar />
+    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 fade-up">
+      <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">Gap-day getaways</p>
+      <h1 className="mt-1 text-3xl font-black text-white">Your matches have gaps — fill them</h1>
+      <p className="mt-2 max-w-2xl text-sm text-slate-400">
+        With matches spread across three weeks, there's time to explore. These day trips are all
+        within a 2-hour drive of Navi Mumbai — no advance booking needed for the demo.
+      </p>
 
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full py-10 space-y-10 pb-24">
-        
-        {/* Header Strip */}
-        <div className="space-y-3 border-b border-[var(--border-subtle)] pb-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-[var(--terracotta-border)] bg-[var(--terracotta-tint)] px-3 py-1 text-xs font-mono font-bold text-[var(--terracotta-text)]">
-            <Compass className="w-3.5 h-3.5 text-[var(--terracotta-primary)]" />
-            <span>FAN TRAVEL GUIDE · NAVI MUMBAI &amp; MAHARASHTRA</span>
-          </div>
+      {loading && <div className="mt-6 h-40 animate-pulse rounded-2xl bg-[#0e0e12]" />}
 
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] font-mono tracking-tight">
-                Explore The Host Region
-              </h1>
-              <p className="text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
-                Make the most of your tournament trip. Discover scenic hill stations, coastal forts, and iconic Mumbai heritage sites within easy reach of DY Patil Stadium.
-              </p>
-            </div>
-
-            <Link
-              href="/matches"
-              className="inline-flex items-center gap-2 rounded-xl bg-[var(--terracotta-primary)] hover:bg-[var(--terracotta-hover)] px-5 py-2.5 text-xs font-mono font-bold text-white shadow-soft transition active:scale-95"
-            >
-              <Ticket className="w-4 h-4 text-white" />
-              <span>Match Fixtures</span>
-            </Link>
-          </div>
-        </div>
-
-        {/* ─── DESTINATIONS GRID ─── */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {destinations.map((dest) => (
-            <div
-              key={dest.id}
-              className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 shadow-soft flex flex-col justify-between space-y-4 hover:border-[var(--terracotta-border)] transition group"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-4xl filter drop-shadow-sm">{dest.image_emoji || '📍'}</span>
-                  <span className="rounded bg-[var(--terracotta-tint)] border border-[var(--terracotta-border)] px-2 py-0.5 text-[10px] font-mono font-bold text-[var(--terracotta-text)]">
-                    {dest.distance_from_mumbai_km} km from Stadium
-                  </span>
-                </div>
-
-                <h3 className="text-xl font-black text-[var(--text-primary)] font-mono group-hover:text-[var(--terracotta-primary)] transition-colors">
-                  {dest.name}
-                </h3>
-
-                <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-sans">
-                  {dest.description}
-                </p>
+      <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {spots?.map((s) => (
+          <div
+            key={s.id}
+            className="rounded-2xl border border-slate-800 bg-[#0e0e12] p-5 transition hover:-translate-y-0.5 hover:border-emerald-500/50"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900/80 text-emerald-400">
+                <Compass className="h-5 w-5" />
               </div>
-
-              {/* Best Season info */}
-              <div className="border-t border-[var(--border-subtle)] pt-3 space-y-2 text-xs font-mono">
-                <div className="flex items-center justify-between text-[var(--text-secondary)]">
-                  <span className="text-[var(--text-muted)]">Best Visiting Window:</span>
-                  <span className="text-[var(--text-primary)] font-bold">{dest.best_time}</span>
-                </div>
-
-                <div className="pt-2">
-                  <span className="text-[11px] text-[var(--terracotta-text)] font-bold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                    <span>Explore travel routes</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </span>
-                </div>
-              </div>
+              <span className="rounded-full bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-300">
+                {s.distance_from_mumbai_km} km
+              </span>
             </div>
-          ))}
-        </div>
-      </main>
+            <h2 className="mt-3 text-lg font-extrabold text-white">{s.name}</h2>
+            <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{s.description}</p>
+            <p className="mt-3 text-[11px] font-semibold text-emerald-400">Best time: {s.best_time}</p>
+          </div>
+        ))}
+      </div>
 
-      <Footer />
+      <div className="mt-10 rounded-2xl border border-slate-800 bg-[#0e0e12] p-6 text-center">
+        <p className="text-sm text-slate-300">
+          Travelling for multiple matches? Your ticket page shows exactly how many gap days you
+          have before the next kickoff.
+        </p>
+        <Link href="/matches" className="mt-3 inline-block font-bold text-emerald-400">← Back to matches</Link>
+      </div>
     </div>
   );
 }

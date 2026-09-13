@@ -117,8 +117,8 @@ export default function LiveGeospatialLayersHome() {
       HOTELS.forEach((h) => {
         const icon = L.divIcon({
           className: 'custom-hotel-pin',
-          html: `<div style="background:#f59e0b;padding:3px 6px;border-radius:6px;border:1px solid #fff;color:#000;font-size:10px;font-weight:bold;box-shadow:0 0 8px #f59e0b">🏨 ₹${h.rate / 1000}k</div>`,
-          iconSize: [60, 20],
+          html: `<div style="background:#f59e0b;padding:3px 6px;border-radius:6px;border:1px solid #fff;color:#000;font-size:10px;font-weight:bold;box-shadow:0 0 8px #f59e0b">₹${h.rate / 1000}k</div>`,
+          iconSize: [50, 20],
         });
         L.marker([h.lat, h.lng], { icon })
           .addTo(group)
@@ -139,10 +139,10 @@ export default function LiveGeospatialLayersHome() {
   }
 
   const layerPills = [
-    { key: 'gate', label: '🏟️ Gates' },
-    { key: 'hotel', label: '🏨 Hotels' },
-    { key: 'transit', label: '🚆 Transit' },
-    { key: 'shuttle', label: '🚌 Shuttles' },
+    { key: 'gate', label: 'Gates' },
+    { key: 'hotel', label: 'Hotels' },
+    { key: 'transit', label: 'Transit' },
+    { key: 'shuttle', label: 'Shuttles' },
   ];
 
   return (
