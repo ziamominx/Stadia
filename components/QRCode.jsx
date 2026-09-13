@@ -28,7 +28,7 @@ export default function QRCodeCard({ text, value, size = 168 }) {
   if (!url) {
     return (
       <div
-        className="animate-pulse rounded-lg bg-slate-800"
+        className="animate-pulse rounded-lg bg-neutral-800"
         style={{ width: size, height: size }}
       />
     );

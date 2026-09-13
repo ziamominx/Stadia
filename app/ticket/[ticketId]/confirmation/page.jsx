@@ -16,9 +16,9 @@ function InfoRow({ icon, label, value, sub }) {
         {icon}
       </div>
       <div className="min-w-0">
-        <p className="text-[10px] font-mono font-bold uppercase tracking-wide text-slate-500">{label}</p>
+        <p className="text-[10px] font-mono font-bold uppercase tracking-wide text-neutral-500">{label}</p>
         <p className="text-sm font-bold text-white">{value}</p>
-        {sub && <p className="text-[11px] text-slate-400">{sub}</p>}
+        {sub && <p className="text-[11px] text-neutral-400">{sub}</p>}
       </div>
     </div>
   );
@@ -46,7 +46,7 @@ export default function ConfirmationPage() {
   if (error || !detail) {
     return (
       <div className="mx-auto max-w-5xl px-4 py-16 text-center sm:px-6">
-        <p className="text-lg text-slate-300">{error?.message || 'Ticket not found'}</p>
+        <p className="text-lg text-neutral-300">{error?.message || 'Ticket not found'}</p>
         <Link href="/matches" className="mt-4 inline-block font-bold text-emerald-400">
           ← Back to matches
         </Link>
@@ -122,13 +122,13 @@ export default function ConfirmationPage() {
           <h1 className="text-2xl font-black text-white sm:text-3xl mt-1">
             {detail.match.home_team} vs {detail.match.away_team}
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-neutral-400">
             {kickoffLong(detail.match.kickoff_time)} · {detail.match.venue}
           </p>
         </div>
         <Link
           href="/matches"
-          className="rounded-xl border border-slate-600 bg-white/5 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/10"
+          className="rounded-xl border border-neutral-700 bg-white/5 px-4 py-2 text-sm font-bold text-white transition hover:bg-white/10"
         >
           Book another match
         </Link>
@@ -155,13 +155,13 @@ export default function ConfirmationPage() {
       )}
 
       {/* ticket */}
-      <div className="overflow-hidden rounded-2xl border border-slate-700/60 bg-[#0e0e12]">
+      <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-[#0e0e12]">
         <div className="flex flex-col gap-6 p-6 md:flex-row">
           <div className="flex flex-col items-center gap-3 md:w-56 md:shrink-0">
             <QRCodeCard text={qrPayload} />
             <div className="text-center">
               <p className="font-mono text-sm font-bold text-emerald-400">{t.unique_ticket_id}</p>
-              <p className="text-[11px] text-slate-500">Present this QR at the gate</p>
+              <p className="text-[11px] text-neutral-500 font-mono">Present this QR at the gate</p>
             </div>
           </div>
 
@@ -210,12 +210,12 @@ export default function ConfirmationPage() {
         </div>
 
         {/* route map */}
-        <div className="border-t border-slate-800 p-6">
-          <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-400">
+        <div className="border-t border-neutral-800 p-6">
+          <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-neutral-400 font-mono">
             Your match-day route
           </h2>
           <RouteMap route={detail.route} />
-          <p className="mt-2 text-[11px] text-slate-500">
+          <p className="mt-2 text-[11px] text-neutral-500">
             <span className="text-emerald-400">—— green</span> = arrival path ·{' '}
             <span className="text-rose-400">- - red</span> = post-match exit path
             {isLocal && isVehicle && ' · local fans use North/West gates, outstation fans use East/South gates so crowds never mix'}
@@ -231,7 +231,7 @@ export default function ConfirmationPage() {
               <Hotel className="h-5 w-5" />
             </div>
             <h3 className="mt-3 font-bold text-white">10% Off Hotel Reservation</h3>
-            <p className="mt-1 text-xs text-slate-400">
+            <p className="mt-1 text-xs text-neutral-400">
               {detail.hotel ? `Applies to ${detail.hotel.name} — we've already reserved 2 nights for you.` : 'Applies to your selected partner hotel.'}
             </p>
             {detail.claims?.includes('hotel') ? (
@@ -254,7 +254,7 @@ export default function ConfirmationPage() {
             <Tv className="h-5 w-5" />
           </div>
           <h3 className="mt-3 font-bold text-white">10% Off Match Streaming Pass</h3>
-          <p className="mt-1 text-xs text-slate-400">
+          <p className="mt-1 text-xs text-neutral-400">
             Catch every match from home too — this offer is for all fans, local or not.
           </p>
           {detail.claims?.includes('airtel_tv') ? (
@@ -281,7 +281,7 @@ export default function ConfirmationPage() {
               <MessageSquare className="h-4 w-4 text-emerald-400" />
               <h3 className="font-bold text-white">WhatsApp Matchday Dispatch</h3>
             </div>
-            <p className="mt-0.5 text-xs text-slate-400">
+            <p className="mt-0.5 text-xs text-neutral-400">
               Sent automatically on booking completion · resend anytime
             </p>
           </div>
@@ -325,7 +325,7 @@ export default function ConfirmationPage() {
                 <Compass className="h-4 w-4 text-emerald-400" />
                 <h3 className="font-bold text-white">{gapDays} Layover Days Before Next Match</h3>
               </div>
-              <p className="mt-0.5 text-xs text-slate-400">
+              <p className="mt-0.5 text-xs text-neutral-400">
                 Regional tourism destinations around Mumbai Metropolitan Region.
               </p>
             </div>
@@ -340,7 +340,7 @@ export default function ConfirmationPage() {
                   <Compass className="h-4 w-4" />
                 </div>
                 <p className="text-sm font-bold text-white">{s.name}</p>
-                <p className="text-[11px] text-slate-400">{s.distance_from_mumbai_km} km from DY Patil</p>
+                <p className="text-[11px] text-neutral-400">{s.distance_from_mumbai_km} km from DY Patil</p>
               </div>
             ))}
           </div>

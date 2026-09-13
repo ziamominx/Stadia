@@ -146,7 +146,7 @@ function GateMap({ gates, segments, mixingPoints, flowSide }) {
     }
   }, [segments, mixingPoints, flowSide]);
 
-  return <div ref={ref} className="h-[440px] w-full overflow-hidden rounded-2xl border border-slate-700/50" />;
+  return <div ref={ref} className="h-[440px] w-full overflow-hidden rounded-2xl border border-neutral-800" />;
 }
 
 export default function OrganizerGatesPage() {
@@ -166,7 +166,7 @@ export default function OrganizerGatesPage() {
   if (error || !gates) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6">
-        <p className="text-lg text-slate-300">{error?.message || 'Failed to load gates'}</p>
+        <p className="text-lg text-neutral-300">{error?.message || 'Failed to load gates'}</p>
       </div>
     );
   }
@@ -175,18 +175,18 @@ export default function OrganizerGatesPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 fade-up">
-      <Link href="/organizer" className="text-sm font-semibold text-slate-400 hover:text-white">← Overview</Link>
+      <Link href="/organizer" className="text-sm font-semibold text-neutral-400 hover:text-white">← Overview</Link>
       <h1 className="mt-2 text-2xl font-black text-white sm:text-3xl">Gate map — live load &amp; crowd flow</h1>
-      <p className="mt-1 text-sm text-slate-400">
+      <p className="mt-1 text-sm text-neutral-400">
         Green = OK · amber = approaching capacity (≥80%) · red = critical. Tap a marker for details.
       </p>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <div>
           {/* Flow controls */}
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-[#0e0e12] p-3">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-800 bg-[#0e0e12] p-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-slate-500">Simulate</span>
+              <span className="text-[11px] font-bold uppercase tracking-wide text-neutral-500 font-mono">Simulate</span>
               {['both', 'local', 'outstation'].map((s) => (
                 <button
                   key={s}
@@ -198,7 +198,7 @@ export default function OrganizerGatesPage() {
                         : s === 'outstation'
                           ? 'border-rose-400 bg-rose-500/15 text-rose-300'
                           : 'border-emerald-400 bg-emerald-500/15 text-emerald-300'
-                      : 'border-slate-700 text-slate-400 hover:text-white'
+                      : 'border-neutral-700 text-neutral-400 hover:text-white'
                   }`}
                 >
                   {s === 'both' ? 'Both flows' : s === 'local' ? 'Local flow' : 'Outstation flow'}
@@ -206,7 +206,7 @@ export default function OrganizerGatesPage() {
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-slate-400">Arrival time</span>
+              <span className="text-[11px] text-neutral-400">Arrival time</span>
               <input
                 type="range"
                 min={0}
@@ -224,7 +224,7 @@ export default function OrganizerGatesPage() {
           <GateMap gates={gates} segments={flow?.segments} mixingPoints={flow?.mixingPoints ?? []} flowSide={flowSide} />
 
           {flow && (
-            <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-slate-400">
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-neutral-400">
               <span>
                 Simulating <b className="text-white">{flow.match?.home_team} vs {flow.match?.away_team}</b> ·{' '}
                 <b className="text-sky-300">sky</b> = local · <b className="text-rose-300">rose</b> = outstation · line width = people on path
@@ -245,7 +245,7 @@ export default function OrganizerGatesPage() {
                     <AlertTriangle className="h-3 w-3 shrink-0" />
                     Potential crowd mixing point — {m.localPath} ↔ {m.outstationPath}
                   </p>
-                  <p className="mt-0.5 text-[11px] leading-relaxed text-slate-400">{m.note}</p>
+                  <p className="mt-0.5 text-[11px] leading-relaxed text-neutral-400">{m.note}</p>
                 </div>
               ))}
             </div>
@@ -266,7 +266,7 @@ export default function OrganizerGatesPage() {
             const p60 = Math.max(45, Math.round(g.load * 86));
 
             return (
-              <div key={g.id} className="rounded-2xl border border-slate-800 bg-[#0e0e12] p-4 space-y-3">
+              <div key={g.id} className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-4 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span
@@ -299,7 +299,7 @@ export default function OrganizerGatesPage() {
 
                 <div className="flex items-center gap-2">
                   <LoadBar load={g.load} status={g.status} className="flex-1" />
-                  <span className="whitespace-nowrap text-[10px] font-mono text-slate-400">
+                  <span className="whitespace-nowrap text-[10px] font-mono text-neutral-400">
                     {g.assigned?.toLocaleString('en-IN')}/{g.capacity?.toLocaleString('en-IN')}
                   </span>
                 </div>
@@ -340,7 +340,7 @@ export default function OrganizerGatesPage() {
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
               <h2 className="text-xl font-black text-white">Arrival forecast</h2>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-neutral-400">
                 Predicted gate load from T-3h to kickoff for{' '}
                 <b className="text-white">{forecast.match?.home_team} vs {forecast.match?.away_team}</b> —
                 modelled as tickets assigned × arrival curve (peak arrivals in the 90–30 min window).
@@ -359,7 +359,7 @@ export default function OrganizerGatesPage() {
             {forecast.gates?.map((g) => (
               <div
                 key={g.id}
-                className={`rounded-2xl border bg-[#0e0e12] p-4 ${g.flagged ? 'border-rose-500/50' : 'border-slate-800'}`}
+                className={`rounded-2xl border bg-[#0e0e12] p-4 ${g.flagged ? 'border-rose-500/50' : 'border-neutral-800'}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-bold text-white">{g.name}</span>
@@ -369,10 +369,10 @@ export default function OrganizerGatesPage() {
                 </div>
                 <ForecastSparkline slots={g.slots} flagged={g.flagged} />
                 <div className="mt-1 flex items-center justify-between text-[11px]">
-                  <span className="text-slate-500">Peak {g.peakLabel}</span>
+                  <span className="text-neutral-500">Peak {g.peakLabel}</span>
                   <span className={`font-black ${g.flagged ? 'text-rose-400' : 'text-amber-300'}`}>{g.peakPct}%</span>
                 </div>
-                <div className="mt-0.5 flex items-center justify-between text-[10px] text-slate-500">
+                <div className="mt-0.5 flex items-center justify-between text-[10px] text-neutral-500 font-mono">
                   <span>{g.assigned?.toLocaleString('en-IN')} tickets</span>
                   {g.flagged && (
                     <span className="inline-flex items-center gap-1 font-bold text-rose-400">

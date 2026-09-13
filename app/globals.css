@@ -19,6 +19,27 @@
   --color-ice-100: #f4f4f5;
 }
 
+:root {
+  --bg-canvas: #09090b;
+  --bg-surface: #0e0e12;
+  --bg-elevated: #141418;
+  --border-subtle: #27272a;
+  --border-hover: #3f3f46;
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+  --status-nominal: #10b981;
+  --status-warning: #f59e0b;
+  --status-critical: #f43f5e;
+  --status-local: #38bdf8;
+  --status-outstation: #fb7185;
+  --terracotta-primary: #10b981;
+  --terracotta-hover: #059669;
+  --terracotta-tint: rgba(16, 185, 129, 0.1);
+  --terracotta-text: #34d399;
+  --terracotta-border: rgba(16, 185, 129, 0.3);
+}
+
 html {
   scroll-behavior: smooth;
   color-scheme: dark;

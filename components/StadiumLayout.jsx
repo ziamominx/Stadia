@@ -35,15 +35,15 @@ const DIVIDERS = Array.from({ length: 16 }, (_, i) => i * 22.5).map((deg) => ({
 
 export default function StadiumLayout() {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/80 p-5 shadow-2xl backdrop-blur-md">
+    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-[#0e0e12] p-5 shadow-2xl backdrop-blur-md">
       {/* Panel header */}
       <div className="relative z-10 flex items-center justify-between gap-2">
         <div>
-          <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Stadium Layout Schematic</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 font-mono">Stadium Layout Schematic</p>
           <p className="mt-0.5 text-xs font-bold text-white">DY Patil Stadium · Nerul, Navi Mumbai</p>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" /> Gates A–H
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Gates A–H
         </span>
       </div>
 

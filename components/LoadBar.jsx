@@ -7,7 +7,7 @@ export default function LoadBar({ load, status, className = '' }) {
         ? 'bg-amber-500'
         : 'bg-emerald-500';
   return (
-    <div className={`h-2 w-full overflow-hidden rounded-full bg-slate-700/60 ${className}`}>
+    <div className={`h-2 w-full overflow-hidden rounded-full bg-neutral-800 ${className}`}>
       <div
         className={`h-full rounded-full ${color} transition-all`}
         style={{ width: `${Math.min(100, p)}%` }}

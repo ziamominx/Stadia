@@ -146,10 +146,10 @@ export default function LiveGeospatialLayersHome() {
   ];
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/80 p-6 shadow-2xl backdrop-blur-md">
+    <div className="relative overflow-hidden rounded-3xl border border-neutral-800/80 bg-[#0e0e12] p-6 shadow-2xl backdrop-blur-md">
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
         <div>
-          <p className="text-[10px] font-extrabold uppercase tracking-widest text-cyan-400">Live Geospatial Layers</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 font-mono">Live Geospatial Layers</p>
           <h3 className="text-xl font-black text-white">Interactive Venue & Corridor Radar</h3>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -159,8 +159,8 @@ export default function LiveGeospatialLayersHome() {
               onClick={() => setActive(pill.key)}
               className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
                 active === pill.key
-                  ? 'bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/20'
-                  : 'border border-slate-700 bg-slate-800/60 text-slate-400 hover:text-white'
+                  ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
+                  : 'border border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:text-white hover:border-neutral-700'
               }`}
             >
               {pill.label}
@@ -169,9 +169,9 @@ export default function LiveGeospatialLayersHome() {
         </div>
       </div>
 
-      <div className="relative h-[380px] w-full overflow-hidden rounded-xl border border-slate-700/40">
+      <div className="relative h-[380px] w-full overflow-hidden rounded-xl border border-neutral-800">
         {!mounted ? (
-          <div className="flex h-full w-full items-center justify-center bg-slate-950 text-xs text-slate-500">
+          <div className="flex h-full w-full items-center justify-center bg-[#09090b] text-xs text-neutral-500">
             Initializing satellite radar...
           </div>
         ) : (

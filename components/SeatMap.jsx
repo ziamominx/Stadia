@@ -10,7 +10,7 @@ const TIER_COLORS = [
   { min: 3000, fill: '#10b981', label: '₹3,000+ · Premium', chip: 'bg-emerald-500' },
   { min: 2400, fill: '#0ea5e9', label: '₹2,400+ · Grandstand', chip: 'bg-sky-500' },
   { min: 2000, fill: '#6366f1', label: '₹2,000+ · Upper West', chip: 'bg-indigo-500' },
-  { min: 0, fill: '#64748b', label: '₹1,200+ · Upper East', chip: 'bg-slate-500' },
+  { min: 0, fill: '#52525b', label: '₹1,200+ · Upper East', chip: 'bg-neutral-600' },
 ];
 
 function tierOf(price) {
@@ -46,7 +46,7 @@ export default function SeatMap({ blocks = [], selectedId, onSelect }) {
   const step = 360 / 12;
 
   return (
-    <div className="rounded-2xl border border-slate-700/50 bg-[#0e0e12]/80 p-4">
+    <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-4">
       <svg viewBox="0 0 640 540" className="w-full" role="img" aria-label="Stadium seat map">
         {/* pitch */}
         <ellipse cx={CX} cy={CY} rx={110} ry={62} fill="#17803c" stroke="#0b1424" strokeWidth={2} />
@@ -113,16 +113,16 @@ export default function SeatMap({ blocks = [], selectedId, onSelect }) {
         })}
       </svg>
 
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-slate-800 pt-3">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-neutral-800 pt-3">
         {TIER_COLORS.map((t) => (
-          <span key={t.label} className="inline-flex items-center gap-1.5 text-[11px] text-slate-400">
+          <span key={t.label} className="inline-flex items-center gap-1.5 text-[11px] text-neutral-400">
             <span className={`h-2.5 w-2.5 rounded-sm ${t.chip}`} /> {t.label}
           </span>
         ))}
-        <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-400">
+        <span className="inline-flex items-center gap-1.5 text-[11px] text-neutral-400">
           <span className="h-2.5 w-2.5 rounded-full bg-sky-400" /> Local gate (N/W)
         </span>
-        <span className="inline-flex items-center gap-1.5 text-[11px] text-slate-400">
+        <span className="inline-flex items-center gap-1.5 text-[11px] text-neutral-400">
           <span className="h-2.5 w-2.5 rounded-full bg-rose-400" /> Outstation gate (E/S)
         </span>
       </div>

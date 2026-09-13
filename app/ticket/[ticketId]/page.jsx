@@ -43,7 +43,7 @@ export default function TravelInfoPage() {
   if (error || !detail) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6">
-        <p className="text-lg text-slate-300">{error?.message || 'Ticket not found'}</p>
+        <p className="text-lg text-neutral-300">{error?.message || 'Ticket not found'}</p>
         <Link href="/matches" className="mt-4 inline-block font-bold text-emerald-400">
           ← Back to matches
         </Link>
@@ -85,18 +85,18 @@ export default function TravelInfoPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 fade-up">
-      <Link href="/matches" className="text-sm font-semibold text-slate-400 hover:text-white">
+      <Link href="/matches" className="text-sm font-semibold text-neutral-400 hover:text-white">
         ← Matches
       </Link>
 
       {/* booking summary */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-700/60 bg-[#0e0e12] p-4">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-800 bg-[#0e0e12] p-4">
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Your ticket</p>
+          <p className="text-[11px] font-bold uppercase tracking-widest text-neutral-500 font-mono">Your ticket</p>
           <p className="text-lg font-extrabold text-white">
             {detail.match.home_team} vs {detail.match.away_team}
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-neutral-400">
             {kickoffLong(detail.match.kickoff_time)} · Block {detail.block.block_name} · Seat{' '}
             {detail.ticket.seat_number} · <span className="font-mono text-emerald-400">{detail.ticket.unique_ticket_id}</span>
           </p>
@@ -108,9 +108,9 @@ export default function TravelInfoPage() {
 
       {/* step 1 */}
       <div className="mt-8">
-        <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">Step 1 of 2</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Step 1 of 2</p>
         <h1 className="mt-1 text-2xl font-black text-white">How are you getting to the stadium?</h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-neutral-400">
           We'll route you through the crowd-orchestration system — different gates and paths for
           local and outstation fans.
         </p>
@@ -121,14 +121,14 @@ export default function TravelInfoPage() {
             className={`rounded-2xl border-2 p-5 text-left transition ${
               visitorType === 'local'
                 ? 'border-emerald-500 bg-emerald-500/10'
-                : 'border-slate-800 bg-[#0e0e12] hover:border-emerald-500/50'
+                : 'border-neutral-800 bg-[#0e0e12] hover:border-emerald-500/50'
             }`}
           >
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800 text-emerald-400 mb-3">
               <Building2 className="h-5 w-5" />
             </div>
             <h3 className="text-lg font-bold text-white">Local Fan · Mumbai Metropolitan Region</h3>
-            <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            <p className="mt-1 text-xs leading-relaxed text-neutral-400">
               Get an assigned parking zone + gate, or the nearest gate via rail. North/West gates
               (A, B, G, H).
             </p>
@@ -138,14 +138,14 @@ export default function TravelInfoPage() {
             className={`rounded-2xl border-2 p-5 text-left transition ${
               visitorType === 'outstation'
                 ? 'border-emerald-500 bg-emerald-500/10'
-                : 'border-slate-800 bg-[#0e0e12] hover:border-emerald-500/50'
+                : 'border-neutral-800 bg-[#0e0e12] hover:border-emerald-500/50'
             }`}
           >
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800 text-sky-400 mb-3">
               <Plane className="h-5 w-5" />
             </div>
             <h3 className="text-lg font-bold text-white">Outstation Fan · Regional / International</h3>
-            <p className="mt-1 text-xs leading-relaxed text-slate-400">
+            <p className="mt-1 text-xs leading-relaxed text-neutral-400">
               Pick a partner hotel — we'll assign your shuttle zone, departure slot and East/South
               gate (C, D, E, F).
             </p>
@@ -156,32 +156,32 @@ export default function TravelInfoPage() {
       {/* step 2 local */}
       {visitorType === 'local' && (
         <div className="fade-up mt-8">
-          <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">Step 2 of 2</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Step 2 of 2</p>
           <h2 className="mt-1 text-xl font-black text-white">How are you travelling today?</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <button
               disabled={submitting}
               onClick={() => submitLocal('vehicle')}
-              className="rounded-2xl border-2 border-slate-800 bg-[#0e0e12] p-5 text-left transition hover:border-emerald-500/60 disabled:opacity-50"
+              className="rounded-2xl border-2 border-neutral-800 bg-[#0e0e12] p-5 text-left transition hover:border-emerald-500/60 disabled:opacity-50"
             >
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800 text-amber-400 mb-3">
                 <Car className="h-5 w-5" />
               </div>
               <h3 className="text-lg font-bold text-white">Personal Vehicle</h3>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-neutral-400">
                 We'll assign a parking zone near your seat block and the walking path to your gate.
               </p>
             </button>
             <button
               disabled={submitting}
               onClick={() => submitLocal('transit')}
-              className="rounded-2xl border-2 border-slate-800 bg-[#0e0e12] p-5 text-left transition hover:border-emerald-500/60 disabled:opacity-50"
+              className="rounded-2xl border-2 border-neutral-800 bg-[#0e0e12] p-5 text-left transition hover:border-emerald-500/60 disabled:opacity-50"
             >
               <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-900 border border-neutral-800 text-emerald-400 mb-3">
                 <Train className="h-5 w-5" />
               </div>
               <h3 className="text-lg font-bold text-white">Public Transit / Metro</h3>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-neutral-400">
                 We'll route you to the nearest gate and suggest the closest railway station.
               </p>
             </button>
@@ -193,9 +193,9 @@ export default function TravelInfoPage() {
       {/* step 2 outstation */}
       {visitorType === 'outstation' && (
         <div className="fade-up mt-8">
-          <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">Step 2 of 2</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Step 2 of 2</p>
           <h2 className="mt-1 text-xl font-black text-white">Choose your partner hotel</h2>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-neutral-400">
             You'll get a 10% discount (tracked on your ticket) and a shuttle slot to the stadium.
           </p>
 
@@ -207,13 +207,13 @@ export default function TravelInfoPage() {
                 className={`rounded-full border px-3 py-1 text-xs font-bold transition ${
                   zoneFilter === z
                     ? 'border-rose-500 bg-rose-500/15 text-rose-300'
-                    : 'border-slate-700 text-slate-400 hover:text-white'
+                    : 'border-neutral-800 text-neutral-400 hover:text-white'
                 }`}
               >
                 {z}
               </button>
             ))}
-            <span className="mx-1 h-4 w-px bg-slate-700" />
+            <span className="mx-1 h-4 w-px bg-neutral-800" />
             {tiers.map((t) => (
               <button
                 key={t}
@@ -221,7 +221,7 @@ export default function TravelInfoPage() {
                 className={`rounded-full border px-3 py-1 text-xs font-bold transition ${
                   tierFilter === t
                     ? 'border-emerald-500 bg-emerald-500/15 text-emerald-400'
-                    : 'border-slate-700 text-slate-400 hover:text-white'
+                    : 'border-neutral-800 text-neutral-400 hover:text-white'
                 }`}
               >
                 {t}
@@ -237,7 +237,7 @@ export default function TravelInfoPage() {
                   key={h.id}
                   disabled={submitting}
                   onClick={() => submitOutstation(h.id)}
-                  className="rounded-2xl border border-slate-800 bg-[#0e0e12] p-4 text-left transition hover:-translate-y-0.5 hover:border-rose-500/60 hover:shadow-lg disabled:opacity-50"
+                  className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-4 text-left transition hover:-translate-y-0.5 hover:border-rose-500/60 hover:shadow-lg disabled:opacity-50"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="font-bold text-white">{h.name}</h3>
@@ -245,11 +245,11 @@ export default function TravelInfoPage() {
                       {h.tier}
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-slate-400">
+                  <p className="mt-1 text-xs text-neutral-400">
                     {h.zone} · {h.distance_from_stadium_km} km from stadium
                   </p>
                   <div className="mt-3 flex items-center justify-between">
-                    <span className="text-xs text-slate-500">{inr(h.nightly_rate)} / night</span>
+                    <span className="text-xs text-neutral-500">{inr(h.nightly_rate)} / night</span>
                     <span className="text-xs font-bold text-emerald-400">10% off →</span>
                   </div>
                 </button>
