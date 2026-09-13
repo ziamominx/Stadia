@@ -5,8 +5,8 @@ import Footer from '../components/Footer';
 import { RoleProvider } from '../components/RoleContext';
 
 export const metadata = {
-  title: 'STADIA · One Ticket. Every Journey. Zero Chaos.',
-  description: 'STADIA — intelligent hospitality & crowd orchestration for mega-events. One ticket. Every journey. Zero chaos.',
+  title: 'STADIA NEXUS · Autonomous Mega-Event & Crowd Orchestration Operating System',
+  description: 'Intelligent multi-agency crowd orchestration platform: real-time event state, predictive turnstile balancing, and dynamic attendee journey coordination.',
 };
 
 export default function RootLayout({ children }) {

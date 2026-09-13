@@ -57,13 +57,13 @@ export default function Landing() {
       pills: ['94% Nominal Safety Index', '80.4% Venue Capacity', 'Multi-Agency Aligned'],
     },
     fan: {
-      badge: 'Fan & Attendee Matchday Companion',
-      headline1: 'Your matchday journey.',
-      headlineGradient: 'Direct gates. Zero confusion.',
-      subtitle: 'Access your verified digital ticket QR pass, personalized arrival route, walking directions, and early-bird concourse perks.',
-      primaryBtn: { text: 'View My Digital Pass', href: '/ticket/FWC-IND-10492/confirmation' },
-      secondaryBtn: { text: 'Browse Match Fixtures', href: '/matches' },
-      pills: ['Verified Digital QR Pass', 'Fast-Track Turnstiles', 'Trip Companion Active'],
+      badge: 'Live Attendee Ingress & Guidance Console',
+      headline1: 'Dynamic crowd guidance.',
+      headlineGradient: 'Live turnstiles. Zero congestion.',
+      subtitle: 'Real-time arrival coordination: algorithmically calculated departure windows, live gate queue monitoring, dynamic rerouting away from bottlenecks, and post-match safe dispersal.',
+      primaryBtn: { text: 'Open Live Guidance Pass', href: '/ticket/FWC-IND-10492/confirmation' },
+      secondaryBtn: { text: 'Coordinate Journey Plan', href: '/journey-planner' },
+      pills: ['Gate A Express: 4m Wait', 'Dynamic Ingress Active', 'Post-Match Wave 2 Dispersal'],
     },
   };
 
@@ -289,9 +289,9 @@ export default function Landing() {
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-xs font-bold text-white">1</span>
                   <span className="text-[10px] font-bold text-neutral-500 uppercase font-mono">Stage 1</span>
                 </div>
-                <h3 className="font-bold text-white text-sm">My Event &amp; Booking</h3>
+                <h3 className="font-bold text-white text-sm">Event Pass &amp; Ingress Profile</h3>
                 <p className="text-xs text-neutral-400 leading-relaxed">
-                  Seat selection automatically tags your visitor profile (local commuter vs outstation tourist) and allocates dedicated stadium perimeter gates.
+                  Your digital pass automatically vectors your arrival origin (local commuter vs outstation attendee) and designates dedicated perimeter gates to prevent crossing bottleneck flows.
                 </p>
               </div>
 
@@ -371,43 +371,209 @@ export default function Landing() {
             </div>
           </section>
 
-          {/* Upcoming Matches & Ingress Seat Selection */}
-          {matches && matches.length > 0 && (
-            <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
-              <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
-                <div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Match Schedule &amp; Tickets</span>
-                  <h2 className="text-2xl font-black text-white mt-1">Upcoming World Cup Fixtures</h2>
-                  <p className="text-xs text-neutral-400">Choose your match, select your block, and get your personalized transit routing.</p>
+          {/* Live Turnstiles & Ingress Queue Comparison (Section 9: Live Guidance) */}
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-neutral-800/80 pb-4">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Real-Time Ingress Telemetry</span>
+                <h2 className="text-2xl font-black text-white mt-1">Live Turnstile Queue Comparison</h2>
+                <p className="text-xs text-neutral-400">Dynamic wait times and automated crowd reroutes across stadium perimeter gates.</p>
+              </div>
+              <Link href="/crowd-flow" className="text-xs font-bold text-emerald-400 hover:underline flex items-center gap-1">
+                View Concourse Radar &rarr;
+              </Link>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Gate A */}
+              <div className="rounded-3xl border border-emerald-500/40 bg-[#0e0e12] p-5 shadow-xl space-y-3 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-bl-full pointer-events-none" />
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-white">Gate A · North Express</span>
+                  <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
+                    {ecosystem?.gate_reroute_active ? 'Active Diversion' : 'Optimal'}
+                  </span>
                 </div>
-                <Link href="/matches" className="text-xs font-bold text-emerald-400 hover:underline">
-                  View All Fixtures &rarr;
-                </Link>
+                <div className="text-2xl font-black text-white">
+                  4 <span className="text-xs text-neutral-400 font-normal">min wait</span>
+                </div>
+                <div className="space-y-1.5 text-xs text-neutral-400">
+                  <div className="flex justify-between">
+                    <span>Queue Density:</span>
+                    <span className="font-semibold text-emerald-400">42% (Nominal)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Turnstiles Open:</span>
+                    <span className="font-semibold text-white">6 of 6 Active</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Target Route:</span>
+                    <span className="font-semibold text-neutral-300">Skywalk Level 1</span>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-neutral-800/80">
+                  <span className="text-[11px] text-emerald-400 font-medium">Recommended for West & North stands</span>
+                </div>
               </div>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {matches.slice(0, 3).map(m => (
-                  <div key={m.id} className="rounded-3xl border border-neutral-800/80 bg-[#0e0e12] p-5 shadow-xl space-y-3">
-                    <div className="flex items-center justify-between text-xs text-neutral-400">
-                      <span className="font-bold text-white">{m.venue}</span>
-                      <span>{new Date(m.kickoff_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
-                    </div>
-                    <div className="text-lg font-black text-white">
-                      {m.home_team} <span className="text-neutral-500 font-normal">vs</span> {m.away_team}
-                    </div>
-                    <div className="pt-2">
-                      <Link
-                        href={`/match/${m.id}`}
-                        className="block w-full text-center rounded-full bg-white text-black hover:bg-neutral-200 py-2 text-xs font-bold transition"
-                      >
-                        Select Seats &amp; Ingress Corridor
-                      </Link>
-                    </div>
+              {/* Gate B */}
+              <div className={`rounded-3xl border ${ecosystem?.gate_reroute_active ? 'border-amber-500/40 bg-amber-950/10' : 'border-neutral-800/80 bg-[#0e0e12]'} p-5 shadow-xl space-y-3 relative overflow-hidden`}>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-white">Gate B · North Concourse</span>
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                    ecosystem?.gate_reroute_active
+                      ? 'bg-amber-500/20 border border-amber-500/30 text-amber-300'
+                      : 'bg-rose-500/15 border border-rose-500/30 text-rose-400'
+                  }`}>
+                    {ecosystem?.gate_reroute_active ? 'Auto-Diverting' : 'Congested'}
+                  </span>
+                </div>
+                <div className="text-2xl font-black text-white">
+                  18 <span className="text-xs text-neutral-400 font-normal">min wait</span>
+                </div>
+                <div className="space-y-1.5 text-xs text-neutral-400">
+                  <div className="flex justify-between">
+                    <span>Queue Density:</span>
+                    <span className="font-semibold text-amber-400">88% (Bottleneck)</span>
                   </div>
-                ))}
+                  <div className="flex justify-between">
+                    <span>Turnstiles Open:</span>
+                    <span className="font-semibold text-white">5 of 6 Active</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Intervention:</span>
+                    <span className="font-semibold text-amber-300">Diverting to Gate A</span>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-neutral-800/80">
+                  <span className="text-[11px] text-amber-400 font-medium">Excess arrivals redirected to Gate A Express</span>
+                </div>
               </div>
-            </section>
-          )}
+
+              {/* Gate C */}
+              <div className="rounded-3xl border border-neutral-800/80 bg-[#0e0e12] p-5 shadow-xl space-y-3 relative overflow-hidden">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-white">Gate C · East Concourse</span>
+                  <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">Normal</span>
+                </div>
+                <div className="text-2xl font-black text-white">
+                  7 <span className="text-xs text-neutral-400 font-normal">min wait</span>
+                </div>
+                <div className="space-y-1.5 text-xs text-neutral-400">
+                  <div className="flex justify-between">
+                    <span>Queue Density:</span>
+                    <span className="font-semibold text-emerald-400">58% (Steady)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Turnstiles Open:</span>
+                    <span className="font-semibold text-white">6 of 6 Active</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Target Route:</span>
+                    <span className="font-semibold text-neutral-300">East Parking P3 Link</span>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-neutral-800/80">
+                  <span className="text-[11px] text-neutral-400 font-medium">Dedicated feeder shuttle arrival lane</span>
+                </div>
+              </div>
+
+              {/* Gate D */}
+              <div className="rounded-3xl border border-neutral-800/80 bg-[#0e0e12] p-5 shadow-xl space-y-3 relative overflow-hidden">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-white">Gate D · South Concourse</span>
+                  <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">Normal</span>
+                </div>
+                <div className="text-2xl font-black text-white">
+                  9 <span className="text-xs text-neutral-400 font-normal">min wait</span>
+                </div>
+                <div className="space-y-1.5 text-xs text-neutral-400">
+                  <div className="flex justify-between">
+                    <span>Queue Density:</span>
+                    <span className="font-semibold text-emerald-400">65% (Steady)</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Turnstiles Open:</span>
+                    <span className="font-semibold text-white">4 of 4 Active</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Target Route:</span>
+                    <span className="font-semibold text-neutral-300">Highway Underpass</span>
+                  </div>
+                </div>
+                <div className="pt-2 border-t border-neutral-800/80">
+                  <span className="text-[11px] text-neutral-400 font-medium">Direct access to South VIP & hospitality tiers</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Staggered Post-Match Dispersal Schedule (Section 9 & 10) */}
+          <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-neutral-800/80 pb-4">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Egress Safety &amp; Dispersal Coordination</span>
+                <h2 className="text-2xl font-black text-white mt-1">Staggered Post-Match Egress Windows</h2>
+                <p className="text-xs text-neutral-400">Section-coordinated exit waves prevent crushing at suburban rail platforms and arterial corridors.</p>
+              </div>
+              <Link href="/hospitality-hub" className="text-xs font-bold text-emerald-400 hover:underline flex items-center gap-1">
+                Dispersal Lounges &amp; Perks &rarr;
+              </Link>
+            </div>
+
+            <div className="grid sm:grid-cols-3 gap-4">
+              <div className="rounded-3xl border border-neutral-800/80 bg-[#0e0e12] p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400">
+                    Wave 1 · 21:30 IST
+                  </span>
+                  <span className="text-[10px] font-mono text-neutral-500 font-bold">T+0 mins</span>
+                </div>
+                <h3 className="font-bold text-white text-base">Lower Tiers &amp; South Stand</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Priority release into Seawoods West pedestrian spine. Nerul station platform 1 dedicated to Wave 1 departures.
+                </p>
+                <div className="pt-2 border-t border-neutral-800/80 flex items-center justify-between text-xs">
+                  <span className="text-neutral-500">Platform Density:</span>
+                  <span className="font-bold text-emerald-400">38% (Optimal)</span>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-emerald-500/40 bg-[#0e0e12] p-5 space-y-3 relative overflow-hidden">
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[10px] font-bold text-emerald-400">
+                    Wave 2 · 21:45 IST (Your Section)
+                  </span>
+                  <span className="text-[10px] font-mono text-emerald-400 font-bold">T+15 mins</span>
+                </div>
+                <h3 className="font-bold text-white text-base">West Stand Block A &amp; East Concourse</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  Stadia Nexus coordinated wave. Free post-match refreshments in Concourse Zone 2 until your corridor gate unlocks.
+                </p>
+                <div className="pt-2 border-t border-neutral-800/80 flex items-center justify-between text-xs">
+                  <span className="text-neutral-500">Platform Density:</span>
+                  <span className="font-bold text-emerald-400">Controlled (54%)</span>
+                </div>
+              </div>
+
+              <div className="rounded-3xl border border-neutral-800/80 bg-[#0e0e12] p-5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="rounded-full bg-neutral-800 border border-neutral-700 px-2.5 py-0.5 text-[10px] font-bold text-neutral-400">
+                    Wave 3 · 22:00 IST
+                  </span>
+                  <span className="text-[10px] font-mono text-neutral-500 font-bold">T+30 mins</span>
+                </div>
+                <h3 className="font-bold text-white text-base">Upper Tiers &amp; Outstation Shuttles</h3>
+                <p className="text-xs text-neutral-400 leading-relaxed">
+                  25% dining discounts active at Seawoods fan district. Express shuttle convoys depart to Belapur/Kharghar hotels.
+                </p>
+                <div className="pt-2 border-t border-neutral-800/80 flex items-center justify-between text-xs">
+                  <span className="text-neutral-500">Platform Density:</span>
+                  <span className="font-bold text-neutral-300">Dispersing (45%)</span>
+                </div>
+              </div>
+            </div>
+          </section>
         </>
       ) : (
         /* ================= OPERATIONAL COMMAND SUITE VIEW ================= */
@@ -626,7 +792,7 @@ export default function Landing() {
                         href={`/match/${m.id}`}
                         className="block w-full text-center rounded-full bg-white text-black hover:bg-neutral-200 py-2 text-xs font-bold transition"
                       >
-                        Select Seats &amp; Ingress Corridor
+                        Inspect Corridor &amp; Turnstile Model
                       </Link>
                     </div>
                   </div>
