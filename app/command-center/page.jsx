@@ -200,14 +200,14 @@ export default function CommandCenterPage() {
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
             <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400">
-              Autonomous Ecosystem Digital Twin
+              Live Event Flow Command
             </span>
           </div>
           <h1 className="mt-1 text-3xl font-black tracking-tight text-white sm:text-4xl">
             Mega-Event Command Center
           </h1>
           <p className="mt-1 text-sm text-neutral-400">
-            Real-time cross-sector orchestration across accommodation saturation, transit corridors, gate queues, and hospitality dispersal.
+            Real-time coordination across hotel occupancy, transit routes, gate lines, and post-match dining.
           </p>
         </div>
 
@@ -231,7 +231,7 @@ export default function CommandCenterPage() {
         isApproved={Boolean(data?.gate_reroute_active || data?.simulationState?.gate_reroute_active)}
         onApprove={async () => {
           await executeMitigation(
-            'Gate B → Gate A Ingress Diversion',
+            'Gate B → Gate A Entry Reroute',
             'reroute_gate_b_to_a',
             'Gate B load: -23%'
           );
@@ -242,7 +242,7 @@ export default function CommandCenterPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="rounded-3xl border border-neutral-800/80 bg-[#111114] p-5 shadow-xl">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-neutral-400">Hotel Saturation</span>
+            <span className="text-xs font-medium text-neutral-400">Hotel Occupancy</span>
             <Hotel className="h-4 w-4 text-emerald-400" />
           </div>
           <div className="mt-2 text-3xl font-black text-white">{metrics?.avgHotelSaturation || 0}%</div>
@@ -325,10 +325,10 @@ export default function CommandCenterPage() {
             {/* Layer Filter Pills */}
             <div className="flex flex-wrap gap-1.5">
               {[
-                { key: 'hotels', label: 'Accommodation Zones', active: activeLayers.hotels },
-                { key: 'transit', label: 'Transit Corridors', active: activeLayers.transit },
-                { key: 'gates', label: 'Gates & Turnstiles', active: activeLayers.gates },
-                { key: 'merchants', label: 'Fan Dispersal', active: activeLayers.merchants },
+                { key: 'hotels', label: 'Hotel Zones', active: activeLayers.hotels },
+                { key: 'transit', label: 'Transit Routes', active: activeLayers.transit },
+                { key: 'gates', label: 'Entry Gates', active: activeLayers.gates },
+                { key: 'merchants', label: 'Post-Match Dining', active: activeLayers.merchants },
               ].map(layer => (
                 <button
                   key={layer.key}
@@ -358,7 +358,7 @@ export default function CommandCenterPage() {
             <div className="flex items-center justify-between border-b border-neutral-800/80 pb-3">
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-emerald-400" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-white">Tactical Interventions</h3>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-white">Smart Actions</h3>
               </div>
               <span className="text-[10px] text-neutral-400">One-Click Dispatch</span>
             </div>
@@ -383,7 +383,7 @@ export default function CommandCenterPage() {
 
               <div className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-3 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white">Broadcast Early-Bird F&B Pass</span>
+                  <span className="text-xs font-bold text-white">Broadcast Early-Bird Food Pass</span>
                   <span className="text-[10px] text-emerald-400 font-semibold">-34% Gate Queue</span>
                 </div>
                 <p className="text-[11px] text-neutral-400">
@@ -391,7 +391,7 @@ export default function CommandCenterPage() {
                 </p>
                 <button
                   disabled={isSubmitting}
-                  onClick={() => executeMitigation('Broadcast Early Ingress Vouchers', 'NUDGE_BROADCAST', '-34% Gate Wait Times')}
+                  onClick={() => executeMitigation('Broadcast Early Food Vouchers', 'NUDGE_BROADCAST', '-34% Gate Wait Times')}
                   className="w-full rounded-full bg-white py-1.5 text-xs font-bold text-black hover:bg-neutral-200 transition disabled:opacity-50"
                 >
                   Send Push Nudge
@@ -400,18 +400,18 @@ export default function CommandCenterPage() {
 
               <div className="rounded-2xl border border-neutral-800 bg-neutral-900/60 p-3 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white">Activate Kharghar Overflow Buffer</span>
+                  <span className="text-xs font-bold text-white">Activate Kharghar Overflow Hotels</span>
                   <span className="text-[10px] text-emerald-400 font-semibold">+3,400 Rooms</span>
                 </div>
                 <p className="text-[11px] text-neutral-400">
-                  Trigger partner hotel inventory in Kharghar Green Zone with complimentary Metro passes to relieve saturated Core Nerul.
+                  Trigger partner hotel inventory in Kharghar Green Zone with complimentary Metro passes to relieve crowded Core Nerul.
                 </p>
                 <button
                   disabled={isSubmitting}
-                  onClick={() => executeMitigation('Activate Kharghar Overflow Buffer', 'HOTEL_OVERFLOW', '+3,400 Buffer Rooms Released')}
+                  onClick={() => executeMitigation('Activate Kharghar Overflow Hotels', 'HOTEL_OVERFLOW', '+3,400 Extra Rooms Released')}
                   className="w-full rounded-full bg-white py-1.5 text-xs font-bold text-black hover:bg-neutral-200 transition disabled:opacity-50"
                 >
-                  Release Buffer
+                  Release Rooms
                 </button>
               </div>
             </div>
@@ -429,10 +429,10 @@ export default function CommandCenterPage() {
                 <div key={z.id} className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-2.5 text-xs">
                   <div className="flex items-center justify-between font-bold text-amber-300">
                     <span className="flex items-center gap-1.5"><Hotel className="h-3.5 w-3.5" /> {z.name}</span>
-                    <span>{z.occupancy_pct}% Saturation</span>
+                    <span>{z.occupancy_pct}% Occupancy</span>
                   </div>
                   <p className="mt-1 text-[11px] text-neutral-400">
-                    Severe capacity pressure. Diverting new inbound bookings to Belapur/Kharghar.
+                    Heavy bookings. Guiding new arrivals to Belapur/Kharghar.
                   </p>
                 </div>
               ))}
@@ -444,7 +444,7 @@ export default function CommandCenterPage() {
                     <span>{t.current_load_pct}% Load</span>
                   </div>
                   <p className="mt-1 text-[11px] text-neutral-400">
-                    Corridor approaching gridlock. Recommend park-and-ride feeder diversion.
+                    Route approaching heavy traffic. Recommend park-and-ride shuttle route.
                   </p>
                 </div>
               ))}
@@ -453,12 +453,12 @@ export default function CommandCenterPage() {
         </div>
       </div>
 
-      {/* Transit Corridors & Capacity Distribution Table */}
+      {/* Transit Routes & Capacity Distribution Table */}
       <div className="rounded-3xl border border-neutral-800/80 bg-[#111114] p-6 shadow-xl space-y-4">
         <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
           <div>
-            <h3 className="text-base font-bold text-white">Multimodal Corridor Telemetry</h3>
-            <p className="text-xs text-neutral-400">Transit throughput, current passenger flow, and operational status.</p>
+            <h3 className="text-base font-bold text-white">Transit Route Live Status</h3>
+            <p className="text-xs text-neutral-400">Transit passenger flow speed and operational status.</p>
           </div>
         </div>
 
@@ -466,7 +466,7 @@ export default function CommandCenterPage() {
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-neutral-800 text-neutral-400 uppercase tracking-wider font-semibold">
-                <th className="pb-3 pr-4">Corridor Name</th>
+                <th className="pb-3 pr-4">Route Name</th>
                 <th className="pb-3 pr-4">Mode</th>
                 <th className="pb-3 pr-4">Capacity / Hr</th>
                 <th className="pb-3 pr-4">Current Load</th>
@@ -483,7 +483,7 @@ export default function CommandCenterPage() {
                       {(t.mode || 'transit').replace('_', ' ')}
                     </span>
                   </td>
-                  <td className="py-3 pr-4 text-neutral-300">{t.capacity_per_hr?.toLocaleString('en-IN')} pax</td>
+                  <td className="py-3 pr-4 text-neutral-300">{t.capacity_per_hr?.toLocaleString('en-IN')} fans</td>
                   <td className="py-3 pr-4">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-white w-8">{t.current_load_pct}%</span>
@@ -503,7 +503,7 @@ export default function CommandCenterPage() {
                           ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                           : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                     }`}>
-                      {t.status.toUpperCase()}
+                      {t.status === 'chokepoint' ? 'BOTTLENECK' : t.status.toUpperCase()}
                     </span>
                   </td>
                   <td className="py-3 text-right text-neutral-400 font-mono text-[11px]">

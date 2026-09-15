@@ -30,7 +30,7 @@ export default function JourneyTimeline({ itinerary, steps }) {
       title: `Arrival at ${itinerary?.assigned_parking || 'Parking P4 / Transit Hub'}`,
       desc: itinerary?.assigned_parking 
         ? `${itinerary.assigned_parking} reserved. QR scan active at entry barrier.`
-        : 'Arrive at DY Patil Metro Station. Follow South Concourse illuminated signage.',
+        : 'Arrive at DY Patil Metro Station. Follow South Walkway illuminated signs.',
       icon: MapPin,
       status: 'active',
       badge: 'RESERVED SPOT'
@@ -38,15 +38,15 @@ export default function JourneyTimeline({ itinerary, steps }) {
     {
       time: '17:25',
       title: `Security Screening · ${itinerary?.assigned_gate || 'Gate C'}`,
-      desc: `Proceed to ${itinerary?.assigned_gate || 'Gate C'}. Express fast-track biometric turnstiles active. Average wait 3 mins.`,
+      desc: `Proceed to ${itinerary?.assigned_gate || 'Gate C'}. Express digital scanner gates active. Average wait 3 mins.`,
       icon: Shield,
       status: 'upcoming',
       badge: 'MINIMUM QUEUE'
     },
     {
       time: '17:45',
-      title: `Concourse & Seat Block ${itinerary?.block?.block_name || 'C1'}`,
-      desc: `Enter Concourse Level 2. Seat ${itinerary?.seat_number || '14'} in Block ${itinerary?.block?.block_name || 'C1'}. F&B kiosk 4B adjacent.`,
+      title: `Stadium Walkway & Seat Block ${itinerary?.block?.block_name || 'C1'}`,
+      desc: `Enter Walkway Level 2. Seat ${itinerary?.seat_number || '14'} in Block ${itinerary?.block?.block_name || 'C1'}. Food & drinks kiosk 4B adjacent.`,
       icon: Ticket,
       status: 'upcoming',
       badge: 'PITCH VIEW'
@@ -54,7 +54,7 @@ export default function JourneyTimeline({ itinerary, steps }) {
     {
       time: '18:00',
       title: 'Match Kickoff · FIFA Women’s World Cup',
-      desc: 'National anthems & team walkout. Emergency exits and egress waves pre-programmed.',
+      desc: 'National anthems & team walkout. Emergency exits and post-match exit routes pre-planned.',
       icon: Navigation,
       status: 'upcoming',
       badge: 'KICKOFF'

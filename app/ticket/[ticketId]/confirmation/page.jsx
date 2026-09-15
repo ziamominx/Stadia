@@ -141,14 +141,14 @@ export default function ConfirmationPage() {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-black uppercase tracking-wider text-amber-400">
-                Live Turnstile Advisory · Ingress Optimization Active
+                Live Gate Advisory · Smart Rerouting Active
               </span>
               <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">
                 Fast-Track Active
               </span>
             </div>
             <p className="mt-1 text-xs text-neutral-200 leading-relaxed">
-              Gate B is currently experiencing heavy queue saturation. Stadium Operations has automatically diverted your digital pass to <strong className="text-white font-bold">Gate A (North Express Concourse)</strong> for fast-track entry. Your QR code is verified and active at Gate A turnstiles.
+              Gate B is currently experiencing long lines and heavy crowds. Stadium Operations has automatically redirected your digital pass to <strong className="text-white font-bold">Gate A (North Express Walkway)</strong> for fast-track entry. Your QR code is verified and active at Gate A entry gates.
             </p>
           </div>
         </div>

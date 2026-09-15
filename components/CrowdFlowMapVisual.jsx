@@ -63,8 +63,8 @@ export default function CrowdFlowMapVisual({
         poly.bindPopup(`
           <div style="font-family: monospace; font-size: 11px; color: #111; padding: 3px;">
             <strong>${seg.name}</strong><br/>
-            <span>Side: ${isLocal ? 'Local Corridor' : 'Outstation Shuttle'}</span><br/>
-            <span>Throughput: ${seg.routed || 0} fans / hr</span>
+            <span>Side: ${isLocal ? 'Local Route' : 'Outstation Shuttle'}</span><br/>
+            <span>Flow Speed: ${seg.routed || 0} fans / hr</span>
           </div>
         `);
       });

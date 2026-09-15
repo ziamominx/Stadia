@@ -31,39 +31,39 @@ export default function Landing() {
   const HERO_CONTENT = {
     stadium_ops: {
       badge: 'Stadium Operations & Safety Command',
-      headline1: 'Venue turnstiles.',
-      headlineGradient: 'Real-time ingress safety.',
-      subtitle: 'Continuous anomaly detection across DY Patil gates. One-click turnstile flow redirection and deconflicted attendee walking corridors.',
+      headline1: 'Stadium entry gates.',
+      headlineGradient: 'Real-time entry safety.',
+      subtitle: 'Continuous crowd monitoring across DY Patil gates. One-click gate flow redirection and smooth attendee walking routes.',
       primaryBtn: { text: 'Open Command Center', href: '/command-center' },
-      secondaryBtn: { text: 'Inspect Gates & Turnstiles', href: '/organizer/gates' },
-      pills: ['8 Turnstile Gates Online', 'Gate B Diversion Active', '0 Safety Breaches'],
+      secondaryBtn: { text: 'Inspect Entry Gates', href: '/organizer/gates' },
+      pills: ['8 Entry Gates Online', 'Gate B Reroute Active', '0 Safety Issues'],
     },
     mobility_ops: {
       badge: 'Mobility Operations & Transit Dispatch',
-      headline1: 'Arterial corridors.',
+      headline1: 'Main transit routes.',
       headlineGradient: 'Parking & fleet dispatch.',
-      subtitle: 'Coordinating parking zones P1–P5 with automated load bypass, outstation hotel express corridors, and mass transit arrivals.',
+      subtitle: 'Coordinating parking zones P1–P5 with automated load bypass, outstation hotel shuttle routes, and mass transit arrivals.',
       primaryBtn: { text: 'Open Mobility Hub', href: '/organizer/shuttles' },
-      secondaryBtn: { text: 'Corridor Health', href: '/command-center' },
-      pills: ['6,440 / 9,200 Bays Filled', 'P2 Auto-Diverting to P4', '4 Shuttle Corridors Active'],
+      secondaryBtn: { text: 'Route Health', href: '/command-center' },
+      pills: ['6,440 / 9,200 Spots Filled', 'P2 Rerouting to P4', '4 Shuttle Routes Active'],
     },
     executive: {
       badge: 'Executive Tournament Director Suite',
       headline1: 'Macro event health.',
       headlineGradient: 'Strategic safety & risk index.',
-      subtitle: 'Cross-domain event health scorecard: 44,214 checked in (80.4% capacity), 94% safety index, and real-time stress testing.',
+      subtitle: 'All-in-one event health scorecard: 44,214 checked in (80.4% capacity), 94% safe and smooth flow, and real-time stress testing.',
       primaryBtn: { text: 'Open Executive Suite', href: '/organizer' },
       secondaryBtn: { text: 'Test Crisis Simulator', href: '/simulator' },
-      pills: ['94% Nominal Safety Index', '80.4% Venue Capacity', 'Multi-Agency Aligned'],
+      pills: ['94% Smooth Safety Index', '80.4% Venue Capacity', 'Multi-Agency Aligned'],
     },
     fan: {
-      badge: 'Live Attendee Ingress & Guidance Console',
+      badge: 'Live Fan Arrival & Guide Console',
       headline1: 'Dynamic crowd guidance.',
-      headlineGradient: 'Live turnstiles. Zero congestion.',
-      subtitle: 'Real-time arrival coordination: algorithmically calculated departure windows, live gate queue monitoring, dynamic rerouting away from bottlenecks, and post-match safe dispersal.',
+      headlineGradient: 'Fast entry gates. Zero delays.',
+      subtitle: 'Real-time arrival coordination: smart departure windows, live gate wait times, dynamic rerouting away from crowded spots, and smooth post-match exit.',
       primaryBtn: { text: 'Open Live Guidance Pass', href: '/ticket/FWC-IND-10492/confirmation' },
       secondaryBtn: { text: 'Coordinate Journey Plan', href: '/journey-planner' },
-      pills: ['Gate A Express: 4m Wait', 'Dynamic Ingress Active', 'Post-Match Wave 2 Dispersal'],
+      pills: ['Gate A Express: 4m Wait', 'Smart Entry Active', 'Post-Match Wave 2 Exit'],
     },
   };
 
@@ -223,21 +223,21 @@ export default function Landing() {
                       </span>
                     </div>
                     <p className="mt-0.5 text-xs text-neutral-300">
-                      Gate B turnstiles reached heavy queue density. Your pass has been diverted to <strong>Gate A (North Express)</strong> with priority fast-track lane.
+                      Gate B entry gates reached heavy crowd levels. Your pass has been redirected to <strong>Gate A (North Express)</strong> with priority fast-track lane.
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Ingress Details Bento */}
+              {/* Entry Details Bento */}
               <div className="grid sm:grid-cols-3 gap-4">
                 <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-4">
-                  <div className="text-[10px] uppercase text-neutral-500 font-bold font-mono">Assigned Turnstile</div>
+                  <div className="text-[10px] uppercase text-neutral-500 font-bold font-mono">Assigned Gate</div>
                   <div className="text-base font-black text-white mt-1">
-                    {ecosystem?.gate_reroute_active ? 'Gate A · North Express' : 'Gate B · North Concourse'}
+                    {ecosystem?.gate_reroute_active ? 'Gate A · North Express' : 'Gate B · North Walkway'}
                   </div>
                   <div className="text-xs text-emerald-400 font-semibold mt-1">
-                    {ecosystem?.gate_reroute_active ? 'Fast-Track Active' : 'Optimal Flow · Walk Time ~4 mins'}
+                    {ecosystem?.gate_reroute_active ? 'Fast-Track Active' : 'Smooth Flow · Walk Time ~4 mins'}
                   </div>
                 </div>
 
@@ -250,7 +250,7 @@ export default function Landing() {
                 </div>
 
                 <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-4">
-                  <div className="text-[10px] uppercase text-neutral-500 font-bold font-mono">Arrival Corridor</div>
+                  <div className="text-[10px] uppercase text-neutral-500 font-bold font-mono">Arrival Route</div>
                   <div className="text-base font-black text-white mt-1">Nerul Station Link</div>
                   <div className="text-xs text-emerald-400 mt-1 font-semibold">
                     Pedestrian Skywalk Flow (Separated)
@@ -280,7 +280,7 @@ export default function Landing() {
             <div className="border-b border-neutral-800/80 pb-4">
               <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Attendee Experience Architecture</span>
               <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">The 4-Stage Matchday Flow</h2>
-              <p className="text-xs text-neutral-400">How Stadia Nexus guides fans seamlessly from ticket selection to post-match dispersal.</p>
+              <p className="text-xs text-neutral-400">How Stadia Nexus guides fans seamlessly from ticket selection to smooth post-match departures.</p>
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -289,9 +289,9 @@ export default function Landing() {
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-xs font-bold text-white">1</span>
                   <span className="text-[10px] font-bold text-neutral-500 uppercase font-mono">Stage 1</span>
                 </div>
-                <h3 className="font-bold text-white text-sm">Event Pass &amp; Ingress Profile</h3>
+                <h3 className="font-bold text-white text-sm">Event Pass &amp; Entry Route</h3>
                 <p className="text-xs text-neutral-400 leading-relaxed">
-                  Your digital pass automatically vectors your arrival origin (local commuter vs outstation attendee) and designates dedicated perimeter gates to prevent crossing bottleneck flows.
+                  Your digital pass automatically checks your arrival origin (local commuter vs outstation attendee) and designates dedicated gates to prevent crowded crossovers.
                 </p>
               </div>
 
@@ -311,9 +311,9 @@ export default function Landing() {
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500/20 border border-emerald-500/40 text-xs font-bold text-emerald-400">3</span>
                   <span className="text-[10px] font-bold text-emerald-400 uppercase font-mono">Stage 3</span>
                 </div>
-                <h3 className="font-bold text-white text-sm">Live Turnstile Guidance</h3>
+                <h3 className="font-bold text-white text-sm">Live Gate Guidance</h3>
                 <p className="text-xs text-neutral-400 leading-relaxed">
-                  Real-time turnstile load balancing. If your assigned gate experiences queue congestion, your pass is dynamically reallocated to the nearest open gate.
+                  Real-time gate line balancing. If your assigned gate experiences queue congestion, your pass is dynamically redirected to the nearest open gate.
                 </p>
               </div>
 
@@ -322,7 +322,7 @@ export default function Landing() {
                   <span className="flex h-7 w-7 items-center justify-center rounded-full bg-neutral-900 border border-neutral-800 text-xs font-bold text-white">4</span>
                   <span className="text-[10px] font-bold text-neutral-500 uppercase font-mono">Stage 4</span>
                 </div>
-                <h3 className="font-bold text-white text-sm">Exit &amp; Merchant Dispersal</h3>
+                <h3 className="font-bold text-white text-sm">Exit &amp; Local Dining Perks</h3>
                 <p className="text-xs text-neutral-400 leading-relaxed">
                   Post-match voucher nudges offering 25% dining discounts in nearby fan districts absorb crowd waves and eliminate crushing at Nerul railway station.
                 </p>
@@ -334,18 +334,18 @@ export default function Landing() {
           <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
             <div className="border-b border-neutral-800/80 pb-4">
               <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Exclusive Matchday Benefits</span>
-              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">Attendee Perks &amp; Concourse Incentives</h2>
+              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">Attendee Perks &amp; Walkway Incentives</h2>
               <p className="text-xs text-neutral-400">Claim valuable rewards designed to distribute stadium foot traffic.</p>
             </div>
 
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-5 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white">Early Ingress Concessions</span>
+                  <span className="text-xs font-bold text-white">Early Arrival Food Perks</span>
                   <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">₹250 Voucher</span>
                 </div>
                 <p className="text-xs text-neutral-400">
-                  Arrive between T-3h and T-2h to bypass the peak 90-minute ingress rush and receive ₹250 concessions credit at all concourse dining kiosks.
+                  Arrive between T-3h and T-2h to bypass the peak 90-minute arrival rush and receive ₹250 food credit at all walkway dining kiosks.
                 </p>
               </div>
 
@@ -361,7 +361,7 @@ export default function Landing() {
 
               <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-5 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-white">Post-Match Dining Dispersal</span>
+                  <span className="text-xs font-bold text-white">Post-Match Dining Perks</span>
                   <span className="rounded-full bg-violet-500/15 border border-violet-500/30 px-2 py-0.5 text-[10px] font-bold text-violet-400">25% Discount</span>
                 </div>
                 <p className="text-xs text-neutral-400">
@@ -371,16 +371,16 @@ export default function Landing() {
             </div>
           </section>
 
-          {/* Live Turnstiles & Ingress Queue Comparison (Section 9: Live Guidance) */}
+          {/* Live Gates & Entry Queue Comparison */}
           <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-neutral-800/80 pb-4">
               <div>
-                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Real-Time Ingress Telemetry</span>
-                <h2 className="text-2xl font-black text-white mt-1">Live Turnstile Queue Comparison</h2>
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Real-Time Gate Updates</span>
+                <h2 className="text-2xl font-black text-white mt-1">Live Gate Queue Comparison</h2>
                 <p className="text-xs text-neutral-400">Dynamic wait times and automated crowd reroutes across stadium perimeter gates.</p>
               </div>
               <Link href="/crowd-flow" className="text-xs font-bold text-emerald-400 hover:underline flex items-center gap-1">
-                View Concourse Radar &rarr;
+                View Walkway Crowd Map &rarr;
               </Link>
             </div>
 
@@ -391,7 +391,7 @@ export default function Landing() {
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-bold text-white">Gate A · North Express</span>
                   <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                    {ecosystem?.gate_reroute_active ? 'Active Diversion' : 'Optimal'}
+                    {ecosystem?.gate_reroute_active ? 'Active Reroute' : 'Smooth Flow'}
                   </span>
                 </div>
                 <div className="text-2xl font-black text-white">
@@ -400,10 +400,10 @@ export default function Landing() {
                 <div className="space-y-1.5 text-xs text-neutral-400">
                   <div className="flex justify-between">
                     <span>Queue Density:</span>
-                    <span className="font-semibold text-emerald-400">42% (Nominal)</span>
+                    <span className="font-semibold text-emerald-400">42% (Normal)</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Turnstiles Open:</span>
+                    <span>Entry Gates Open:</span>
                     <span className="font-semibold text-white">6 of 6 Active</span>
                   </div>
                   <div className="flex justify-between">
@@ -419,13 +419,13 @@ export default function Landing() {
               {/* Gate B */}
               <div className={`rounded-3xl border ${ecosystem?.gate_reroute_active ? 'border-amber-500/40 bg-amber-950/10' : 'border-neutral-800/80 bg-[#0e0e12]'} p-5 shadow-xl space-y-3 relative overflow-hidden`}>
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-white">Gate B · North Concourse</span>
+                  <span className="font-bold text-white">Gate B · North Walkway</span>
                   <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
                     ecosystem?.gate_reroute_active
                       ? 'bg-amber-500/20 border border-amber-500/30 text-amber-300'
                       : 'bg-rose-500/15 border border-rose-500/30 text-rose-400'
                   }`}>
-                    {ecosystem?.gate_reroute_active ? 'Auto-Diverting' : 'Congested'}
+                    {ecosystem?.gate_reroute_active ? 'Rerouting' : 'Congested'}
                   </span>
                 </div>
                 <div className="text-2xl font-black text-white">
@@ -437,12 +437,12 @@ export default function Landing() {
                     <span className="font-semibold text-amber-400">88% (Bottleneck)</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Turnstiles Open:</span>
+                    <span>Entry Gates Open:</span>
                     <span className="font-semibold text-white">5 of 6 Active</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Intervention:</span>
-                    <span className="font-semibold text-amber-300">Diverting to Gate A</span>
+                    <span>Action:</span>
+                    <span className="font-semibold text-amber-300">Rerouting to Gate A</span>
                   </div>
                 </div>
                 <div className="pt-2 border-t border-neutral-800/80">
@@ -453,7 +453,7 @@ export default function Landing() {
               {/* Gate C */}
               <div className="rounded-3xl border border-neutral-800/80 bg-[#0e0e12] p-5 shadow-xl space-y-3 relative overflow-hidden">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-white">Gate C · East Concourse</span>
+                  <span className="font-bold text-white">Gate C · East Walkway</span>
                   <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">Normal</span>
                 </div>
                 <div className="text-2xl font-black text-white">
@@ -465,7 +465,7 @@ export default function Landing() {
                     <span className="font-semibold text-emerald-400">58% (Steady)</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Turnstiles Open:</span>
+                    <span>Entry Gates Open:</span>
                     <span className="font-semibold text-white">6 of 6 Active</span>
                   </div>
                   <div className="flex justify-between">
@@ -481,7 +481,7 @@ export default function Landing() {
               {/* Gate D */}
               <div className="rounded-3xl border border-neutral-800/80 bg-[#0e0e12] p-5 shadow-xl space-y-3 relative overflow-hidden">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-white">Gate D · South Concourse</span>
+                  <span className="font-bold text-white">Gate D · South Walkway</span>
                   <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 text-[10px] font-bold text-emerald-400">Normal</span>
                 </div>
                 <div className="text-2xl font-black text-white">
@@ -493,7 +493,7 @@ export default function Landing() {
                     <span className="font-semibold text-emerald-400">65% (Steady)</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Turnstiles Open:</span>
+                    <span>Entry Gates Open:</span>
                     <span className="font-semibold text-white">4 of 4 Active</span>
                   </div>
                   <div className="flex justify-between">
@@ -508,16 +508,16 @@ export default function Landing() {
             </div>
           </section>
 
-          {/* Staggered Post-Match Dispersal Schedule (Section 9 & 10) */}
+          {/* Staggered Post-Match Exit Schedule */}
           <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-neutral-800/80 pb-4">
               <div>
-                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Egress Safety &amp; Dispersal Coordination</span>
-                <h2 className="text-2xl font-black text-white mt-1">Staggered Post-Match Egress Windows</h2>
-                <p className="text-xs text-neutral-400">Section-coordinated exit waves prevent crushing at suburban rail platforms and arterial corridors.</p>
+                <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Safe Exit &amp; Crowd Flow Coordination</span>
+                <h2 className="text-2xl font-black text-white mt-1">Staggered Post-Match Exit Waves</h2>
+                <p className="text-xs text-neutral-400">Section-coordinated exit waves prevent crowding at suburban train platforms and main roads.</p>
               </div>
               <Link href="/hospitality-hub" className="text-xs font-bold text-emerald-400 hover:underline flex items-center gap-1">
-                Dispersal Lounges &amp; Perks &rarr;
+                Exit Lounges &amp; Perks &rarr;
               </Link>
             </div>
 
@@ -546,9 +546,9 @@ export default function Landing() {
                   </span>
                   <span className="text-[10px] font-mono text-emerald-400 font-bold">T+15 mins</span>
                 </div>
-                <h3 className="font-bold text-white text-base">West Stand Block A &amp; East Concourse</h3>
+                <h3 className="font-bold text-white text-base">West Stand Block A &amp; East Walkway</h3>
                 <p className="text-xs text-neutral-400 leading-relaxed">
-                  Stadia Nexus coordinated wave. Free post-match refreshments in Concourse Zone 2 until your corridor gate unlocks.
+                  Stadia Nexus coordinated wave. Free post-match refreshments in Walkway Zone 2 until your exit gate opens.
                 </p>
                 <div className="pt-2 border-t border-neutral-800/80 flex items-center justify-between text-xs">
                   <span className="text-neutral-500">Platform Density:</span>
@@ -569,7 +569,7 @@ export default function Landing() {
                 </p>
                 <div className="pt-2 border-t border-neutral-800/80 flex items-center justify-between text-xs">
                   <span className="text-neutral-500">Platform Density:</span>
-                  <span className="font-bold text-neutral-300">Dispersing (45%)</span>
+                  <span className="font-bold text-neutral-300">Exiting Smoothly (45%)</span>
                 </div>
               </div>
             </div>
@@ -587,10 +587,10 @@ export default function Landing() {
                   Real-Time Decision Cycle · Closed-Loop
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">
-                  Live Ingress Balancing &amp; Tactical Intervention
+                  Live Crowd Balancing &amp; Route Coordination
                 </h2>
                 <p className="text-xs text-neutral-400 max-w-2xl mt-0.5">
-                  Continuous operational cycle: Understand event state &rarr; Predict congestion &rarr; Recommend intervention &rarr; Human approval &rarr; Execute &rarr; Measure outcome.
+                  Continuous operational cycle: Monitor stadium state &rarr; Predict crowding &rarr; Suggest smart action &rarr; Staff approval &rarr; Apply updates &rarr; Review results.
                 </p>
               </div>
               <div className="flex items-center gap-3">
@@ -634,7 +634,7 @@ export default function Landing() {
                 </div>
                 <h3 className="text-lg font-black text-white">Dynamic Accommodation Balancing</h3>
                 <p className="text-xs text-neutral-400 leading-relaxed">
-                  When stadium hotels reach 95% saturation with surge pricing, the engine automatically routes visitors to alternative zones (Belapur &amp; Kharghar) with ₹3,500+ savings and guaranteed electric feeder shuttle links.
+                  When stadium hotels reach 95% occupancy with high prices, the system automatically guides visitors to nearby areas (Belapur &amp; Kharghar) with ₹3,500+ savings and free shuttle bus links.
                 </p>
                 <div className="pt-3 border-t border-neutral-800/80 flex items-center justify-between text-xs text-emerald-400 font-semibold">
                   <span>5 City Zones Unified</span>
@@ -647,12 +647,12 @@ export default function Landing() {
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
                   <Train className="h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-black text-white">Multimodal Transportation Orchestration</h3>
+                <h3 className="text-lg font-black text-white">Bus, Metro &amp; Train Coordination</h3>
                 <p className="text-xs text-neutral-400 leading-relaxed">
                   Seamlessly integrates Suburban Rail, Navi Mumbai Metro Line 1, park-and-ride hubs, and dedicated electric shuttle fleets. Avoids highway gridlocks by separating local drivers from outstation shuttle arrivals.
                 </p>
                 <div className="pt-3 border-t border-neutral-800/80 flex items-center justify-between text-xs text-blue-400 font-semibold">
-                  <span>97,500 Pax / Hr Capacity</span>
+                  <span>97,500 Fans / Hr Capacity</span>
                   <span>Zero-Mix Gate Paths</span>
                 </div>
               </div>
@@ -662,13 +662,13 @@ export default function Landing() {
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-400 border border-violet-500/20">
                   <Utensils className="h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-black text-white">Demand Incentives &amp; Dispersal</h3>
+                <h3 className="text-lg font-black text-white">Crowd Incentives &amp; Post-Match Dining</h3>
                 <p className="text-xs text-neutral-400 leading-relaxed">
-                  Nudges attendees to arrive during off-peak windows via ₹250 stadium F&amp;B vouchers, and absorbs post-match egress bottlenecks through 25% dining discounts in nearby fan districts and entertainment lounges.
+                  Nudges attendees to arrive during off-peak windows via ₹250 stadium food vouchers, and prevents post-match exit crowding through 25% dining discounts in nearby food hubs and entertainment spots.
                 </p>
                 <div className="pt-3 border-t border-neutral-800/80 flex items-center justify-between text-xs text-violet-400 font-semibold">
                   <span>-40% Gate Wait Times</span>
-                  <span>10,500 Dispersal Capacity</span>
+                  <span>10,500 Post-Match Dining Capacity</span>
                 </div>
               </div>
             </div>
@@ -679,7 +679,7 @@ export default function Landing() {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-neutral-800/80 pb-4">
               <div>
                 <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Ecosystem Events</span>
-                <h2 className="text-2xl font-black text-white sm:text-3xl mt-1">Active Mega-Events Under Orchestration</h2>
+                <h2 className="text-2xl font-black text-white sm:text-3xl mt-1">Active Mega-Events Under Live Management</h2>
                 <p className="text-xs text-neutral-400">Sports tournaments, stadium concerts, global summits, and mega festivals.</p>
               </div>
 
@@ -732,12 +732,12 @@ export default function Landing() {
                       <div>
                         <span className="text-neutral-500">Expected Attendance:</span>
                         <div className="font-bold text-white text-sm">
-                          {(ev.expected_attendance || ev.capacity || 50000).toLocaleString('en-IN')} pax
+                          {(ev.expected_attendance || ev.capacity || 50000).toLocaleString('en-IN')} fans
                         </div>
                       </div>
                       <div>
                         <span className="text-neutral-500">Capacity Status:</span>
-                        <div className="font-bold text-emerald-400 text-sm">Orchestrated</div>
+                        <div className="font-bold text-emerald-400 text-sm">Actively Managed</div>
                       </div>
                     </div>
                   </div>
@@ -768,9 +768,9 @@ export default function Landing() {
             <section className="mx-auto max-w-7xl px-4 sm:px-6 space-y-6">
               <div className="flex items-center justify-between border-b border-neutral-800/80 pb-4">
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Attendee Ingestion Pipeline</span>
-                  <h2 className="text-2xl font-black text-white mt-1">Event Ingestion &amp; Attendee Transit Profiling</h2>
-                  <p className="text-xs text-neutral-400">Inputs into the orchestration engine: Seat block allocation directly feeds perimeter gate predictions and corridor separation.</p>
+                  <span className="text-xs font-bold uppercase tracking-widest text-emerald-400 font-mono">Fan Arrival &amp; Ticketing Setup</span>
+                  <h2 className="text-2xl font-black text-white mt-1">Event Ticketing &amp; Fan Travel Planning</h2>
+                  <p className="text-xs text-neutral-400">Inputs into the flow engine: Seat block allocation directly feeds perimeter gate predictions and walking path separation.</p>
                 </div>
                 <Link href="/matches" className="text-xs font-bold text-emerald-400 hover:underline">
                   View All 9 Matches &rarr;
@@ -792,7 +792,7 @@ export default function Landing() {
                         href={`/match/${m.id}`}
                         className="block w-full text-center rounded-full bg-white text-black hover:bg-neutral-200 py-2 text-xs font-bold transition"
                       >
-                        Inspect Corridor &amp; Turnstile Model
+                        Inspect Walking Routes &amp; Gate Plan
                       </Link>
                     </div>
                   </div>
@@ -812,7 +812,7 @@ export default function Landing() {
                 How Stadia Nexus Solves the Mega-Event Capacity Dilemma
               </h2>
               <p className="text-sm text-neutral-400 max-w-3xl leading-relaxed">
-                Major events fail not from lack of total capacity, but from <strong>uncoordinated localized saturation</strong>. By breaking down information barriers between event ticketing, hotel allotments, and transit dispatchers, Stadia Nexus autonomously predicts bottlenecks, redirects surplus demand to peripheral hubs, and guarantees a world-class experience for visitors and city authorities.
+                Major events fail not from lack of total capacity, but from <strong>uncoordinated local overcrowding</strong>. By breaking down information barriers between event ticketing, hotel allotments, and transit dispatchers, Stadia Nexus autonomously predicts bottlenecks, redirects surplus demand to peripheral hubs, and guarantees a world-class experience for visitors and city authorities.
               </p>
 
               <div className="flex flex-wrap gap-4 pt-2">

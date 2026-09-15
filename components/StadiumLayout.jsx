@@ -47,7 +47,7 @@ export default function StadiumLayout() {
         </span>
       </div>
 
-      <svg viewBox="0 0 560 560" className="relative z-10 mt-3 w-full max-w-[480px] mx-auto" role="img" aria-label="DY Patil Stadium layout with eight gates split into local and outstation corridors">
+      <svg viewBox="0 0 560 560" className="relative z-10 mt-3 w-full max-w-[480px] mx-auto" role="img" aria-label="DY Patil Stadium layout with eight gates split into local and outstation arrival routes">
         <defs>
           <path id="arc-local" d="M 52 280 A 228 228 0 0 1 508 280" fill="none" />
           <path id="arc-outstation" d="M 52 284 A 228 228 0 0 0 508 284" fill="none" />
@@ -60,12 +60,12 @@ export default function StadiumLayout() {
         {/* Outer boundary */}
         <circle cx={CX} cy={CY} r="242" fill="none" stroke="rgba(56,189,248,0.25)" strokeWidth="1.5" strokeDasharray="6 6" />
 
-        {/* Corridor Arcs */}
+        {/* Route Arcs */}
         <text fontSize="14" fontWeight="800" letterSpacing="3" fill="#38bdf8">
-          <textPath href="#arc-local" startOffset="50%" textAnchor="middle">LOCAL CORRIDOR · NORTH / WEST</textPath>
+          <textPath href="#arc-local" startOffset="50%" textAnchor="middle">LOCAL ARRIVAL ROUTE · NORTH / WEST</textPath>
         </text>
         <text fontSize="14" fontWeight="800" letterSpacing="3" fill="#fb7185">
-          <textPath href="#arc-outstation" startOffset="50%" textAnchor="middle">OUTSTATION CORRIDOR · EAST / SOUTH</textPath>
+          <textPath href="#arc-outstation" startOffset="50%" textAnchor="middle">OUTSTATION ARRIVAL ROUTE · EAST / SOUTH</textPath>
         </text>
 
         {/* Stand Bowl */}

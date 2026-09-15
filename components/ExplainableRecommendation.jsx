@@ -26,14 +26,14 @@ export default function ExplainableRecommendation({ onApprove, isApproved }) {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-black uppercase tracking-wider text-white">
-                {isApproved ? 'Intervention Active · Balanced' : 'AI Operational Recommendation'}
+                {isApproved ? 'Route Balancing Active' : 'Smart Route Recommendation'}
               </span>
               <span className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] font-mono text-neutral-400">
                 Level 4 · Human Approval
               </span>
             </div>
             <p className="text-[11px] text-neutral-400">
-              {isApproved ? 'Orchestration loop executed · Fan routes dynamically updated' : 'Cross-domain risk detected · Gate B Ingress Chokepoint'}
+              {isApproved ? 'Smart coordination active · Fan routes dynamically updated' : 'Crowd buildup detected · Gate B Entry Bottleneck'}
             </p>
           </div>
         </div>
@@ -54,10 +54,10 @@ export default function ExplainableRecommendation({ onApprove, isApproved }) {
           </div>
           <div>
             <h4 className="text-sm font-bold text-white leading-snug">
-              Proposed Intervention: Redirect 1,200 attendees from <span className="text-amber-400 font-mono">Gate B (North-East)</span> → <span className="text-emerald-400 font-mono">Gate A (North Express)</span>
+              Recommended Action: Redirect 1,200 attendees from <span className="text-amber-400 font-mono">Gate B (North-East)</span> → <span className="text-emerald-400 font-mono">Gate A (North Express)</span>
             </h4>
             <p className="mt-1 text-xs text-neutral-400 leading-relaxed">
-              Automated ingress balancing: Re-assign walking guidance in attendee digital passes, adjust North concourse turnstiles, and broadcast advisory to Sector 14 / P2 arrivals.
+              Automated entry balancing: Re-assign walking directions in fan passes, open extra North walkway entry gates, and send updates to Sector 14 / P2 arrivals.
             </p>
           </div>
         </div>
@@ -71,15 +71,15 @@ export default function ExplainableRecommendation({ onApprove, isApproved }) {
         <ul className="space-y-1.5 text-neutral-400">
           <li className="flex items-start gap-2">
             <span className="text-amber-400 font-bold">•</span>
-            <span><strong className="text-neutral-200">Predicted Gate Overload:</strong> Gate B current load is 82%, projected to reach <strong className="text-red-400">94% in 12 minutes</strong> exceeding safe turnstile velocity.</span>
+            <span><strong className="text-neutral-200">Predicted Gate Overload:</strong> Gate B current load is 82%, projected to reach <strong className="text-red-400">94% in 12 minutes</strong> exceeding safe entry gate speed.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-amber-400 font-bold">•</span>
-            <span><strong className="text-neutral-200">Contributing Source:</strong> Parking Lot P2 (Sector 14) is at 88% capacity, contributing <strong className="text-neutral-200">3,840 approaching fans</strong> along Corridor B.</span>
+            <span><strong className="text-neutral-200">Contributing Source:</strong> Parking Lot P2 (Sector 14) is at 88% capacity, contributing <strong className="text-neutral-200">3,840 approaching fans</strong> along Walkway B.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-emerald-400 font-bold">•</span>
-            <span><strong className="text-neutral-200">Available Buffer:</strong> Gate A (North) currently operates at 68% with <strong className="text-emerald-400">32% available headroom</strong> and parallel turnstiles.</span>
+            <span><strong className="text-neutral-200">Available Capacity:</strong> Gate A (North) currently operates at 68% with <strong className="text-emerald-400">32% open space</strong> and extra entry gates.</span>
           </li>
         </ul>
       </div>
@@ -93,15 +93,15 @@ export default function ExplainableRecommendation({ onApprove, isApproved }) {
           </div>
         </div>
         <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-2.5">
-          <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">Avg Turnstile Wait</span>
+          <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">Avg Gate Wait</span>
           <div className="mt-1 font-mono font-black text-sm text-emerald-400">
-            {isApproved ? '8 min (Nominal)' : '-6 min (14m → 8m)'}
+            {isApproved ? '8 min (Normal)' : '-6 min (14m → 8m)'}
           </div>
         </div>
         <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-2.5">
-          <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">Corridor Risk</span>
+          <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-semibold">Walkway Congestion</span>
           <div className="mt-1 font-mono font-black text-sm text-emerald-400">
-            {isApproved ? 'NOMINAL' : 'HIGH → NOMINAL'}
+            {isApproved ? 'SMOOTH' : 'HIGH → SMOOTH'}
           </div>
         </div>
       </div>
@@ -112,10 +112,10 @@ export default function ExplainableRecommendation({ onApprove, isApproved }) {
           {isApproved ? (
             <span className="inline-flex items-center gap-1.5 text-emerald-400 font-semibold">
               <CheckCircle className="h-4 w-4" />
-              Intervention applied to live stadium state. 1,200 fan passes updated.
+              Route updates applied to live stadium state. 1,200 fan passes updated.
             </span>
           ) : (
-            <span>Authorizing will immediately re-balance gate allocations and update fan tickets.</span>
+            <span>Authorizing will immediately balance gate lines and update fan tickets.</span>
           )}
         </div>
 
@@ -139,7 +139,7 @@ export default function ExplainableRecommendation({ onApprove, isApproved }) {
                 }}
                 className="flex items-center gap-1.5 rounded-full bg-emerald-500 px-5 py-2 text-xs font-bold text-black shadow-lg shadow-emerald-500/20 hover:bg-emerald-400 transition"
               >
-                {loading ? 'Balancing Ingress...' : 'Approve & Reroute Fans'}
+                {loading ? 'Balancing Entry Flow...' : 'Approve & Reroute Fans'}
               </button>
             </>
           ) : (

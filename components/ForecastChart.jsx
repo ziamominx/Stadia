@@ -46,10 +46,10 @@ export default function ForecastChart({ data = [] }) {
         <div>
           <h3 className="text-sm font-bold text-[var(--text-primary)] font-mono flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-[var(--terracotta-primary)]" />
-            STADIUM INGRESS &amp; SURGE RADAR (T-180m → KICKOFF)
+            STADIUM ARRIVAL &amp; CROWD RADAR (T-180m → KICKOFF)
           </h3>
           <p className="text-xs text-[var(--text-muted)] font-mono mt-0.5">
-            Real-time turnstile telemetry vs. predictive Poisson gate arrival curve
+            Real-time gate check-ins vs. predicted crowd arrival curve
           </p>
         </div>
 

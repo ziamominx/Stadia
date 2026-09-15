@@ -17,8 +17,8 @@ const DEFAULT_TIMELINE = [
   {
     id: 1,
     time: '18:34',
-    title: 'Incident Resolved · Gate B Ingress Nominal',
-    description: 'Turnstile wait decreased from 14m to 7.8m. Gate B load stabilized at 65%.',
+    title: 'Issue Resolved · Gate B Entry Normal & Smooth',
+    description: 'Gate wait decreased from 14m to 7.8m. Gate B crowd stabilized at 65%.',
     severity: 'resolved',
     stage: 'resolved',
     role: 'AI State Engine',
@@ -35,8 +35,8 @@ const DEFAULT_TIMELINE = [
   {
     id: 3,
     time: '18:27',
-    title: 'Stadium Ops Authorized Level 4 Intervention',
-    description: 'Operator approved turnstile diversion from Gate B (North-East) to Gate A (North Express).',
+    title: 'Stadium Ops Approved Route Balancing',
+    description: 'Operator approved crowd rerouting from Gate B (North-East) to Gate A (North Express).',
     severity: 'action',
     stage: 'assigned',
     role: 'Stadium Operations',
@@ -45,7 +45,7 @@ const DEFAULT_TIMELINE = [
     id: 4,
     time: '18:26',
     title: 'AI Generated Explainable Recommendation',
-    description: 'Identified Gate A with 32% headroom to absorb 1,200 fans with 87% confidence.',
+    description: 'Identified Gate A with 32% available capacity to welcome 1,200 fans with 87% confidence.',
     severity: 'warning',
     stage: 'recommendation',
     role: 'Decision Engine',
@@ -54,7 +54,7 @@ const DEFAULT_TIMELINE = [
     id: 5,
     time: '18:25',
     title: 'Gate B Overload Predicted (94% in 12m)',
-    description: 'Ingress rate projected to exceed safe throughput of 1,500 pax/min along Corridor B.',
+    description: 'Arrival rate projected to exceed safe capacity of 1,500 fans/min along Route B.',
     severity: 'critical',
     stage: 'assessed',
     role: 'Prediction Engine',
@@ -94,7 +94,7 @@ export default function EventTimeline({ timeline = [], currentStage = 'resolved'
       {/* 7-Stage Incident Lifecycle Visualizer (Section 15 of Brief) */}
       <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-4">
         <div className="text-[10px] uppercase font-bold tracking-wider text-neutral-500 mb-3">
-          Incident Lifecycle Progression: Gate B Ingress Chokepoint
+          Live Incident Timeline: Gate B Entry Bottleneck
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
           {LIFECYCLE_STAGES.map((s, idx) => (

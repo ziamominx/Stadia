@@ -108,7 +108,7 @@ export default function LiveGeospatialLayersHome() {
       });
       L.marker([g.lat, g.lng], { icon })
         .addTo(group)
-        .bindPopup(`<strong>${g.name}</strong><br/>Corridor: ${g.side.toUpperCase()}`);
+        .bindPopup(`<strong>${g.name}</strong><br/>Side: ${g.side.toUpperCase()}`);
     });
 
     if (layerKey === 'gate') {
@@ -150,7 +150,7 @@ export default function LiveGeospatialLayersHome() {
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
         <div>
           <p className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 font-mono">Live Geospatial Layers</p>
-          <h3 className="text-xl font-black text-white">Interactive Venue & Corridor Radar</h3>
+          <h3 className="text-xl font-black text-white">Interactive Stadium &amp; Route Map</h3>
         </div>
         <div className="flex flex-wrap gap-2">
           {layerPills.map((pill) => (
