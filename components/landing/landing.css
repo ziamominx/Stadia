@@ -282,20 +282,94 @@
   color: var(--lp-muted);
 }
 
-/* Sector A12 Focus Badge */
-.lp-sector-focus-badge {
+/* Sector A12 Focus Badge & Unified Stage Badges */
+.lp-sector-focus-badge,
+.lp-stage-badge {
   position: absolute;
-  top: 36%;
-  left: 28%;
   background: rgba(0, 0, 0, 0.9);
   border: 1px solid #ffffff;
-  padding: 20px 26px;
+  padding: 22px 28px;
   border-radius: 2px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.22);
   pointer-events: auto;
-  min-width: 280px;
+  min-width: 300px;
+  z-index: 25;
+}
+
+.pos-left-center {
+  top: 45%;
+  left: 12vw;
+  transform: translateY(-50%);
+}
+
+.pos-right-center {
+  top: 45%;
+  right: 12vw;
+  transform: translateY(-50%);
+}
+
+/* 5-Stage Cinematic Asset Wrappers */
+.lp-stage-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.lp-stage-asset-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 1920px;
+  max-height: 1080px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+.lp-stage-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 0 60px rgba(0, 0, 0, 0.98));
+}
+
+.lp-stage-svg-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* Laser scan line for credential card */
+.lp-laser-scan-line {
+  animation: laserScan 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes laserScan {
+  0% {
+    transform: translateY(-160px);
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(160px);
+    opacity: 0.2;
+  }
 }
 
 /* Transit Focus Badge */
@@ -475,9 +549,63 @@
 /* Virtual Scroll Container */
 .lp-scroll-track {
   position: relative;
-  height: 500vh; /* 5 viewports for smooth, controlled stage progression */
+  height: 600vh; /* 5 rich stages for smooth, controlled 2.5D progression */
   z-index: 20;
   pointer-events: none;
+}
+
+/* Interactive Timeline Navigation Scrubber (Lower Right) */
+.lp-hero-timeline-scrubber {
+  position: fixed;
+  bottom: 32px;
+  right: 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  z-index: 35;
+}
+
+.lp-scrubber-pips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 4px 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 2px;
+  backdrop-filter: blur(10px);
+}
+
+.lp-pip-btn {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  background: transparent;
+  color: var(--lp-muted);
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lp-pip-btn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.lp-pip-btn.is-active {
+  color: #000;
+  background: #fff;
+  border-color: #fff;
+  font-weight: 600;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.lp-timeline-bar-hero {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 /* Floating HUD Overlay */
