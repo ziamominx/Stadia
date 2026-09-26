@@ -47,7 +47,7 @@ export const ROLES = {
     name: 'Fan Journey',
     tag: '1-Click Booking & Smart Matchday Pass',
     iconName: 'Ticket',
-    defaultPath: '/',
+    defaultPath: '/fan',
     navItems: [
       { to: '/matches', label: 'Book Match & Pass', iconName: 'Ticket' },
       { to: '/ticket/FWC-1-A1-8842/confirmation', label: 'My Digital Pass', iconName: 'Activity' },

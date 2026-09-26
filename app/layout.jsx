@@ -1,7 +1,6 @@
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import SiteFrame from '../components/SiteFrame';
 import { RoleProvider } from '../components/RoleContext';
 
 export const metadata = {
@@ -25,13 +24,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="min-h-screen bg-[#09090b] text-[#f4f4f5] antialiased">
         <RoleProvider>
-          <div className="flex min-h-screen flex-col bg-[#09090b] text-[#f4f4f5]">
-            <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
+          <SiteFrame>{children}</SiteFrame>
         </RoleProvider>
       </body>
     </html>

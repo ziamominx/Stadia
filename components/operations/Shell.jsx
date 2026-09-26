@@ -1,0 +1,179 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { OperationsProvider, useOperations } from "./OperationsProvider";
+import { Badge, Button, clock, Modal } from "./UI";
+const links = [
+  ["/command-center", "Command Center"],
+  ["/crowd", "Crowd"],
+  ["/ground", "Ground"],
+  ["/transport", "Transport"],
+  ["/incidents", "Incidents"],
+  ["/event-control", "Event Control"],
+  ["/analytics", "Analytics"],
+];
+function Frame({ children }) {
+  const { state, send, busy } = useOperations();
+  const path = usePathname(),
+    router = useRouter();
+  const [broadcast, setBroadcast] = useState(false),
+    [message, setMessage] = useState(
+      "Please follow staff directions and use the East Gate approach.",
+    );
+  return (
+    <>
+      <a href="#ops-main" className="ops-skip">
+        Skip to content
+      </a>
+      <header className="ops-header">
+        <Link href="/command-center" className="ops-brand">
+          STADIA<span>●</span>
+        </Link>
+        <div className="ops-event">
+          <strong>{state?.event.name || "Event command"}</strong>
+          <span>{state?.event.venue || "Connecting to venue"}</span>
+        </div>
+        <div className="ops-header-right">
+          <Badge tone={state?.posture || "normal"}>
+            {state?.posture || "connecting"}
+          </Badge>
+          <span className="ops-clock">
+            {clock(state?.minute || 0)} <small>SIM / IST</small>
+          </span>
+          <Button onClick={() => setBroadcast(true)}>↗ PA Broadcast</Button>
+          <label className="ops-role">
+            <span className="ops-kicker">Demo role</span>
+            <select
+              aria-label="Switch demo role"
+              value={
+                path === "/ground"
+                  ? "ground"
+                  : path === "/transport"
+                    ? "transport"
+                    : "executive"
+              }
+              onChange={(e) =>
+                router.push(
+                  e.target.value === "ground"
+                    ? "/ground"
+                    : e.target.value === "transport"
+                      ? "/transport"
+                      : "/command-center",
+                )
+              }
+            >
+              <option value="executive">Executive</option>
+              <option value="ground">Ground team</option>
+              <option value="transport">Transport team</option>
+            </select>
+          </label>
+        </div>
+      </header>
+      <nav className="ops-nav" aria-label="Operations">
+        {links.map(([href, title]) => (
+          <Link
+            href={href}
+            key={href}
+            aria-current={path === href ? "page" : undefined}
+          >
+            {title}
+            {title === "Incidents" &&
+              !!state?.incidents.filter((i) => i.status !== "resolved")
+                .length && (
+                <span className="ops-nav-count">
+                  {
+                    state.incidents.filter((i) => i.status !== "resolved")
+                      .length
+                  }
+                </span>
+              )}
+          </Link>
+        ))}
+        <Link className="ops-fan" href="/fan">
+          Fan experience ↗
+        </Link>
+      </nav>
+      <div className="ops-demo">
+        <span>
+          <strong>DEMO ENVIRONMENT</strong> Simulated sensors & dispatch · 1
+          event minute = 2.5 seconds
+        </span>
+        <div>
+          <span className="ops-mono">
+            T+{String(state?.minute || 0).padStart(3, "0")} MIN
+          </span>
+          <button
+            disabled={busy || !state}
+            onClick={() =>
+              send(
+                { type: "pause" },
+                state?.paused ? "Simulation resumed." : "Simulation paused.",
+              )
+            }
+          >
+            {state?.paused ? "▶ Resume" : "Ⅱ Pause"}
+          </button>
+        </div>
+      </div>
+      {state?.emergency && (
+        <div className="ops-emergency" role="alert">
+          SIMULATED EMERGENCY ACTIVE — Verify exit availability and obtain staff
+          approval before directing attendees.
+        </div>
+      )}
+      <main id="ops-main" className="ops-main">
+        {children}
+      </main>
+      <footer className="ops-footer">
+        <strong>STADIA OPS</strong>
+        <span>
+          SHARED EVENT STATE / {state?.paused ? "PAUSED" : "SIMULATION ONLINE"}
+        </span>
+        <span>HACK CELESTIAL · PS–08</span>
+        <span>HUMAN APPROVAL · EVERY RESPONSE</span>
+      </footer>
+      <Modal
+        open={broadcast}
+        onClose={() => setBroadcast(false)}
+        title="Public address announcement"
+      >
+        <p>This records a simulated PA announcement in the shared event log.</p>
+        <label className="ops-field">
+          Announcement
+          <textarea
+            rows={4}
+            maxLength={240}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+          />
+        </label>
+        <Button
+          variant="primary"
+          disabled={busy || message.trim().length < 5}
+          onClick={async () => {
+            if (
+              await send(
+                { type: "broadcast", message },
+                "Simulated announcement added to the event log.",
+              )
+            )
+              setBroadcast(false);
+          }}
+        >
+          Confirm simulated broadcast
+        </Button>
+      </Modal>
+    </>
+  );
+}
+export default function Shell({ children }) {
+  return (
+    <div className="ops">
+      <OperationsProvider>
+        <Frame>{children}</Frame>
+      </OperationsProvider>
+    </div>
+  );
+}

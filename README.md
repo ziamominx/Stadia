@@ -1,3 +1,18 @@
+# STADIA — Event Command Platform (`hc002`)
+
+The new operations experience opens at `/command-center` (also the default `/` route). It implements the six supplied UI references in Next.js, with a connected crowd-response simulation, fire/medical tasks, parking controls, and outcome analytics.
+
+```sh
+npm ci
+npm test
+npm run build
+npm start
+```
+
+Read [hc002 implementation and demo guide](MD/HC002_IMPLEMENTATION.md) for the walkthrough, architecture, and simulation boundaries. The original landing page is available at `/fan`; the earlier project documentation follows below.
+
+---
+
 # ⚽ FIFA Women's World Cup India 2026 — Hospitality & Crowd Orchestration Platform
 
 Built to serve as the single official ticketing channel for the FIFA Women's World Cup India
