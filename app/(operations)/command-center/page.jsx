@@ -142,7 +142,7 @@ export default function CommandCenter() {
 
         <aside className="ops-rail">
           <Panel title="Recent telemetry events" meta="SIM / IST">
-            <div className="ops-log">
+            <div className="ops-log" aria-live="polite" aria-atomic="false">
               {state.log.slice(0, 8).map((entry) => (
                 <div key={entry.id}>
                   <span className={`ops-log-dot ${entry.type}`}>●</span>

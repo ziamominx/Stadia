@@ -168,7 +168,7 @@ export function Response({ incident, detailed = false }) {
           </div>
 
           <Button
-            variant="primary full"
+            variant="primary full ops-btn-sheen"
             disabled={busy}
             onClick={() => setConfirm(true)}
           >
@@ -310,9 +310,10 @@ export function TaskList({ team }) {
     );
   return (
     <div className="ops-task-list">
-      {tasks.map((t) => (
+      {tasks.map((t, idx) => (
         <article
           key={t.id}
+          style={{ "--i": idx }}
           className={`ops-task-card ${t.flagged ? "flagged" : ""}`}
         >
           <div className="ops-row">

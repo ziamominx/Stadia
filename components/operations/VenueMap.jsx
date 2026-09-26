@@ -91,6 +91,17 @@ export default function VenueMap({
             >
               <path d="M0 0L6 3L0 6Z" fill="context-stroke" />
             </marker>
+            <filter id="neon-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="3.5" floodColor="#087855" floodOpacity="0.75" />
+            </filter>
+            <filter id="critical-glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" floodColor="#c5232b" floodOpacity="0.8" />
+            </filter>
+            <linearGradient id="radar-cone" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#087855" stopOpacity="0.45" />
+              <stop offset="50%" stopColor="#087855" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#087855" stopOpacity="0" />
+            </linearGradient>
           </defs>
           <rect width="900" height="570" fill="url(#stadia-grid)" />
           <path
@@ -149,6 +160,21 @@ export default function VenueMap({
           />
           <rect x="436" y="260" width="28" height="54" fill="#d8caac" />
           <path d="M437 271H463M437 301H463" stroke="#fff" />
+          <g className="ops-radar-sweep">
+            <path
+              d="M450 287 L450 193 A94 94 0 0 1 544 287 Z"
+              fill="url(#radar-cone)"
+            />
+            <line
+              x1="450"
+              y1="287"
+              x2="450"
+              y2="193"
+              stroke="#087855"
+              strokeWidth="2.5"
+              strokeOpacity="0.85"
+            />
+          </g>
           <text x="450" y="333" textAnchor="middle" className="ops-svg-label">
             MATCH IN PLAY
           </text>
@@ -179,11 +205,12 @@ export default function VenueMap({
           {(layer === "flow" || mode === "transport") && (
             <g
               fill="none"
-              strokeWidth="2"
-              strokeDasharray="5 5"
+              strokeWidth="3.5"
+              className="ops-flow-stream"
               markerEnd="url(#flow-arrow)"
+              filter="url(#neon-glow)"
             >
-              <path d="M52 399Q102 390 153 302" stroke={color("west")} />
+              <path d="M52 399Q102 390 153 302" stroke={color("west")} filter={active ? "url(#critical-glow)" : "url(#neon-glow)"} />
               <path d="M790 401Q743 370 732 302" stroke="#087855" />
               <path d="M750 411Q455 543 193 382" stroke="#087855" />
             </g>
@@ -191,9 +218,17 @@ export default function VenueMap({
           <path
             d="M100 418L181 343"
             stroke={active ? "#c5232b" : "#087855"}
-            strokeDasharray="4 5"
+            strokeWidth="3.5"
+            className="ops-flow-stream"
+            filter={active ? "url(#critical-glow)" : "url(#neon-glow)"}
           />
-          <path d="M804 418L719 346" stroke="#087855" strokeDasharray="4 5" />
+          <path
+            d="M804 418L719 346"
+            stroke="#087855"
+            strokeWidth="3.5"
+            className="ops-flow-stream"
+            filter="url(#neon-glow)"
+          />
           {mode === "ground" &&
             [320, 350, 380, 410, 440, 470, 500, 530, 560, 590].map((x, i) => (
               <g key={x}>
