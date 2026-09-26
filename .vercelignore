@@ -1,0 +1,6 @@
+# Database ignore
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+data/

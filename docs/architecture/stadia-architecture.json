@@ -1,0 +1,208 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "FIFA Women's World Cup India — Hospitality & Crowd Orchestration Platform",
+    "subtitle": "Unified Next.js 15 topology, routing engines, simulation services, and reactive domain mesh",
+    "output": "stadia-architecture.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "fan-flow",
+        "label": "Visitor Booking & Ingress Flow",
+        "focus": ["visitor_portal", "api_gateway", "routing_engine", "domain_store", "meta_whatsapp"],
+        "note": "Follow fan interaction from seat selection to routing allocation and QR pass delivery."
+      },
+      {
+        "id": "organizer-ops",
+        "label": "Organizer Command & Simulation",
+        "focus": ["command_center", "api_gateway", "forecast_engine", "sim_service", "stadium_gis"],
+        "note": "Tactical situational awareness, spatial conflict detection (<220m), and live stress simulation."
+      },
+      {
+        "id": "core-engines",
+        "label": "Core Orchestration & State",
+        "focus": ["routing_engine", "forecast_engine", "domain_store", "sim_service"],
+        "note": "Internal logic coordinating gate splits (North/West vs East/South) and parking load fallbacks."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "visitor_portal",
+      "type": "frontend",
+      "label": "Fan Web Portal",
+      "sublabel": "Next.js 15 / React 19",
+      "tag": "Seat & Digital Pass",
+      "pos": [40, 200],
+      "size": [150, 64]
+    },
+    {
+      "id": "command_center",
+      "type": "frontend",
+      "label": "Command Center",
+      "sublabel": "Leaflet GIS & Tactical HUD",
+      "tag": "Live Gate & Shuttle Ops",
+      "pos": [40, 400],
+      "size": [150, 64]
+    },
+    {
+      "id": "api_gateway",
+      "type": "backend",
+      "label": "Next.js API Layer",
+      "sublabel": "App Router Handlers",
+      "tag": "/api/dashboard & /api/routes",
+      "pos": [270, 300],
+      "size": [160, 64]
+    },
+    {
+      "id": "routing_engine",
+      "type": "backend",
+      "label": "Assignment Engine",
+      "sublabel": "lib/assignment.js",
+      "tag": "Split-Gate & Parking Failover",
+      "pos": [520, 200],
+      "size": [160, 64]
+    },
+    {
+      "id": "forecast_engine",
+      "type": "backend",
+      "label": "Predictive Forecast",
+      "sublabel": "lib/forecast.js",
+      "tag": "Arrival Wave (T-3h Curve)",
+      "pos": [520, 400],
+      "size": [160, 64]
+    },
+    {
+      "id": "domain_store",
+      "type": "database",
+      "label": "Domain Mesh Store",
+      "sublabel": "lib/stadiaStore.js",
+      "tag": "In-Memory Reactive State",
+      "pos": [780, 200],
+      "size": [150, 64]
+    },
+    {
+      "id": "sim_service",
+      "type": "backend",
+      "label": "Stress Simulator",
+      "sublabel": "app/simulator",
+      "tag": "Dynamic Crowd Surge",
+      "pos": [780, 400],
+      "size": [150, 64]
+    },
+    {
+      "id": "meta_whatsapp",
+      "type": "external",
+      "label": "WhatsApp Cloud API",
+      "sublabel": "Meta Graph API",
+      "tag": "Digital QR Dispatch",
+      "pos": [1030, 200],
+      "size": [150, 64]
+    },
+    {
+      "id": "stadium_gis",
+      "type": "external",
+      "label": "OpenStreetMap GIS",
+      "sublabel": "Leaflet Polylines",
+      "tag": "DY Patil Coordinates",
+      "pos": [1030, 400],
+      "size": [150, 64]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Stadia App Router & Client Tier",
+      "wraps": ["visitor_portal", "command_center", "api_gateway", "routing_engine", "forecast_engine"]
+    },
+    {
+      "kind": "security-group",
+      "label": "Next.js Domain & Operations Tier",
+      "wraps": ["domain_store", "sim_service"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "portal-to-api",
+      "from": "visitor_portal",
+      "to": "api_gateway",
+      "label": "HTTPS REST",
+      "variant": "emphasis"
+    },
+    {
+      "id": "command-to-api",
+      "from": "command_center",
+      "to": "api_gateway",
+      "label": "Telemetry Query",
+      "variant": "emphasis"
+    },
+    {
+      "id": "api-to-routing",
+      "from": "api_gateway",
+      "to": "routing_engine",
+      "label": "Haversine Ingress"
+    },
+    {
+      "id": "api-to-forecast",
+      "from": "api_gateway",
+      "to": "forecast_engine",
+      "label": "Arrival Curves"
+    },
+    {
+      "id": "routing-to-db",
+      "from": "routing_engine",
+      "to": "domain_store",
+      "label": "Persist Route"
+    },
+    {
+      "id": "forecast-to-sim",
+      "from": "forecast_engine",
+      "to": "sim_service",
+      "label": "Stress Telemetry"
+    },
+    {
+      "id": "db-to-whatsapp",
+      "from": "domain_store",
+      "to": "meta_whatsapp",
+      "label": "Send QR Pass",
+      "variant": "dashed"
+    },
+    {
+      "id": "command-to-gis",
+      "from": "command_center",
+      "to": "stadium_gis",
+      "label": "GIS Polylines",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Dual User Experiences",
+      "items": [
+        "Fan Web Portal provides block/seat selection and personalized arrival routes",
+        "Command Center provides real-time gate, shuttle, and parking zone load flags"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Orchestration & Routing",
+      "items": [
+        "Physical Gate Split: North/West (Local) vs East/South (Outstation)",
+        "Automatic parking failover when zone capacity exceeds 85%",
+        "Arrival forecasting with 15-minute slot intervals from T-3h to kickoff"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Resilience & Alerts",
+      "items": [
+        "Mixing-point proximity alerts (<220m conflict detection)",
+        "Approaching capacity flags at ≥80% and critical alarms at ≥95%"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "stadia-warm-editorial-command",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Stadia — shared live event state engine with role-specific command surfaces (Warm Editorial Command UI)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "^15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "postcss": "^8.5.28",
+    "tailwindcss": "^4.0.0"
+  }
+}
