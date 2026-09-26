@@ -1,12 +1,23 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { api, useApi } from '../../lib/api.js';
-import { Shield, ArrowRight, Clock, MapPin } from '../../components/Icons';
+import { getPublicEvents } from '../../lib/eventsData.js';
+import { Shield, ArrowRight, Clock, MapPin, Calendar, Sparkles } from '../../components/Icons';
 
 export default function MatchesPage() {
   const { data: matches, loading, error } = useApi(api.matches);
+  const [publicEvents, setPublicEvents] = useState([]);
+
+  useEffect(() => {
+    const loadEvents = () => {
+      setPublicEvents(getPublicEvents());
+    };
+    loadEvents();
+    window.addEventListener('stadia_events_updated', loadEvents);
+    return () => window.removeEventListener('stadia_events_updated', loadEvents);
+  }, []);
 
   if (loading) {
     return (
@@ -41,48 +52,120 @@ export default function MatchesPage() {
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {matches.map((m) => (
-          <div
-            key={m.id}
-            className="rounded-3xl border border-neutral-800/80 bg-[#111114] p-6 shadow-xl space-y-4 hover:border-neutral-700 transition flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between text-xs text-neutral-400">
-                <span className="rounded-full bg-neutral-800 px-2.5 py-0.5 text-[10px] font-bold uppercase text-emerald-400">
-                  {m.status || 'Scheduled'}
-                </span>
-                <span>{new Date(m.kickoff_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-              </div>
-
-              <div className="mt-4 text-xl font-black text-white">
-                {m.home_team} <span className="text-neutral-500 font-normal">vs</span> {m.away_team}
-              </div>
-
-              <div className="mt-3 space-y-1.5 text-xs text-neutral-400">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5 text-neutral-500" />
-                  <span>{m.venue}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-3.5 w-3.5 text-neutral-500" />
-                  <span>Kickoff: {new Date(m.kickoff_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} IST</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-neutral-800">
-              <Link
-                href={`/match/${m.id}`}
-                className="flex items-center justify-center gap-2 w-full rounded-full bg-white py-2.5 text-xs font-bold text-black hover:bg-neutral-200 transition"
-              >
-                Select Seats &amp; Routing
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
+      {/* Published Executive Mega-Events (if any are active and published) */}
+      {publicEvents.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-emerald-400" />
+            <h2 className="text-lg font-bold text-white">
+              Featured Maharashtra Mega-Events &amp; Derbies
+            </h2>
+            <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[10px] font-mono text-emerald-400">
+              Live for Booking
+            </span>
           </div>
-        ))}
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {publicEvents.map((ev) => (
+              <div
+                key={ev.id}
+                className="rounded-3xl border border-emerald-500/30 bg-[#0e1411] p-6 shadow-xl space-y-4 hover:border-emerald-500/60 transition flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-xs text-neutral-400">
+                    <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-bold uppercase text-emerald-300 font-mono">
+                      {ev.status || 'Published'}
+                    </span>
+                    <span>{ev.date}</span>
+                  </div>
+
+                  <div className="mt-4 text-xl font-black text-white leading-snug">
+                    {ev.title}
+                  </div>
+                  <p className="mt-1 text-xs text-neutral-400">{ev.subtitle}</p>
+
+                  <div className="mt-3 space-y-1.5 text-xs text-neutral-400">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-3.5 w-3.5 text-emerald-400" />
+                      <span>{ev.venue}, {ev.city}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-3.5 w-3.5 text-neutral-500" />
+                      <span>Start: {ev.time} {ev.duration && `(${ev.duration})`}</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 pt-2 border-t border-neutral-800/80 flex items-center justify-between text-xs font-mono">
+                    <span className="text-neutral-400">From ₹{ev.basePrice?.toLocaleString('en-IN') || '1,500'}</span>
+                    <span className="text-emerald-400">{(ev.capacity || 50000).toLocaleString('en-IN')} Cap</span>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t border-neutral-800">
+                  <Link
+                    href={`/match/${ev.id}`}
+                    className="flex items-center justify-center gap-2 w-full rounded-full bg-emerald-500 py-2.5 text-xs font-black text-black hover:bg-emerald-400 transition"
+                  >
+                    Select Seats &amp; Routing
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Standard Tournament Fixtures */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-bold text-white">
+          Scheduled Stadium Group Matches
+        </h2>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {matches.map((m) => (
+            <div
+              key={m.id}
+              className="rounded-3xl border border-neutral-800/80 bg-[#111114] p-6 shadow-xl space-y-4 hover:border-neutral-700 transition flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-center justify-between text-xs text-neutral-400">
+                  <span className="rounded-full bg-neutral-800 px-2.5 py-0.5 text-[10px] font-bold uppercase text-emerald-400">
+                    {m.status || 'Scheduled'}
+                  </span>
+                  <span>{new Date(m.kickoff_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                </div>
+
+                <div className="mt-4 text-xl font-black text-white">
+                  {m.home_team} <span className="text-neutral-500 font-normal">vs</span> {m.away_team}
+                </div>
+
+                <div className="mt-3 space-y-1.5 text-xs text-neutral-400">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-3.5 w-3.5 text-neutral-500" />
+                    <span>{m.venue}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-3.5 w-3.5 text-neutral-500" />
+                    <span>Kickoff: {new Date(m.kickoff_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })} IST</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-neutral-800">
+                <Link
+                  href={`/match/${m.id}`}
+                  className="flex items-center justify-center gap-2 w-full rounded-full bg-white py-2.5 text-xs font-bold text-black hover:bg-neutral-200 transition"
+                >
+                  Select Seats &amp; Routing
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
+

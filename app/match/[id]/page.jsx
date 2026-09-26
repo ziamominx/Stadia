@@ -4,29 +4,83 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useApi, api } from '../../../lib/api.js';
+import { getEventById } from '../../../lib/eventsData.js';
+import { BLOCKS_DATA } from '../../../lib/stadiaData.js';
 import SeatMap from '../../../components/SeatMap.jsx';
 import SeatPicker from '../../../components/SeatPicker.jsx';
 import { kickoffLong, inr } from '../../../lib/format.js';
-import { Ticket } from '../../../components/Icons.jsx';
+import { Ticket, Lock } from '../../../components/Icons.jsx';
 
 export default function MatchDetailPage() {
   const params = useParams();
   const id = params?.id;
   const router = useRouter();
-  const { data, loading, error } = useApi(() => api.matchSeats(id), [id]);
+  const { data: apiData, loading, error } = useApi(() => api.matchSeats(id), [id]);
   const [block, setBlock] = useState(null);
 
-  if (loading) {
+  // Check fallback from local event registry (for newly created organizer events)
+  const localEvent = typeof window !== 'undefined' ? getEventById(id) : null;
+
+  let match = apiData?.match;
+  let blocks = apiData?.blocks;
+
+  if (!match && localEvent) {
+    match = {
+      id: localEvent.id,
+      home_team: localEvent.title,
+      away_team: localEvent.subtitle || 'Live Event Experience',
+      kickoff_time: `${localEvent.date}T19:30:00.000Z`,
+      venue: `${localEvent.venue}, ${localEvent.city}`,
+      status: localEvent.status,
+    };
+    blocks = BLOCKS_DATA.map(b => ({
+      ...b,
+      price: (b.block_name.startsWith('E') || b.block_name.startsWith('F')) ? (localEvent.vipPrice || 8500) : (localEvent.basePrice || 1500),
+      available: Math.max(12, b.capacity - b.sold),
+    }));
+  }
+
+  if (loading && !localEvent) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
         <div className="h-64 animate-pulse rounded-2xl bg-neutral-900" />
       </div>
     );
   }
-  if (error || !data) {
+
+  // Handle Draft state: hidden from public fans
+  if (localEvent && (localEvent.status || '').toLowerCase() === 'draft') {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6 space-y-4">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-400">
+          <Lock className="h-7 w-7" />
+        </div>
+        <h1 className="text-2xl font-black text-white">Event in Staged Draft Mode</h1>
+        <p className="text-sm text-neutral-400 leading-relaxed">
+          &quot;{localEvent.title}&quot; has been created by the Executive Organizer but has not yet been put live to fans.
+        </p>
+        <div className="pt-4 flex items-center justify-center gap-3">
+          <Link
+            href="/matches"
+            className="rounded-full border border-neutral-700 bg-[#121217] px-5 py-2.5 text-xs font-bold text-neutral-300 hover:bg-neutral-800"
+          >
+            ← Public Matches Directory
+          </Link>
+          <Link
+            href={`/organizer/events/${localEvent.id}`}
+            className="rounded-full bg-emerald-500 hover:bg-emerald-400 px-5 py-2.5 text-xs font-black text-black"
+          >
+            Open Executive Console &amp; Put Live
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!match || !blocks) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6">
-        <p className="text-lg text-slate-300">{error?.message || 'Match not found'}</p>
+        <p className="text-lg text-slate-300">{error?.message || 'Match or Event not found'}</p>
         <Link href="/matches" className="mt-4 inline-block font-bold text-emerald-400">
           ← Back to matches
         </Link>
@@ -34,7 +88,6 @@ export default function MatchDetailPage() {
     );
   }
 
-  const { match, blocks } = data;
   const totalSeats = blocks?.reduce((a, b) => a + b.capacity, 0) || 1;
   const soldTotal = blocks?.reduce((a, b) => a + b.sold, 0) || 0;
   const soldOut = blocks?.filter((b) => b.available <= 0).length || 0;
@@ -72,19 +125,37 @@ export default function MatchDetailPage() {
 
         <div>
           {!block ? (
-            <div className="rounded-2xl border border-dashed border-slate-700 bg-[#0e0e12]/50 p-6 text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-white/5">
-                <Ticket className="h-6 w-6 text-emerald-400" />
+            <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-6 text-center space-y-4">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+                <Ticket className="h-6 w-6" />
               </div>
-              <p className="font-bold text-white">Pick a block on the seat map</p>
-              <p className="mt-1 text-sm text-slate-400">
-                Blocks fill from {inr(Math.min(...blocks.map((b) => b.price)))} to{' '}
-                {inr(Math.max(...blocks.map((b) => b.price)))}. Click a coloured section to see seats.
-              </p>
-              <p className="mt-4 text-xs text-slate-500">
-                Grey blocks are sold out. After choosing your seat you'll create your ticket, then tell
-                us if you're local or outstation for your arrival plan.
-              </p>
+              <div>
+                <p className="font-extrabold text-white text-base">Select a Stadium Block to View Seats</p>
+                <p className="mt-1 text-xs text-neutral-400">
+                  Choose your pitch view. Prices range from {inr(Math.min(...blocks.map((b) => b.price)))} to {inr(Math.max(...blocks.map((b) => b.price)))}.
+                </p>
+              </div>
+
+              {/* What's Included Callout */}
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-3.5 text-left space-y-2">
+                <span className="text-[10px] font-mono uppercase font-bold text-emerald-400 tracking-wider">
+                  Included Free with Every Pass:
+                </span>
+                <ul className="text-xs text-neutral-300 space-y-1.5 font-medium">
+                  <li className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+                    <span>Auto-Reserved Parking Bay (P1) or Metro Corridor</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+                    <span>₹250 Stadium Food Voucher (T-3h Early Ingress)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
+                    <span>Turnstile Fast-Track Lane + Offline Wallet Pass</span>
+                  </li>
+                </ul>
+              </div>
             </div>
           ) : (
             <div className="rounded-2xl border border-slate-700/60 bg-[#0e0e12] p-5">

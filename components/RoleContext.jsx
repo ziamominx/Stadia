@@ -45,14 +45,14 @@ export const ROLES = {
   fan: {
     id: 'fan',
     name: 'Fan Journey',
-    tag: 'Live Arrival & Journey Guidance',
+    tag: '1-Click Booking & Smart Matchday Pass',
     iconName: 'Ticket',
     defaultPath: '/',
     navItems: [
-      { to: '/ticket/FWC-IND-10492/confirmation', label: 'Live Pass & Gate Route', iconName: 'Activity' },
-      { to: '/journey-planner', label: 'Journey Coordinator', iconName: 'Navigation' },
-      { to: '/crowd-flow', label: 'Walkway Crowd Map', iconName: 'Shield' },
-      { to: '/hospitality-hub', label: 'Post-Match Perks & Dining', iconName: 'Hotel' },
+      { to: '/matches', label: 'Book Match & Pass', iconName: 'Ticket' },
+      { to: '/ticket/FWC-1-A1-8842/confirmation', label: 'My Digital Pass', iconName: 'Activity' },
+      { to: '/crowd-flow', label: 'Walkway Crowd Radar', iconName: 'Shield' },
+      { to: '/hospitality-hub', label: 'Dining & Matchday Perks', iconName: 'Hotel' },
     ],
   },
 };

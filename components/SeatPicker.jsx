@@ -94,9 +94,9 @@ export default function SeatPicker({ block, onConfirm, onClose }) {
             <button
               disabled={!selected}
               onClick={() => selected && onConfirm(selected)}
-              className="rounded-lg bg-emerald-500 hover:bg-emerald-400 px-4 py-2 text-sm font-bold text-black shadow-lg shadow-emerald-500/20 transition disabled:cursor-not-allowed disabled:opacity-40"
+              className="rounded-xl bg-emerald-500 hover:bg-emerald-400 px-5 py-2.5 text-xs font-black text-black shadow-lg shadow-emerald-500/20 transition disabled:cursor-not-allowed disabled:opacity-40 flex items-center gap-1.5"
             >
-              Continue → ₹{block?.price?.toLocaleString('en-IN')}
+              <span>Proceed to 1-Click Pass Checkout → ₹{block?.price?.toLocaleString('en-IN')}</span>
             </button>
           </div>
         </div>

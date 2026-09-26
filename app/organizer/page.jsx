@@ -1,16 +1,35 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useApi, api } from '../../lib/api.js';
+import { getAllEventsForOrganizer, updateEventStatus } from '../../lib/eventsData.js';
 import LoadBar, { StatusPill } from '../../components/LoadBar.jsx';
 import { pct, inr } from '../../lib/format.js';
-import { Activity, Shield, Hotel, Sliders, ArrowRight, CheckCircle, AlertTriangle, Bus } from '../../components/Icons.jsx';
+import { Activity, Shield, Hotel, Sliders, ArrowRight, CheckCircle, AlertTriangle, Bus, Eye, Lock, Zap, Calendar, MapPin } from '../../components/Icons.jsx';
 
 export default function ExecutiveOrganizerPage() {
   const { data, loading, error, reload } = useApi(api.dashboard);
   const { data: ecosystem } = useApi(api.ecosystem);
   const [showCommercial, setShowCommercial] = useState(false);
+
+  // Executive managed events
+  const [managedEvents, setManagedEvents] = useState([]);
+
+  useEffect(() => {
+    const loadEvents = () => {
+      setManagedEvents(getAllEventsForOrganizer());
+    };
+    loadEvents();
+    window.addEventListener('stadia_events_updated', loadEvents);
+    return () => window.removeEventListener('stadia_events_updated', loadEvents);
+  }, []);
+
+  const handleToggleStatus = (eventId, currentStatus) => {
+    const s = (currentStatus || '').toLowerCase();
+    const nextStatus = s === 'draft' ? 'Published' : 'Draft';
+    updateEventStatus(eventId, nextStatus);
+  };
 
   if (loading) {
     return (
@@ -46,14 +65,21 @@ export default function ExecutiveOrganizerPage() {
             </span>
           </div>
           <h1 className="mt-1 text-3xl font-black tracking-tight text-white sm:text-4xl">
-            Event Health & Multi-Agency Status
+            Event Operations &amp; Publication Mesh
           </h1>
           <p className="mt-1 text-sm text-neutral-400">
-            Real-time strategic oversight: venue capacity, cross-domain risk indexing, and operational agency health.
+            Create events, configure Maharashtra venue grids, inspect pre-live analytics, and choose when to put events live for fans.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href="/organizer/events/new"
+            className="flex items-center gap-1.5 rounded-full bg-emerald-500 hover:bg-emerald-400 px-5 py-2 text-xs font-black text-black shadow-lg shadow-emerald-500/20 transition"
+          >
+            <span className="text-sm font-bold">+</span>
+            Create New Event
+          </Link>
           <Link
             href="/simulator"
             className="flex items-center gap-1.5 rounded-full border border-neutral-700 bg-[#121217] px-4 py-2 text-xs font-bold text-neutral-200 hover:bg-neutral-800 hover:text-white transition"
@@ -70,6 +96,150 @@ export default function ExecutiveOrganizerPage() {
           </Link>
         </div>
       </div>
+
+      {/* EXECUTIVE EVENT PORTFOLIO & PUBLICATION LIFECYCLE */}
+      <div className="rounded-3xl border border-neutral-800/80 bg-[#111114] p-6 shadow-xl space-y-4">
+        <div className="border-b border-neutral-800/80 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-400" />
+              <h2 className="text-lg font-bold text-white">
+                Executive Event Portfolio &amp; Go-Live Control
+              </h2>
+            </div>
+            <p className="text-xs text-neutral-400 mt-0.5">
+              Draft events are restricted to organizers. Published and Live events are immediately discoverable and bookable by fans.
+            </p>
+          </div>
+
+          <Link
+            href="/organizer/events/new"
+            className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 hover:underline"
+          >
+            + Register Another Event &rarr;
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {managedEvents.map(ev => {
+            const isDraft = (ev.status || '').toLowerCase() === 'draft';
+            const isLive = (ev.status || '').toLowerCase() === 'live';
+            const isPublished = (ev.status || '').toLowerCase() === 'published' || (ev.status || '').toLowerCase() === 'registration open';
+
+            return (
+              <div 
+                key={ev.id} 
+                className={`rounded-2xl border p-5 space-y-4 transition flex flex-col justify-between ${
+                  isDraft 
+                    ? 'border-amber-500/30 bg-[#14120a]' 
+                    : isLive 
+                      ? 'border-rose-500/40 bg-[#140a0e]' 
+                      : 'border-emerald-500/30 bg-[#0e1411]'
+                }`}
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 bg-neutral-800/80 px-2 py-0.5 rounded">
+                      {ev.categoryLabel || ev.category || 'Event'}
+                    </span>
+
+                    {/* Publication Status Pill */}
+                    {isDraft && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 text-[10px] font-bold text-amber-300 font-mono">
+                        <Lock className="h-2.5 w-2.5" /> DRAFT · STAGING
+                      </span>
+                    )}
+                    {isPublished && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2.5 py-0.5 text-[10px] font-bold text-emerald-300 font-mono">
+                        <Eye className="h-2.5 w-2.5" /> PUBLISHED
+                      </span>
+                    )}
+                    {isLive && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-rose-500/15 border border-rose-500/30 px-2.5 py-0.5 text-[10px] font-bold text-rose-300 font-mono animate-pulse">
+                        <Zap className="h-2.5 w-2.5" /> LIVE MATCH
+                      </span>
+                    )}
+                  </div>
+
+                  <h3 className="text-base font-bold text-white leading-snug">
+                    {ev.title}
+                  </h3>
+
+                  <div className="text-xs text-neutral-400 flex items-center gap-1 font-mono">
+                    <MapPin className="h-3 w-3 text-neutral-500" />
+                    <span>{ev.venue}</span>
+                    <span>·</span>
+                    <span className="text-emerald-400">{ev.city}</span>
+                  </div>
+
+                  <div className="text-[11px] text-neutral-400 flex items-center gap-2 font-mono">
+                    <Calendar className="h-3 w-3 text-neutral-500" />
+                    <span>{ev.date}</span>
+                    <span>·</span>
+                    <span>{ev.time}</span>
+                    {ev.duration && (
+                      <>
+                        <span>·</span>
+                        <span className="text-neutral-300">{ev.duration}</span>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="pt-2 border-t border-neutral-800/80 flex items-center justify-between text-xs font-mono">
+                    <span className="text-neutral-400">Capacity: <strong className="text-white">{(ev.capacity || 50000).toLocaleString('en-IN')}</strong></span>
+                    <span className="text-emerald-400 font-bold">
+                      {isDraft ? '0 booked (Draft)' : `${(ev.sold || 0).toLocaleString('en-IN')} booked`}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Card Action Bar */}
+                <div className="pt-3 border-t border-neutral-800/80 flex flex-col gap-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <button
+                      onClick={() => handleToggleStatus(ev.id, ev.status)}
+                      className={`text-[11px] font-bold px-3 py-1.5 rounded-full transition flex items-center gap-1.5 ${
+                        isDraft
+                          ? 'bg-emerald-500 hover:bg-emerald-400 text-black font-black'
+                          : 'border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
+                      }`}
+                    >
+                      {isDraft ? (
+                        <>
+                          <Eye className="h-3 w-3" />
+                          Put Live to Fans
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="h-3 w-3" />
+                          Make Draft
+                        </>
+                      )}
+                    </button>
+
+                    <Link
+                      href={`/organizer/events/${ev.id}`}
+                      className="text-xs font-bold text-white hover:text-emerald-400 flex items-center gap-1 transition"
+                    >
+                      Analytics &amp; Gates &rarr;
+                    </Link>
+                  </div>
+
+                  {!isDraft && (
+                    <Link
+                      href={`/match/${ev.id}`}
+                      className="text-[11px] text-neutral-400 hover:text-emerald-400 font-mono text-right transition"
+                    >
+                      View Fan Page &amp; Tickets &rarr;
+                    </Link>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
 
       {/* Macro Event Health Scorecard (Section 20 of Brief) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

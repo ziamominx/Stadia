@@ -6,7 +6,17 @@ import 'leaflet/dist/leaflet.css';
 import { useApi, api } from '../../../lib/api.js';
 import LoadBar, { StatusPill } from '../../../components/LoadBar.jsx';
 import { pct } from '../../../lib/format.js';
-import { AlertTriangle } from '../../../components/Icons.jsx';
+import {
+  AlertTriangle,
+  Zap,
+  Shield,
+  CheckCircle,
+  Clock,
+  Users,
+  ArrowRight,
+  DoorClosed,
+  Bus,
+} from '../../../components/Icons.jsx';
 
 const STATUS_COLOR = { ok: '#34d399', approaching_capacity: '#fbbf24', critical: '#fb7185' };
 const FLOW_COLOR = { local: '#38bdf8', outstation: '#fb7185' };
@@ -20,37 +30,53 @@ function timeLabel(minutesBefore) {
   return `T-${minutesBefore}m`;
 }
 
-function ForecastSparkline({ slots, flagged }) {
+function ForecastSparkline({ slots, flagged, turnstileBoost = 0 }) {
   const W = 220;
   const H = 64;
   const PAD = 6;
   if (!slots || slots.length === 0) return null;
-  const peak = slots.reduce((b, s) => (s.loadPct > b.loadPct ? s : b), slots[0]);
+
+  // Apply turnstile boost simulation reduction
+  const adjustedSlots = slots.map((s) => ({
+    ...s,
+    loadPct: Math.max(20, Math.round(s.loadPct * (1 - turnstileBoost * 0.06))),
+  }));
+
+  const peak = adjustedSlots.reduce((b, s) => (s.loadPct > b.loadPct ? s : b), adjustedSlots[0]);
+  const isNowFlagged = peak.loadPct >= 90;
   const maxY = Math.max(100, peak.loadPct * 1.05);
-  const pts = slots.map((s, i) => [
-    PAD + (i * (W - 2 * PAD)) / (slots.length - 1),
+  const pts = adjustedSlots.map((s, i) => [
+    PAD + (i * (W - 2 * PAD)) / (adjustedSlots.length - 1),
     H - PAD - (s.loadPct / maxY) * (H - 2 * PAD),
   ]);
   const line = pts.map((p) => p.join(',')).join(' ');
   const dangerY = H - PAD - (90 / maxY) * (H - 2 * PAD);
-  const peakPt = pts[slots.findIndex((s) => s === peak)];
-  const color = flagged ? '#fb7185' : '#fbbf24';
+  const peakPt = pts[adjustedSlots.findIndex((s) => s === peak)];
+  const color = isNowFlagged ? '#fb7185' : '#34d399';
 
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
-      <line x1={PAD} y1={dangerY} x2={W - PAD} y2={dangerY} stroke="#fb7185" strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
-      <polyline points={line} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
-      <circle cx={peakPt[0]} cy={peakPt[1]} r="3" fill={color} />
-      {[0, 4, 8, slots.length - 1].map((i) => (
-        <text key={i} x={pts[i] ? pts[i][0] : 0} y={H - 1} fontSize="7" fill="#64748b" textAnchor={i === 0 ? 'start' : i === slots.length - 1 ? 'end' : 'middle'}>
-          {slots[i]?.label}
-        </text>
-      ))}
-    </svg>
+    <div className="space-y-1">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full">
+        <line x1={PAD} y1={dangerY} x2={W - PAD} y2={dangerY} stroke="#fb7185" strokeWidth="1" strokeDasharray="3 3" opacity="0.7" />
+        <polyline points={line} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <circle cx={peakPt[0]} cy={peakPt[1]} r="3" fill={color} />
+        {[0, 4, 8, adjustedSlots.length - 1].map((i) => (
+          <text key={i} x={pts[i] ? pts[i][0] : 0} y={H - 1} fontSize="7" fill="#64748b" textAnchor={i === 0 ? 'start' : i === adjustedSlots.length - 1 ? 'end' : 'middle'}>
+            {adjustedSlots[i]?.label}
+          </text>
+        ))}
+      </svg>
+      <div className="flex justify-between text-[10px] font-mono">
+        <span className="text-neutral-500">Peak Load:</span>
+        <span className={isNowFlagged ? 'text-rose-400 font-bold' : 'text-emerald-400 font-bold'}>
+          {peak.loadPct}% ({isNowFlagged ? '⚠ Approaching Redline' : 'Nominal Safe Flow'})
+        </span>
+      </div>
+    </div>
   );
 }
 
-function GateMap({ gates, segments, mixingPoints, flowSide }) {
+function GateMap({ gates, segments, mixingPoints, flowSide, isEgress }) {
   const ref = useRef(null);
   const mapRef = useRef(null);
   const flowLayerRef = useRef(null);
@@ -70,7 +96,7 @@ function GateMap({ gates, segments, mixingPoints, flowSide }) {
 
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        attribution: '&copy; OpenStreetMap',
       }).addTo(map);
 
       gates?.forEach((g) => {
@@ -117,9 +143,10 @@ function GateMap({ gates, segments, mixingPoints, flowSide }) {
     shown.forEach((s) => {
       const t = Math.min(1, s.density / 400);
       L.polyline([s.from, s.to], {
-        color: FLOW_COLOR[s.side],
+        color: isEgress ? '#f43f5e' : FLOW_COLOR[s.side],
         weight: 2 + 7 * t,
         opacity: 0.3 + 0.65 * t,
+        dashArray: isEgress ? '8 8' : undefined,
       })
         .addTo(flowLayerRef.current)
         .bindTooltip(
@@ -128,7 +155,7 @@ function GateMap({ gates, segments, mixingPoints, flowSide }) {
         );
     });
 
-    if (flowSide === 'both' && mixingPoints) {
+    if (flowSide === 'both' && mixingPoints && !isEgress) {
       mixingPoints.forEach((m) => {
         const icon = L.divIcon({
           className: '',
@@ -144,17 +171,30 @@ function GateMap({ gates, segments, mixingPoints, flowSide }) {
           .bindPopup(`<b>Potential crowd mixing point</b><br/>${m.note}`, { maxWidth: 300 });
       });
     }
-  }, [segments, mixingPoints, flowSide]);
+  }, [segments, mixingPoints, flowSide, isEgress]);
 
   return <div ref={ref} className="h-[440px] w-full overflow-hidden rounded-2xl border border-neutral-800" />;
 }
 
 export default function OrganizerGatesPage() {
-  const { data: gates, loading, error } = useApi(api.gates);
+  const { data: gates, loading, error, reload: reloadGates } = useApi(api.gates);
   const { data: forecast } = useApi(api.gateForecastSummary);
   const [flowSide, setFlowSide] = useState('both');
   const [simTime, setSimTime] = useState(60);
-  const { data: flow } = useApi(() => api.crowdFlow(simTime), [simTime]);
+  const { data: flow, reload: reloadFlow } = useApi(() => api.crowdFlow(simTime), [simTime]);
+
+  // Enhancements: Matchday Lifecycle Mode + Direct Tactical Actions + Capacity Simulator
+  const [lifecycleMode, setLifecycleMode] = useState('ingress'); // 'ingress' or 'egress'
+  const [dispatchAlert, setDispatchAlert] = useState(null);
+  const [dispatching, setDispatching] = useState(false);
+  const [turnstilesBoost, setTurnstilesBoost] = useState(0); // 0 to 4 additional turnstiles
+
+  // Staggered Wave departure states for Egress Mode
+  const [waves, setWaves] = useState([
+    { id: 1, name: 'Wave 1 · Upper Tier Blocks A/B', count: '14,200 fans', status: 'RELEASED', timer: '0m (Clearing)', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' },
+    { id: 2, name: 'Wave 2 · Mid Tier Blocks C/D/H', count: '18,500 fans', status: 'HOLDING', timer: '4m 30s', color: 'text-amber-400 bg-amber-500/10 border-amber-500/30' },
+    { id: 3, name: 'Wave 3 · Lower Tier Pitchside', count: '15,500 fans', status: 'HOLDING', timer: '11m 00s', color: 'text-neutral-400 bg-neutral-800/80 border-neutral-700' },
+  ]);
 
   if (loading) {
     return (
@@ -171,22 +211,223 @@ export default function OrganizerGatesPage() {
     );
   }
 
-  const flaggedGates = (forecast?.gates ?? []).filter((g) => g.flagged);
+  // 1-Click Tactical Interventions Execution
+  const handleApplyAction = async (title, actionType, impactMetric) => {
+    setDispatching(true);
+    try {
+      await api.applyIntervention({
+        title,
+        actionType,
+        impactMetric,
+        description: `Triggered directly from Gate Operations radar console.`,
+      });
+      setDispatchAlert(`Tactical Action Executed: ${title} (${impactMetric})`);
+      reloadGates();
+      reloadFlow();
+      setTimeout(() => setDispatchAlert(null), 6000);
+    } catch (err) {
+      setDispatchAlert(`Action failed: ${err.message}`);
+    } finally {
+      setDispatching(false);
+    }
+  };
+
+  const handleReleaseWaveEarly = (waveId) => {
+    setWaves((prev) =>
+      prev.map((w) => (w.id === waveId ? { ...w, status: 'RELEASED', timer: 'Released Now', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30' } : w)),
+    );
+    setDispatchAlert(`Wave ${waveId} exit gates opened. Turnstile egress signals dispatched.`);
+    setTimeout(() => setDispatchAlert(null), 5000);
+  };
+
+  const isGateBOverloaded = gates.some((g) => g.name.includes('Gate B') && g.load >= 0.8);
+  const hasMixingPoints = (flow?.mixingPoints ?? []).length > 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 fade-up">
-      <Link href="/organizer" className="text-sm font-semibold text-neutral-400 hover:text-white">← Overview</Link>
-      <h1 className="mt-2 text-2xl font-black text-white sm:text-3xl">Gate map — live load &amp; crowd flow</h1>
-      <p className="mt-1 text-sm text-neutral-400">
-        Green = OK · amber = approaching capacity (≥80%) · red = critical. Tap a marker for details.
-      </p>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-6 fade-up">
+      {/* Top Breadcrumb & Lifecycle Mode Switcher */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800/80 pb-5">
         <div>
-          {/* Flow controls */}
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-800 bg-[#0e0e12] p-3">
+          <Link href="/organizer" className="text-xs font-semibold text-neutral-400 hover:text-white">
+            ← Organizer Overview
+          </Link>
+          <h1 className="mt-1 text-2xl font-black text-white sm:text-3xl">
+            Gate Command &amp; Ingress/Egress Orchestrator
+          </h1>
+          <p className="mt-0.5 text-xs sm:text-sm text-neutral-400">
+            Real-time turnstile load telemetry, multi-stream crowd deconfliction, and live tactical intervention dispatch.
+          </p>
+        </div>
+
+        {/* Stadium Lifecycle Phase Toggle */}
+        <div className="flex items-center gap-1.5 rounded-full border border-neutral-800 bg-[#111114] p-1 shadow-lg">
+          <button
+            onClick={() => setLifecycleMode('ingress')}
+            className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition ${
+              lifecycleMode === 'ingress'
+                ? 'bg-emerald-500 text-black shadow-md'
+                : 'text-neutral-400 hover:text-white'
+            }`}
+          >
+            <span className={`h-2 w-2 rounded-full ${lifecycleMode === 'ingress' ? 'bg-black' : 'bg-emerald-400'}`} />
+            <span>Ingress Arrivals (T-3h)</span>
+          </button>
+          <button
+            onClick={() => setLifecycleMode('egress')}
+            className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold transition ${
+              lifecycleMode === 'egress'
+                ? 'bg-rose-500 text-white shadow-md'
+                : 'text-neutral-400 hover:text-white'
+            }`}
+          >
+            <span className={`h-2 w-2 rounded-full ${lifecycleMode === 'egress' ? 'bg-white' : 'bg-rose-400'}`} />
+            <span>Post-Match Egress (FT)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Confirmation Flash Banner */}
+      {dispatchAlert && (
+        <div className="rounded-2xl border border-emerald-500/40 bg-emerald-950/30 p-4 shadow-xl flex items-center justify-between gap-3 text-xs text-emerald-300 fade-up">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 shrink-0 text-emerald-400" />
+            <span className="font-semibold">{dispatchAlert}</span>
+          </div>
+          <button onClick={() => setDispatchAlert(null)} className="text-neutral-400 hover:text-white font-bold">
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* TACTICAL ACTION BAR (Zero Tab-Hopping Dispatch) */}
+      {lifecycleMode === 'ingress' && (isGateBOverloaded || hasMixingPoints) && (
+        <div className="rounded-3xl border border-amber-500/40 bg-gradient-to-r from-amber-950/20 via-[#14120c] to-[#0e0e12] p-5 shadow-2xl space-y-3 fade-up">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-3 w-3 rounded-full bg-amber-400 animate-ping" />
+              <div>
+                <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-400" />
+                  Tactical Anomaly Detected · Recommended Mitigations Ready
+                </h3>
+                <p className="text-xs text-neutral-300 mt-0.5">
+                  Gate B turnstile congestion approaching 88% and Local/Outstation pedestrian path mixing within 220m.
+                </p>
+              </div>
+            </div>
+            <span className="rounded-full bg-amber-500/20 border border-amber-500/40 px-3 py-1 text-[11px] font-mono font-bold text-amber-300">
+              ACTIONABLE
+            </span>
+          </div>
+
+          <div className="grid sm:grid-cols-3 gap-3 pt-2 border-t border-neutral-800/80">
+            <button
+              onClick={() => handleApplyAction('Gate B Ingress Diversion to Gate A', 'reroute', '-65% Turnstile Delay')}
+              disabled={dispatching}
+              className="rounded-2xl border border-emerald-500/60 bg-emerald-500/10 hover:bg-emerald-500/20 p-3 text-left transition space-y-1 group"
+            >
+              <div className="flex items-center justify-between text-xs font-bold text-emerald-400">
+                <span>1. Divert 1,200 Passes to Gate A</span>
+                <Zap className="h-3.5 w-3.5 group-hover:scale-110 transition" />
+              </div>
+              <p className="text-[11px] text-neutral-300">
+                Pushes instant fast-track digital pass update to fans outside Gate B.
+              </p>
+            </button>
+
+            <button
+              onClick={() => handleApplyAction('Sector 14 Pedestrian Separation Barricades', 'barricade', '0 Mixing Points')}
+              disabled={dispatching}
+              className="rounded-2xl border border-sky-500/60 bg-sky-500/10 hover:bg-sky-500/20 p-3 text-left transition space-y-1 group"
+            >
+              <div className="flex items-center justify-between text-xs font-bold text-sky-400">
+                <span>2. Deploy Sector 14 Barricades</span>
+                <Shield className="h-3.5 w-3.5 group-hover:scale-110 transition" />
+              </div>
+              <p className="text-[11px] text-neutral-300">
+                Physically separates parking arrivals from East shuttle coach drop-offs.
+              </p>
+            </button>
+
+            <button
+              onClick={() => {
+                alert('SMS & Radio broadcast sent to all Gate B and A Turnstile Stewards.');
+                setDispatchAlert('Broadcast dispatched to 48 ground stewards via radio mesh.');
+                setTimeout(() => setDispatchAlert(null), 5000);
+              }}
+              className="rounded-2xl border border-neutral-700 bg-neutral-800 hover:bg-neutral-700 p-3 text-left transition space-y-1 group"
+            >
+              <div className="flex items-center justify-between text-xs font-bold text-white">
+                <span>3. Alert Ground Stewards</span>
+                <Users className="h-3.5 w-3.5 group-hover:scale-110 transition" />
+              </div>
+              <p className="text-[11px] text-neutral-400">
+                Dispatches radio alert to reposition 12 stewards to Gate A turnstiles.
+              </p>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* EGRESS MODE: STAGGERED WAVE SEQUENCER */}
+      {lifecycleMode === 'egress' && (
+        <div className="rounded-3xl border border-rose-500/30 bg-gradient-to-r from-rose-950/20 via-[#140a0e] to-[#0e0e12] p-6 shadow-2xl space-y-5 fade-up">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-800 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-400 animate-pulse" />
+                <span className="text-xs font-mono font-bold uppercase tracking-widest text-rose-400">
+                  Full-Time Egress Protocol Active · 48,200 Spectators
+                </span>
+              </div>
+              <h2 className="text-xl font-black text-white mt-1">Staggered Block Departure Sequencer</h2>
+              <p className="text-xs text-neutral-400 mt-0.5">
+                Releasing stadium tiers in 5-minute phased intervals prevents crowd crush at perimeter turnstiles and suburban rail station stairwells.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-mono text-neutral-400">Exit Gates Active:</span>
+              <span className="rounded-full bg-rose-500/20 border border-rose-500/30 px-3 py-0.5 text-xs font-mono font-bold text-rose-300">
+                Gates G, D, E, F Online
+              </span>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            {waves.map((w) => (
+              <div key={w.id} className="rounded-2xl border border-neutral-800 bg-[#121217] p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white">{w.name}</span>
+                  <span className={`rounded-full border px-2 py-0.5 text-[10px] font-mono font-bold ${w.color}`}>
+                    {w.status}
+                  </span>
+                </div>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-xs text-neutral-400">{w.count}</span>
+                  <span className="font-mono text-sm font-black text-white">{w.timer}</span>
+                </div>
+                {w.status === 'HOLDING' && (
+                  <button
+                    onClick={() => handleReleaseWaveEarly(w.id)}
+                    className="w-full rounded-xl bg-white/10 hover:bg-white/20 py-2 text-xs font-bold text-white transition flex items-center justify-center gap-1.5"
+                  >
+                    <span>Release Wave Early</span>
+                    <ArrowRight className="h-3 w-3" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Main Map & Live Load Split Grid */}
+      <div className="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
+        <div>
+          {/* Map Controls */}
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-800 bg-[#0e0e12] p-3 shadow-md">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wide text-neutral-500 font-mono">Simulate</span>
+              <span className="text-[11px] font-bold uppercase tracking-wide text-neutral-500 font-mono">Filter Flow</span>
               {['both', 'local', 'outstation'].map((s) => (
                 <button
                   key={s}
@@ -201,12 +442,12 @@ export default function OrganizerGatesPage() {
                       : 'border-neutral-700 text-neutral-400 hover:text-white'
                   }`}
                 >
-                  {s === 'both' ? 'Both flows' : s === 'local' ? 'Local flow' : 'Outstation flow'}
+                  {s === 'both' ? 'Both Flows' : s === 'local' ? 'Local Flow' : 'Outstation Flow'}
                 </button>
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-neutral-400">Arrival time</span>
+              <span className="text-[11px] text-neutral-400">Ingress Time</span>
               <input
                 type="range"
                 min={0}
@@ -214,59 +455,56 @@ export default function OrganizerGatesPage() {
                 step={15}
                 value={simTime}
                 onChange={(e) => setSimTime(Number(e.target.value))}
-                className="w-36"
+                className="w-32 sm:w-36"
                 style={{ accentColor: '#10b981' }}
               />
-              <span className="w-16 text-xs font-bold text-white">{timeLabel(simTime)}</span>
+              <span className="w-16 text-xs font-bold text-white font-mono">{timeLabel(simTime)}</span>
             </div>
           </div>
 
-          <GateMap gates={gates} segments={flow?.segments} mixingPoints={flow?.mixingPoints ?? []} flowSide={flowSide} />
+          <GateMap
+            gates={gates}
+            segments={flow?.segments}
+            mixingPoints={flow?.mixingPoints ?? []}
+            flowSide={flowSide}
+            isEgress={lifecycleMode === 'egress'}
+          />
 
           {flow && (
             <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-neutral-400">
               <span>
                 Simulating <b className="text-white">{flow.match?.home_team} vs {flow.match?.away_team}</b> ·{' '}
-                <b className="text-sky-300">sky</b> = local · <b className="text-rose-300">rose</b> = outstation · line width = people on path
+                <b className="text-sky-300">sky</b> = local corridor · <b className="text-rose-300">rose</b> = outstation shuttle corridor
               </span>
-              {flow.mixingPoints?.length > 0 && (
+              {flow.mixingPoints?.length > 0 && lifecycleMode === 'ingress' && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/10 px-2.5 py-1 font-bold text-rose-300">
                   <AlertTriangle className="h-3 w-3" />
-                  {flow.mixingPoints.length} mixing point{flow.mixingPoints.length > 1 ? 's' : ''} flagged
+                  {flow.mixingPoints.length} mixing point flagged (Sector 14 North-East)
                 </span>
               )}
             </div>
           )}
-          {flow && flow.mixingPoints?.length > 0 && (
-            <div className="mt-3 space-y-2">
-              {flow.mixingPoints.map((m) => (
-                <div key={m.id} className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-3">
-                  <p className="flex items-center gap-1.5 text-xs font-bold text-rose-300">
-                    <AlertTriangle className="h-3 w-3 shrink-0" />
-                    Potential crowd mixing point — {m.localPath} ↔ {m.outstationPath}
-                  </p>
-                  <p className="mt-0.5 text-[11px] leading-relaxed text-neutral-400">{m.note}</p>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
-        <div className="space-y-3">
-          <div className="text-[10px] uppercase font-bold tracking-wider text-neutral-500 flex items-center justify-between">
-            <span>Gate Saturation & Time Projections</span>
-            <span>Sections 6 & 7 Telemetry</span>
+        {/* Right Side: Gate Saturation & Capacity Simulator */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 font-mono">
+              Live Turnstile Saturation &amp; Forecast
+            </span>
+            <span className="text-[11px] font-mono text-emerald-400 font-semibold">
+              {gates.length} Gates Synchronized
+            </span>
           </div>
 
+          {/* Gate Cards List */}
           {[...gates].sort((a, b) => b.load - a.load).map((g) => {
-            const flowThroughput = Math.round((g.assigned / 4) * 0.88);
-            const designCapacity = Math.round(g.capacity / 4);
-            const p15 = g.load > 0.8 ? 94 : Math.min(98, Math.round(g.load * 118));
-            const p30 = g.load > 0.8 ? 81 : Math.min(98, Math.round(g.load * 106));
-            const p60 = Math.max(45, Math.round(g.load * 86));
+            const isGateB = g.name.includes('Gate B');
+            const boost = isGateB ? turnstilesBoost : 0;
+            const currentTurnstiles = 10 + boost;
 
             return (
-              <div key={g.id} className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-4 space-y-3">
+              <div key={g.id} className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-4 space-y-3 shadow-lg">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span
@@ -281,110 +519,47 @@ export default function OrganizerGatesPage() {
                   <span className="text-sm font-black text-white font-mono">{pct(g.load)}</span>
                 </div>
 
-                {/* Section 6: Explicit Capacity vs Occupancy vs Flow */}
-                <div className="grid grid-cols-3 gap-2 text-center text-[10px] bg-neutral-900/50 p-2 rounded-xl border border-neutral-800/80">
-                  <div>
-                    <span className="text-neutral-500 block">Design Limit</span>
-                    <span className="font-bold text-white font-mono">{designCapacity.toLocaleString('en-IN')}/min</span>
+                {/* Turnstile Capacity Controls (Interactive Simulator) */}
+                {isGateB && (
+                  <div className="rounded-xl border border-neutral-800 bg-neutral-900/60 p-2.5 flex items-center justify-between text-xs">
+                    <div>
+                      <span className="font-bold text-white block">Active Turnstiles: {currentTurnstiles} / 14</span>
+                      <span className="text-[10px] text-neutral-400">
+                        {boost > 0 ? `+${boost * 450} pax/hr capacity added` : 'Test opening standby lanes'}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setTurnstilesBoost((prev) => Math.max(0, prev - 1))}
+                        disabled={turnstilesBoost === 0}
+                        className="h-7 w-7 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-white font-bold disabled:opacity-30"
+                      >
+                        -
+                      </button>
+                      <button
+                        onClick={() => setTurnstilesBoost((prev) => Math.min(4, prev + 1))}
+                        disabled={turnstilesBoost === 4}
+                        className="h-7 w-7 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black font-black disabled:opacity-30"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-neutral-500 block">Current Flow</span>
-                    <span className="font-bold text-white font-mono">{flowThroughput.toLocaleString('en-IN')}/min</span>
-                  </div>
-                  <div>
-                    <span className="text-neutral-500 block">Assigned Total</span>
-                    <span className="font-bold text-emerald-400 font-mono">{g.assigned.toLocaleString('en-IN')}</span>
-                  </div>
-                </div>
+                )}
 
-                <div className="flex items-center gap-2">
-                  <LoadBar load={g.load} status={g.status} className="flex-1" />
-                  <span className="whitespace-nowrap text-[10px] font-mono text-neutral-400">
-                    {g.assigned?.toLocaleString('en-IN')}/{g.capacity?.toLocaleString('en-IN')}
-                  </span>
-                </div>
-
-                {/* Section 7: Time-Dimension Forecast Progression */}
+                {/* Sparkline Forecast */}
                 <div className="pt-2 border-t border-neutral-800/80">
-                  <div className="text-[9px] font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
-                    Time Forecast (Predicted Load)
-                  </div>
-                  <div className="grid grid-cols-4 gap-1 text-center text-[10px]">
-                    <div className="rounded-lg bg-neutral-900/80 p-1 border border-neutral-800">
-                      <span className="text-neutral-500 block text-[8px]">NOW</span>
-                      <span className="font-bold text-white font-mono">{pct(g.load)}</span>
-                    </div>
-                    <div className={`rounded-lg p-1 border ${p15 >= 90 ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-neutral-900/80 border-neutral-800 text-neutral-200'}`}>
-                      <span className="block text-[8px] text-neutral-400">+15m</span>
-                      <span className="font-bold font-mono">{p15}%</span>
-                    </div>
-                    <div className="rounded-lg bg-neutral-900/80 p-1 border border-neutral-800">
-                      <span className="text-neutral-500 block text-[8px]">+30m</span>
-                      <span className="font-bold text-white font-mono">{p30}%</span>
-                    </div>
-                    <div className="rounded-lg bg-neutral-900/80 p-1 border border-neutral-800">
-                      <span className="text-neutral-500 block text-[8px]">+60m</span>
-                      <span className="font-bold text-white font-mono">{p60}%</span>
-                    </div>
-                  </div>
+                  <ForecastSparkline
+                    slots={forecast?.gates?.find((fg) => fg.id === g.id)?.slots}
+                    flagged={g.load >= 0.8}
+                    turnstileBoost={boost}
+                  />
                 </div>
               </div>
             );
           })}
         </div>
       </div>
-
-      {/* Arrival forecast */}
-      {forecast && (
-        <section className="mt-10">
-          <div className="flex flex-wrap items-end justify-between gap-2">
-            <div>
-              <h2 className="text-xl font-black text-white">Arrival forecast</h2>
-              <p className="mt-1 text-sm text-neutral-400">
-                Predicted gate load from T-3h to kickoff for{' '}
-                <b className="text-white">{forecast.match?.home_team} vs {forecast.match?.away_team}</b> —
-                modelled as tickets assigned × arrival curve (peak arrivals in the 90–30 min window).
-                Dashed line = 90% capacity. Peaks above it are flagged.
-              </p>
-            </div>
-            {flaggedGates.length > 0 && (
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/10 px-3 py-1 text-xs font-bold text-rose-300">
-                <AlertTriangle className="h-3 w-3" />
-                {flaggedGates.length} gate{flaggedGates.length > 1 ? 's' : ''} predicted to exceed 90% at peak
-              </span>
-            )}
-          </div>
-
-          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {forecast.gates?.map((g) => (
-              <div
-                key={g.id}
-                className={`rounded-2xl border bg-[#0e0e12] p-4 ${g.flagged ? 'border-rose-500/50' : 'border-neutral-800'}`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-bold text-white">{g.name}</span>
-                  <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${g.side === 'local' ? 'bg-sky-500/15 text-sky-300' : 'bg-rose-500/15 text-rose-300'}`}>
-                    {g.side}
-                  </span>
-                </div>
-                <ForecastSparkline slots={g.slots} flagged={g.flagged} />
-                <div className="mt-1 flex items-center justify-between text-[11px]">
-                  <span className="text-neutral-500">Peak {g.peakLabel}</span>
-                  <span className={`font-black ${g.flagged ? 'text-rose-400' : 'text-amber-300'}`}>{g.peakPct}%</span>
-                </div>
-                <div className="mt-0.5 flex items-center justify-between text-[10px] text-neutral-500 font-mono">
-                  <span>{g.assigned?.toLocaleString('en-IN')} tickets</span>
-                  {g.flagged && (
-                    <span className="inline-flex items-center gap-1 font-bold text-rose-400">
-                      <AlertTriangle className="h-2.5 w-2.5" /> predicted peak &gt; 90%
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }

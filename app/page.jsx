@@ -57,13 +57,13 @@ export default function Landing() {
       pills: ['94% Smooth Safety Index', '80.4% Venue Capacity', 'Multi-Agency Aligned'],
     },
     fan: {
-      badge: 'Live Fan Arrival & Guide Console',
-      headline1: 'Dynamic crowd guidance.',
-      headlineGradient: 'Fast entry gates. Zero delays.',
-      subtitle: 'Real-time arrival coordination: smart departure windows, live gate wait times, dynamic rerouting away from crowded spots, and smooth post-match exit.',
-      primaryBtn: { text: 'Open Live Guidance Pass', href: '/ticket/FWC-IND-10492/confirmation' },
-      secondaryBtn: { text: 'Coordinate Journey Plan', href: '/journey-planner' },
-      pills: ['Gate A Express: 4m Wait', 'Smart Entry Active', 'Post-Match Wave 2 Exit'],
+      badge: '1-Click Matchday Pass & Smart Logistics',
+      headline1: 'Fast turnstile entry.',
+      headlineGradient: 'Seamless 1-click matchday pass.',
+      subtitle: 'Pick your seat and instantly bundle your parking bay or metro transit, claim ₹250 early arrival food perks, and access offline Apple/Google Wallet turnstile passes.',
+      primaryBtn: { text: 'Book Match & 1-Click Pass', href: '/matches' },
+      secondaryBtn: { text: 'View My Digital Pass', href: '/ticket/FWC-1-A1-8842/confirmation' },
+      pills: ['Auto-Reserved Bay P1', '₹250 Early Ingress Voucher', 'Offline Wallet Ready'],
     },
   };
 
@@ -260,16 +260,22 @@ export default function Landing() {
 
               <div className="pt-2 flex flex-wrap gap-3">
                 <Link
-                  href="/ticket/FWC-IND-10492/confirmation"
-                  className="rounded-full bg-white px-6 py-2.5 text-xs font-bold text-black hover:bg-neutral-200 transition shadow-lg shadow-white/5"
+                  href="/matches"
+                  className="rounded-full bg-emerald-500 hover:bg-emerald-400 px-6 py-2.5 text-xs font-black text-black transition shadow-lg shadow-emerald-500/20"
                 >
-                  Open Full Pass &amp; Route Map &rarr;
+                  Book Another Match Pass →
                 </Link>
                 <Link
-                  href="/journey-planner"
+                  href="/ticket/FWC-1-A1-8842/confirmation"
+                  className="rounded-full bg-white px-6 py-2.5 text-xs font-bold text-black hover:bg-neutral-200 transition shadow-lg shadow-white/5"
+                >
+                  Open Full Pass &amp; Multi-Token QR →
+                </Link>
+                <Link
+                  href="/crowd-flow"
                   className="rounded-full border border-neutral-800 bg-neutral-900 px-6 py-2.5 text-xs font-semibold text-neutral-300 hover:text-white transition"
                 >
-                  Plan Multi-Leg Travel Companion
+                  Inspect Live Walkway Radar
                 </Link>
               </div>
             </div>

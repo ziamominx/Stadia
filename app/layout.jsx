@@ -7,6 +7,9 @@ import { RoleProvider } from '../components/RoleContext';
 export const metadata = {
   title: 'STADIA NEXUS · Autonomous Mega-Event & Crowd Orchestration Operating System',
   description: 'Intelligent multi-agency crowd orchestration platform: real-time event state, predictive turnstile balancing, and dynamic attendee journey coordination.',
+  icons: {
+    icon: '/icon.svg',
+  },
 };
 
 export default function RootLayout({ children }) {

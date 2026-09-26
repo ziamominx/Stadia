@@ -27,13 +27,13 @@ exists.
 
 | Layer    | Tech |
 | -------- | ---- |
-| Fullstack / Frontend | Next.js 15 (App Router), React 19, Tailwind CSS 4, Leaflet (OSM), `qrcode` |
-| Backend API | Next.js Route Handlers (`app/api/*`) & Express micro-services |
-| Database | SQLite via `better-sqlite3` |
-| Notifications | WhatsApp Cloud API (mock fallback logs to the console) |
-| Auth     | Mock OTP + JWT endpoints (demo-grade only) |
+| Fullstack Platform | Next.js 15 (App Router), React 19, Tailwind CSS 4, Leaflet (OSM), `qrcode` |
+| Backend & APIs | Native Next.js Route Handlers (`app/api/*`) |
+| State & Domain Mesh | In-Memory Master Domain Registry (`lib/eventsData.js` & `lib/stadiaStore.js`) |
+| Geospatial / Routing | Leaflet OpenStreetMap layers, Haversine route assignment, perimeter buffers |
+| Notifications | WhatsApp Business API (mock webhook / dispatch engine) |
 
-Payments, hotel inventory and the Airtel partnership are **mocked stubs** returning realistic data.
+Payments, hotel inventory and partner referrals are mock stubs returning realistic mega-event data.
 
 ## Quick start
 
@@ -44,9 +44,7 @@ npm run dev        # starts Next.js App Router dev server on :3000
 
 Then open **http://localhost:3000**.
 
-The database auto-seeds the first time the server starts (9 matches, 8 gates, 5 parking zones,
-12 hotels, 4 shuttle zones × 3 slots per match, ~38k sample tickets, ~13k referral events).
-To re-seed from scratch: `npm run seed`.
+All venue presets (DY Patil Stadium, Wankhede Stadium, MCA Pune), entry gates, shuttle corridors, and simulation scenarios initialize automatically in memory with zero database setup required.
 
 ### Production build
 
@@ -110,8 +108,8 @@ app/                    Next.js 15 App Router pages & route handlers
   tourism/              Host city fan discovery & partner experiences
   api/                  Next.js backend API routes (routes, tickets, events, hotels)
 components/             Shared UI components (Navbar, Footer, SeatMap, RouteMap, etc.)
-lib/                    Domain logic, formatters, SQLite store & data engines
-server/                 Express backend & database seed scripts
+lib/                    Master domain mesh (eventsData.js), store (stadiaStore.js), formatters
+docs/                   Interactive architecture diagrams & platform briefs
 ```
 
 ## Key model decisions
