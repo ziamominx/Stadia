@@ -8,8 +8,10 @@ const standalonePaths = [
   "/crowd",
   "/ground",
   "/transport",
+  "/hospitality",
   "/incidents",
   "/event-control",
+  "/setup",
   "/analytics",
 ];
 export default function SiteFrame({ children }) {
