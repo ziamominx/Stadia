@@ -4,10 +4,11 @@ import dynamic from "next/dynamic";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingSections from "@/components/landing/LandingSections";
 import "@/components/landing/landing.css";
+import "@/components/landing/flight.css";
 
-// Dynamic import with SSR disabled for smooth client-side GSAP rendering
-const StadiumHero = dynamic(
-  () => import("@/components/landing/StadiumHero"),
+// One continuous Three.js world, loaded only for the public landing route.
+const LandingCanvas = dynamic(
+  () => import("@/components/landing/LandingCanvas"),
   { ssr: false }
 );
 
@@ -15,7 +16,7 @@ export default function Home() {
   return (
     <main className="lp-body">
       <LandingNav />
-      <StadiumHero />
+      <LandingCanvas />
       <LandingSections />
     </main>
   );

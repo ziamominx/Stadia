@@ -1,0 +1,61 @@
+.lp-flight-viewport { perspective: none; background: #07090c; }
+.lp-flight-viewport canvas { display: block; width: 100%; height: 100%; }
+.lp-body:has(.lp-flight-viewport) .lp-scroll-track { height: 950svh; }
+.lp-body:has(.lp-flight-viewport) .lp-hero-content { top: 19svh; max-width: 530px; }
+.lp-body:has(.lp-flight-viewport) .lp-hero-desc { color: #c3cbd0; max-width: 380px; }
+.lp-flight-caption {
+  position: fixed; left: 6vw; bottom: 150px; max-width: 310px; z-index: 25;
+  pointer-events: none; opacity: 0; color: #f2f4f5;
+  text-shadow: 0 2px 18px #07090c;
+}
+.lp-flight-kicker { font: 10px monospace; letter-spacing: .16em; color: #9eacb7; }
+.lp-flight-caption h2 { font-size: clamp(28px, 3vw, 44px); font-weight: 400; letter-spacing: -.04em; margin: 12px 0; }
+.lp-flight-caption p { font-size: 13px; line-height: 1.6; color: #c3cbd0; max-width: 240px; }
+.lp-flight-nav {
+  position: fixed; z-index: 30; bottom: 28px; left: 6vw; right: 6vw;
+  color: #fff; padding-top: 20px;
+  background: linear-gradient(transparent, #07090cf2);
+}
+.lp-flight-instruction { display: block; font: 9px monospace; letter-spacing: .2em; color: #acbbc5; margin-bottom: 18px; }
+.lp-flight-chapters { display: flex; justify-content: space-between; gap: 16px; }
+.lp-flight-chapters button {
+  display: flex; gap: 12px; align-items: center; min-height: 44px;
+  border: 0; background: none; color: #94a3ad; cursor: pointer; font-size: 12px;
+}
+.lp-flight-chapters button span { font: 10px monospace; color: #637784; }
+.lp-flight-chapters button[aria-current], .lp-flight-chapters button:hover { color: #fff; }
+.lp-flight-chapters button[aria-current] span { color: #e8b884; }
+.lp-flight-progress { height: 1px; background: #ffffff20; margin-top: 12px; }
+.lp-flight-progress i { display: block; height: 100%; background: #e8b884; transform: scaleX(0); transform-origin: left; }
+.lp-flight-fallback { position: absolute; inset: 0 0 auto; height: 100svh; z-index: 11; pointer-events: none; }
+.lp-flight-fallback img { width: 100%; height: 100%; object-fit: cover; opacity: .35; }
+.lp-flight-fallback span { position: absolute; left: 8vw; bottom: 30px; max-width: 500px; font-size: 12px; color: #a1a1aa; }
+.lp-body[data-journey="fallback"] .lp-scroll-track { height: max(100svh, 640px); }
+.lp-body[data-journey="fallback"] .lp-flight-nav,
+.lp-body[data-journey="fallback"] .lp-flight-caption { display: none; }
+.lp-body[data-journey="fallback"] .lp-hero-content { position: absolute; top: 140px; }
+
+@media (max-width: 767px) {
+  .lp-body:has(.lp-flight-viewport) .lp-hero-content { top: 18svh; }
+  .lp-body:has(.lp-flight-viewport) .lp-hero-title { font-size: clamp(32px, 9vw, 48px); }
+  .lp-body:has(.lp-flight-viewport) .lp-hero-desc { font-size: 12px; max-width: 300px; }
+  .lp-flight-caption { bottom: 140px; max-width: 230px; }
+  .lp-flight-caption h2 { margin: 8px 0; font-size: 28px; }
+  .lp-flight-caption p { font-size: 11px; max-width: 205px; }
+  .lp-flight-chapters { gap: 5px; }
+  .lp-flight-chapters button { font-size: 0; gap: 0; min-width: 40px; justify-content: center; }
+  .lp-flight-chapters button span { font-size: 12px; }
+  .lp-flight-instruction { margin-bottom: 6px; }
+}
+@media (max-height: 600px) and (min-width: 768px) {
+  .lp-body:has(.lp-flight-viewport) .lp-hero-content { top: 100px; }
+  .lp-body:has(.lp-flight-viewport) .lp-hero-title { font-size: 36px; }
+  .lp-flight-caption { bottom: 118px; }
+  .lp-flight-caption h2 { font-size: 28px; margin: 6px 0; }
+  .lp-flight-nav { bottom: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-body:has(.lp-flight-viewport) .lp-scroll-track { height: max(100svh, 640px); }
+  .lp-body:has(.lp-flight-viewport) .lp-hero-content { top: 140px; }
+  .lp-flight-caption, .lp-flight-nav { display: none; }
+}

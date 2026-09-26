@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { chapterProgress, scrollDestination } from "@/lib/landing/timeline.mjs";
+import { scrollDestination } from "@/lib/landing/timeline.mjs";
+import { chapters } from "@/lib/landing/flight.mjs";
 
 export default function LandingSections() {
   const handleExploreClick = (e) => {
@@ -14,7 +15,7 @@ export default function LandingSections() {
     if (!track) return;
     const start = track.getBoundingClientRect().top + window.scrollY;
     window.scrollTo({
-      top: scrollDestination(start, track.offsetHeight, window.innerHeight, chapterProgress[1]),
+      top: scrollDestination(start, track.offsetHeight, window.innerHeight, chapters[0].at),
       behavior: "smooth",
     });
   };
@@ -36,7 +37,7 @@ export default function LandingSections() {
         </p>
         <div className="lp-hero-actions">
           <button onClick={handleExploreClick} className="lp-btn-primary">
-            Explore Stadium Mesh ↓
+            Begin the flight ↓
           </button>
           <Link href="/command-center" className="lp-btn-secondary">
             Enter Platform ↗
