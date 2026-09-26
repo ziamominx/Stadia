@@ -6,9 +6,9 @@ import LandingNav from "@/components/landing/LandingNav";
 import LandingSections from "@/components/landing/LandingSections";
 import "@/components/landing/landing.css";
 
-// Dynamic import with SSR disabled for client-side SVG + GSAP ScrollTrigger
-const StadiaJourney = dynamic(
-  () => import("@/components/landing/StadiaJourney"),
+// Dynamic import with SSR disabled for pure client-side WebGL canvas
+const LandingCanvas = dynamic(
+  () => import("@/components/landing/LandingCanvas"),
   { ssr: false }
 );
 
@@ -18,7 +18,7 @@ export default function Home() {
   return (
     <main className="lp-body">
       <LandingNav />
-      <StadiaJourney onProgressUpdate={setScrollProgress} />
+      <LandingCanvas onProgressUpdate={setScrollProgress} />
       <LandingSections progress={scrollProgress} />
     </main>
   );
