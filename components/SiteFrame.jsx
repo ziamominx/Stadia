@@ -2,7 +2,8 @@
 import { usePathname } from "next/navigation";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-const operationPaths = [
+const standalonePaths = [
+  "/",
   "/command-center",
   "/crowd",
   "/ground",
@@ -13,7 +14,7 @@ const operationPaths = [
 ];
 export default function SiteFrame({ children }) {
   const path = usePathname();
-  if (operationPaths.includes(path)) return children;
+  if (standalonePaths.includes(path)) return children;
   return (
     <div className="flex min-h-screen flex-col bg-[#09090b] text-[#f4f4f5]">
       <Navbar />
