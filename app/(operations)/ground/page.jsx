@@ -5,12 +5,12 @@ import {
   Badge,
   Heading,
   Loading,
-  Metrics,
   Panel,
   Progress,
 } from "@/components/operations/UI";
 import VenueMap from "@/components/operations/VenueMap";
 import { TaskList } from "@/components/operations/IncidentResponse";
+
 export default function Ground() {
   const { state } = useOperations();
   const [selected, select] = useState("west");
@@ -20,6 +20,7 @@ export default function Ground() {
   const tasks = state.tasks.filter(
     (t) => t.team === "ground" && t.status !== "completed",
   );
+
   return (
     <>
       <Heading
@@ -29,34 +30,19 @@ export default function Ground() {
       >
         <Badge>Ground team / demo role</Badge>
       </Heading>
-      <Metrics
-        items={[
-          {
-            label: "Total force",
-            value: total,
-            unit: "staff",
-            detail: "Five resource categories",
-          },
-          {
-            label: "Deployed & reserved",
-            value: deployed,
-            detail: "Includes pending response assignments",
-          },
-          {
-            label: "Available",
-            value: total - deployed,
-            detail: "Ready for executive dispatch",
-            tone: "normal",
-          },
-          {
-            label: "Active tasks",
-            value: tasks.length,
-            detail: `${tasks.filter((t) => t.flagged).length} flagged for support`,
-            tone: tasks.length ? "attention" : "",
-          },
-        ]}
-      />
-      <div className="ops-workspace">
+
+      {/* TASK HERO — above the fold, first thing the field worker sees */}
+      <div className="ops-task-hero">
+        <Panel
+          title="Active tasks &amp; dispatch"
+          meta={tasks.length ? `${tasks.length} IN FLIGHT` : "NO ACTIVE TASKS"}
+        >
+          <TaskList team="ground" />
+        </Panel>
+      </div>
+
+      {/* Secondary reference — map, staffing, sequence note */}
+      <div className="ops-secondary-details">
         <div className="ops-map-column">
           <VenueMap
             state={state}
@@ -87,12 +73,23 @@ export default function Ground() {
             </div>
           </Panel>
         </div>
+
         <aside className="ops-rail">
-          <Panel
-            title="Active tasks & dispatch"
-            meta={`${tasks.length} IN FLIGHT`}
-          >
-            <TaskList team="ground" />
+          <Panel title="Force summary" meta="LIVE">
+            <div className="ops-padded">
+              <div className="ops-row">
+                <span className="ops-kicker">Total force</span>
+                <strong>{total} staff</strong>
+              </div>
+              <div className="ops-row" style={{ marginTop: 10 }}>
+                <span className="ops-kicker">Deployed &amp; reserved</span>
+                <strong>{deployed}</strong>
+              </div>
+              <div className="ops-row" style={{ marginTop: 10 }}>
+                <span className="ops-kicker">Available</span>
+                <strong className="normal">{total - deployed}</strong>
+              </div>
+            </div>
           </Panel>
           <div className="ops-note">
             <span className="ops-kicker">Operational sequence</span>

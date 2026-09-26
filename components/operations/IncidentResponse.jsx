@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useOperations } from "./OperationsProvider";
 import { Badge, Button, Empty, Modal, Progress, clock, label } from "./UI";
+
 export function Response({ incident, detailed = false }) {
   const { state, send, busy } = useOperations();
   const [confirm, setConfirm] = useState(false);
@@ -24,6 +25,7 @@ export function Response({ incident, detailed = false }) {
       : "6 volunteer marshals";
   return (
     <div className="ops-response">
+      {/* Status row */}
       <div className="ops-row">
         <Badge
           tone={incident.status === "resolved" ? "normal" : incident.severity}
@@ -35,43 +37,56 @@ export function Response({ incident, detailed = false }) {
         </span>
       </div>
       <h3>{incident.title}</h3>
-      <div className="ops-diagnostic">
-        <div>
-          <span>Zone occupancy</span>
-          <strong
-            className={zone.occupancy >= state.rules.critical ? "critical" : ""}
-          >
-            {zone.occupancy}%
-          </strong>
-        </div>
-        <div>
-          <span>{fire ? "Sensor" : medical ? "Report" : "Trend / min"}</span>
-          <strong>
-            {fire
-              ? "SMOKE"
-              : medical
-                ? "MANUAL"
-                : `${zone.trend > 0 ? "+" : ""}${zone.trend}%`}
-          </strong>
-        </div>
-        <div>
-          <span>Response</span>
-          <strong>
-            {incident.status === "resolved"
-              ? "CLOSED"
-              : incident.status === "detected"
-                ? "REVIEW"
-                : "ACTIVE"}
-          </strong>
+
+      {/* WHAT IS HAPPENING */}
+      <div className="ops-response-section">
+        <span className="ops-kicker">What is happening</span>
+        <div className="ops-diagnostic">
+          <div>
+            <span>Zone occupancy</span>
+            <strong
+              className={
+                zone.occupancy >= state.rules.critical
+                  ? "critical"
+                  : zone.occupancy >= state.rules.warning
+                    ? "attention"
+                    : ""
+              }
+            >
+              {zone.occupancy}%
+            </strong>
+          </div>
+          <div>
+            <span>{fire ? "Sensor" : medical ? "Report" : "Trend / min"}</span>
+            <strong>
+              {fire
+                ? "SMOKE"
+                : medical
+                  ? "MANUAL"
+                  : `${zone.trend > 0 ? "+" : ""}${zone.trend}%`}
+            </strong>
+          </div>
+          <div>
+            <span>Response</span>
+            <strong>
+              {incident.status === "resolved"
+                ? "CLOSED"
+                : incident.status === "detected"
+                  ? "REVIEW"
+                  : "ACTIVE"}
+            </strong>
+          </div>
         </div>
       </div>
-      <div className="ops-response-copy">
+
+      {/* WHY */}
+      <div className="ops-response-section">
         <span className="ops-kicker">
           {fire
             ? "Simulated sensor report"
             : medical
               ? "Staff report"
-              : "Root telemetry correlation"}
+              : "Why this is happening"}
         </span>
         <p>
           {fire
@@ -83,31 +98,45 @@ export function Response({ incident, detailed = false }) {
                 : `${zone.name} occupancy exceeded its configured critical threshold. Deploy volunteers and reduce incoming P3 arrivals while staff inspect the local crowd conditions.`}
         </p>
       </div>
+
       {incident.status === "detected" && (
         <>
-          <div className="ops-recommendation">
-            <span className="ops-kicker">
-              Recommended response / executive approval
-            </span>
-            <p>
-              <b>01</b> Deploy {resource} to {zone.name}.
-            </p>
-            {!fire && !medical && (
-              <p>
-                <b>02</b> Divert 3 incoming P3 buses to P4.
-              </p>
-            )}
+          {/* IF NOTHING CHANGES */}
+          <div className="ops-response-section">
+            <span className="ops-kicker">If nothing changes</span>
             <div className="ops-prediction">
               {!fire && !medical ? (
                 <>
                   <strong>
-                    {zone.occupancy}% → below {state.rules.warning}%
-                  </strong>
-                  <span>
-                    Model estimate: ~
+                    {zone.occupancy}% → peak ~
+                    {Math.min(
+                      zone.occupancy +
+                        Math.max(
+                          1,
+                          Math.ceil(
+                            (zone.occupancy - state.rules.warning + 1) / 5,
+                          ),
+                        ) *
+                          5,
+                      100,
+                    )}
+                    % in{" "}
                     {Math.max(
                       1,
-                      Math.ceil((zone.occupancy - state.rules.warning + 1) / 5),
+                      Math.ceil(
+                        (zone.occupancy - state.rules.warning + 1) / 5,
+                      ),
+                    )}{" "}
+                    min
+                  </strong>
+                  <span>
+                    Model estimate. Stabilises below {state.rules.warning}%
+                    roughly{" "}
+                    {Math.max(
+                      1,
+                      Math.ceil(
+                        (zone.occupancy - state.rules.warning + 1) / 5,
+                      ),
                     )}{" "}
                     simulated min after both teams start. Verify with live
                     readings.
@@ -122,23 +151,41 @@ export function Response({ incident, detailed = false }) {
               )}
             </div>
           </div>
+
+          {/* RECOMMENDED */}
+          <div className="ops-recommendation">
+            <span className="ops-kicker">
+              Recommended response / executive approval
+            </span>
+            <p>
+              <b>01</b> Deploy {resource} to {zone.name}.
+            </p>
+            {!fire && !medical && (
+              <p>
+                <b>02</b> Divert 3 incoming P3 buses to P4.
+              </p>
+            )}
+          </div>
+
           <Button
             variant="primary full"
             disabled={busy}
             onClick={() => setConfirm(true)}
           >
-            Review & dispatch response ↗
+            Dispatch response ↗
           </Button>
         </>
       )}
+
+      {/* Task status — badges only, not nav links (Executive shouldn't navigate away) */}
       {!!tasks.length && (
         <div className="ops-response-tasks">
           {tasks.map((t) => (
             <div className="ops-task-summary" key={t.id}>
               <span>{t.title}</span>
-              <Link href={t.team === "ground" ? "/ground" : "/transport"}>
-                {label(t.status)} →
-              </Link>
+              <Badge tone={t.status === "completed" ? "normal" : "attention"}>
+                {label(t.status)}
+              </Badge>
               {t.flagged && <Badge tone="critical">Issue flagged</Badge>}
             </div>
           ))}
@@ -155,6 +202,7 @@ export function Response({ incident, detailed = false }) {
           )}
         </div>
       )}
+
       {fire && incident.status !== "resolved" && (
         <div className="ops-note">
           {state.approvedRoutes?.filter((r) => r.incidentId === incident.id)
@@ -173,12 +221,13 @@ export function Response({ incident, detailed = false }) {
             <>
               <p>No alternate route approved yet.</p>
               <Link href="/event-control" className="ops-text-link">
-                Review exit status & record verified route →
+                Review exit status &amp; record verified route →
               </Link>
             </>
           )}
         </div>
       )}
+
       {incident.type !== "crowd" &&
         incident.status !== "resolved" &&
         tasks.length > 0 && (
@@ -189,9 +238,10 @@ export function Response({ incident, detailed = false }) {
             }
             onClick={() => setConfirm(true)}
           >
-            Confirm staff clearance & resolve
+            Confirm staff clearance &amp; resolve
           </Button>
         )}
+
       {detailed && (
         <div className="ops-timeline">
           <h4>Incident audit trail</h4>
@@ -203,6 +253,7 @@ export function Response({ incident, detailed = false }) {
           ))}
         </div>
       )}
+
       <Modal
         open={confirm}
         onClose={() => setConfirm(false)}
@@ -246,6 +297,7 @@ export function Response({ incident, detailed = false }) {
     </div>
   );
 }
+
 export function TaskList({ team }) {
   const { state, send, busy } = useOperations();
   const tasks = state.tasks.filter((t) => t.team === team);
@@ -327,6 +379,7 @@ export function TaskList({ team }) {
     </div>
   );
 }
+
 export function ReportDialog({ open, onClose }) {
   const { state, send, busy } = useOperations();
   const [kind, setKind] = useState("medical"),

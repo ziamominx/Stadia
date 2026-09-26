@@ -355,6 +355,7 @@
   align-items: baseline;
   gap: 7px;
   flex-wrap: wrap;
+  font-variant-numeric: tabular-nums;
 }
 .ops-metric-value small {
   font-size: 12px;
@@ -495,6 +496,7 @@
   border: 0;
   padding: 0;
   z-index: 2;
+  cursor: pointer;
 }
 .ops-map-pin > span {
   background: #fff;
@@ -506,6 +508,7 @@
   white-space: nowrap;
   color: var(--ink);
   letter-spacing: 0.02em;
+  transition: border-color 400ms ease-out;
 }
 .ops-map-pin > strong {
   display: grid;
@@ -518,13 +521,21 @@
   font:
     11px "JetBrains Mono",
     monospace;
+  font-variant-numeric: tabular-nums;
   margin-top: 5px;
+  transition:
+    color 400ms ease-out,
+    border-color 400ms ease-out,
+    box-shadow 400ms ease-out;
 }
 .ops-map-pin.selected > strong {
   outline: 5px solid #08785518;
 }
 .ops-map-pin.critical.selected > strong {
   outline-color: #bc202920;
+}
+.ops-map-pin.critical > strong {
+  animation: ops-zone-pulse 2s ease-in-out infinite;
 }
 .ops-map-pin small {
   background: #fff;
@@ -534,6 +545,107 @@
     monospace;
   padding: 3px;
   margin-top: 4px;
+}
+@keyframes ops-zone-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(188, 32, 41, 0.35); }
+  50%       { box-shadow: 0 0 0 9px rgba(188, 32, 41, 0); }
+}
+/* Situation overlay — floats inside map canvas, bottom-right */
+.ops-situation-overlay {
+  position: absolute;
+  bottom: 48px;
+  right: 12px;
+  width: 300px;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  z-index: 10;
+  animation: ops-slide-in 240ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.ops-situation-overlay-header {
+  padding: 10px 14px;
+  background: #f1f3ef;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ops-situation-overlay-header span {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+@keyframes ops-slide-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+/* Command Center hero layout — map fills width */
+.ops-map-hero {
+  position: relative;
+  margin-bottom: 20px;
+}
+.ops-map-hero .ops-map {
+  width: 100%;
+}
+/* Compact stat bar replacing full Metrics row on CC */
+.ops-stat-bar {
+  display: flex;
+  gap: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-bottom: none;
+  font-variant-numeric: tabular-nums;
+}
+.ops-stat-bar-item {
+  flex: 1;
+  padding: 12px 20px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ops-stat-bar-item:last-child {
+  border-right: 0;
+}
+.ops-stat-bar-item strong {
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: -0.8px;
+  line-height: 1.1;
+}
+.ops-stat-bar-item small {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+/* Ground / Transport task-first layout */
+.ops-task-hero {
+  margin-bottom: 24px;
+}
+.ops-task-hero .ops-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.ops-secondary-details {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 360px;
+  gap: 22px;
+  margin-bottom: 24px;
+}
+.ops-hub strong,
+.ops-hub-detail p,
+.ops-parking-count {
+  font-variant-numeric: tabular-nums;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ops-map-pin.critical > strong { animation: none; }
+  .ops-situation-overlay { animation: none; }
+  * { transition-duration: 50ms !important; }
 }
 .ops-hub {
   position: absolute;
@@ -666,6 +778,17 @@
   font-size: 21px;
   line-height: 1.25;
   margin: 15px 0;
+}
+.ops-response-section {
+  margin: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ops-response-section > p {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0;
 }
 .ops-diagnostic {
   display: grid;

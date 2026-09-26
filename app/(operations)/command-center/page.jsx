@@ -7,7 +7,6 @@ import {
   Button,
   Heading,
   Loading,
-  Metrics,
   Panel,
   Sparkline,
   clock,
@@ -19,6 +18,7 @@ import {
   Response,
 } from "@/components/operations/IncidentResponse";
 import { gateStatus, waitMinutes } from "@/lib/operations/engine.mjs";
+
 export default function CommandCenter() {
   const { state, send, busy } = useOperations();
   const [selected, setSelected] = useState("west"),
@@ -27,6 +27,8 @@ export default function CommandCenter() {
   const zone = state.zones.find((z) => z.id === selected),
     incidents = state.incidents.filter((i) => i.status !== "resolved");
   const incident = incidents.find((i) => i.zoneId === selected) || incidents[0];
+  const occupancy = ((state.event.inside / state.event.capacity) * 100).toFixed(1);
+
   return (
     <>
       <Heading
@@ -48,42 +50,46 @@ export default function CommandCenter() {
           {state.spike ? "● Inflow spike active" : "▷ Simulate inflow spike"}
         </Button>
       </Heading>
-      <Metrics
-        items={[
-          {
-            label: "Inside venue",
-            value: number(state.event.inside),
-            unit: `/ ${number(state.event.capacity)}`,
-            detail: `${number(state.event.expected)} expected attendees`,
-          },
-          {
-            label: "Overall occupancy",
-            value: ((state.event.inside / state.event.capacity) * 100).toFixed(
-              1,
-            ),
-            unit: "%",
-            detail: `${number(state.event.exited)} attendees exited`,
-            tone: "normal",
-          },
-          {
-            label: "Active incidents",
-            value: String(incidents.length).padStart(2, "0"),
-            detail: incidents.length
-              ? `${incidents.filter((i) => i.status === "detected").length} awaiting executive review`
-              : "All sectors within configured limits",
-            tone: incidents.length ? "critical" : "normal",
-          },
-          {
-            label: "Response tasks",
-            value: state.tasks.filter((t) => t.status !== "completed").length,
-            unit: "open",
-            detail: `${state.tasks.filter((t) => t.flagged).length} issues flagged by teams`,
-          },
-        ]}
-      />
+
+      {/* Compact stat bar — replaces heavy 4-card Metrics row */}
+      <div className="ops-stat-bar">
+        <div className="ops-stat-bar-item">
+          <strong>{number(state.event.inside)}</strong>
+          <small>inside · {number(state.event.capacity)} cap</small>
+        </div>
+        <div className="ops-stat-bar-item">
+          <strong className={occupancy >= state.rules.critical ? "critical" : occupancy >= state.rules.warning ? "attention" : ""}>
+            {occupancy}%
+          </strong>
+          <small>overall occupancy</small>
+        </div>
+        <div className="ops-stat-bar-item">
+          <strong className={incidents.length ? "critical" : ""}>{String(incidents.length).padStart(2, "0")}</strong>
+          <small>{incidents.length ? `${incidents.filter(i => i.status === "detected").length} awaiting review` : "all sectors clear"}</small>
+        </div>
+        <div className="ops-stat-bar-item">
+          <strong>{state.tasks.filter((t) => t.status !== "completed").length}</strong>
+          <small>{state.tasks.filter((t) => t.flagged).length} tasks flagged</small>
+        </div>
+      </div>
+
+      {/* MAP HERO — full width, situation card floats inside */}
+      <div className="ops-map-hero">
+        <VenueMap state={state} selected={selected} onSelect={setSelected} />
+        {incident && (
+          <div className="ops-situation-overlay">
+            <div className="ops-situation-overlay-header">
+              <span>Priority situation</span>
+              <span className="ops-mono">{incident.id}</span>
+            </div>
+            <Response incident={incident} />
+          </div>
+        )}
+      </div>
+
+      {/* Zone inspector + sector strip below the map */}
       <div className="ops-workspace">
         <div className="ops-map-column">
-          <VenueMap state={state} selected={selected} onSelect={setSelected} />
           <div className="ops-inspector">
             <div>
               <span className="ops-kicker">
@@ -112,6 +118,7 @@ export default function CommandCenter() {
               Inspect crowd intelligence ↗
             </Link>
           </div>
+
           <Panel title="Sector readiness" meta="LIVE / SHARED STATE">
             <div className="ops-zone-strip">
               {state.zones.map((z) => (
@@ -132,16 +139,11 @@ export default function CommandCenter() {
             </div>
           </Panel>
         </div>
+
         <aside className="ops-rail">
-          <Panel
-            title="Priority situational protocol"
-            meta={incident?.id || "ALL CLEAR"}
-          >
-            <Response incident={incident} />
-          </Panel>
           <Panel title="Recent telemetry events" meta="SIM / IST">
             <div className="ops-log">
-              {state.log.slice(0, 6).map((entry) => (
+              {state.log.slice(0, 8).map((entry) => (
                 <div key={entry.id}>
                   <span className={`ops-log-dot ${entry.type}`}>●</span>
                   <p>{entry.text}</p>
@@ -162,6 +164,7 @@ export default function CommandCenter() {
           )}
         </aside>
       </div>
+
       <ReportDialog open={report} onClose={() => setReport(false)} />
     </>
   );

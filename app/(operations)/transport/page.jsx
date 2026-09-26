@@ -6,13 +6,13 @@ import {
   Button,
   Heading,
   Loading,
-  Metrics,
   Panel,
   Progress,
   label,
 } from "@/components/operations/UI";
 import VenueMap from "@/components/operations/VenueMap";
 import { TaskList } from "@/components/operations/IncidentResponse";
+
 export default function Transport() {
   const { state, send, busy } = useOperations();
   const [selected, select] = useState("west"),
@@ -23,6 +23,7 @@ export default function Transport() {
   const lots = [...state.parking].sort(
     (a, b) => a.used / a.capacity - b.used / b.capacity,
   );
+
   return (
     <>
       <Heading
@@ -40,38 +41,19 @@ export default function Transport() {
           ↗ Deploy reserve coaches
         </Button>
       </Heading>
-      <Metrics
-        items={[
-          {
-            label: "Active coaches",
-            value: 25 - standby,
-            unit: "/ 25",
-            detail: `${standby} on standby`,
-          },
-          {
-            label: "Diverted vehicles",
-            value: diverted,
-            detail: "P3 → P4 relief corridor",
-            tone: "normal",
-          },
-          {
-            label: "P3 waiting",
-            value: state.hubs[0].queue,
-            unit: "pax",
-            detail: `${Math.round((state.hubs[0].queue / state.hubs[0].capacity) * 100)}% staging occupancy`,
-            tone: state.hubs[0].queue > 1100 ? "critical" : "",
-          },
-          {
-            label: "Parking spaces",
-            value: state.parking.reduce(
-              (sum, p) => sum + p.capacity - p.used,
-              0,
-            ),
-            detail: `Recommended: ${lots[0].name}`,
-          },
-        ]}
-      />
-      <div className="ops-workspace">
+
+      {/* TASK HERO — dispatch action above the fold */}
+      <div className="ops-task-hero">
+        <Panel
+          title="Route change instructions"
+          meta="EXECUTIVE DISPATCH"
+        >
+          <TaskList team="transport" />
+        </Panel>
+      </div>
+
+      {/* Secondary — fleet, hubs, map */}
+      <div className="ops-secondary-details">
         <div className="ops-map-column">
           <VenueMap
             state={state}
@@ -136,10 +118,8 @@ export default function Transport() {
             </div>
           </Panel>
         </div>
+
         <aside className="ops-rail">
-          <Panel title="Route change instructions" meta="EXECUTIVE DISPATCH">
-            <TaskList team="transport" />
-          </Panel>
           <Panel title="Transit hub readiness" meta="STAGING CAPACITY">
             <div className="ops-padded">
               {state.hubs.map((h) => (
@@ -167,10 +147,28 @@ export default function Transport() {
               ))}
             </div>
           </Panel>
+
+          <Panel title="Fleet summary" meta="LIVE">
+            <div className="ops-padded">
+              <div className="ops-row">
+                <span className="ops-kicker">Active coaches</span>
+                <strong>{25 - standby} / 25</strong>
+              </div>
+              <div className="ops-row" style={{ marginTop: 10 }}>
+                <span className="ops-kicker">Diverted · P3 → P4</span>
+                <strong className="normal">{diverted}</strong>
+              </div>
+              <div className="ops-row" style={{ marginTop: 10 }}>
+                <span className="ops-kicker">Recommended parking</span>
+                <strong>{lots[0].name}</strong>
+              </div>
+            </div>
+          </Panel>
         </aside>
       </div>
+
       <Panel
-        title="Parking capacity & vehicle flow"
+        title="Parking capacity &amp; vehicle flow"
         meta={`LOWEST OCCUPANCY / ${lots[0].id}`}
       >
         <div className="ops-parking-grid">
@@ -180,9 +178,7 @@ export default function Transport() {
                 <h3>
                   {p.id} / {p.name}
                 </h3>
-                <Badge
-                  tone={p.used / p.capacity > 0.85 ? "attention" : "normal"}
-                >
+                <Badge tone={p.used / p.capacity > 0.85 ? "attention" : "normal"}>
                   {Math.round((p.used / p.capacity) * 100)}%
                 </Badge>
               </div>
