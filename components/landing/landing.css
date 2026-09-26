@@ -96,7 +96,7 @@
   box-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
 }
 
-/* Fixed Background 3D Viewport */
+/* Fixed Background Stadium Hero Viewport */
 .lp-viewport {
   position: fixed;
   top: 0;
@@ -105,83 +105,379 @@
   height: 100vh;
   z-index: 10;
   pointer-events: none;
+  overflow: hidden;
+  background: #000000;
+  perspective: 1400px;
 }
 
-.lp-canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
+.lp-stadium-stage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.lp-stadium-wrapper {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 1920px;
+  max-height: 1080px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+  transform-origin: 50% 50%;
+}
+
+.lp-stadium-master-asset {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 0 50px rgba(0, 0, 0, 0.9));
+}
+
+.lp-stadium-svg-mesh {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* Flow line animations */
+@keyframes flowDash {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.lp-flow-line-fast {
+  animation: flowDash 1.0s linear infinite;
+}
+
+.lp-flow-line-med {
+  animation: flowDash 1.6s linear infinite;
+}
+
+.lp-flow-line-pulse {
+  animation: flowDash 2.4s linear infinite;
+}
+
+.lp-sector-polygon-pulse {
+  animation: sectorGlow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes sectorGlow {
+  from {
+    fill: rgba(255, 255, 255, 0.04);
+    stroke: rgba(255, 255, 255, 0.6);
+  }
+  to {
+    fill: rgba(255, 255, 255, 0.2);
+    stroke: #ffffff;
+    filter: drop-shadow(0 0 10px #ffffff);
+  }
+}
+
+/* HTML Telemetry Gate Markers */
+.lp-stadium-overlays {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.lp-telemetry-chip {
+  position: absolute;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 8px 14px;
+  border-radius: 2px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.9);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lp-telemetry-chip:hover {
+  border-color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.pos-gate-west {
+  top: 60%;
+  left: 15%;
+}
+
+.pos-gate-north {
+  top: 18%;
+  left: 56%;
+}
+
+.pos-gate-east {
+  top: 62%;
+  right: 14%;
+}
+
+.pos-gate-south {
+  bottom: 12%;
+  left: 44%;
+}
+
+.lp-chip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 8px #ffffff;
+}
+
+.dot-pulse {
+  animation: dotPulse 1.8s ease-in-out infinite alternate;
+}
+
+@keyframes dotPulse {
+  from {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.2);
+    box-shadow: 0 0 12px #fff;
+  }
+}
+
+.lp-chip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lp-chip-title {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+}
+
+.lp-chip-stat {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--lp-muted);
+}
+
+/* Sector A12 Focus Badge */
+.lp-sector-focus-badge {
+  position: absolute;
+  top: 36%;
+  left: 28%;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #ffffff;
+  padding: 20px 26px;
+  border-radius: 2px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+  pointer-events: auto;
+  min-width: 280px;
+}
+
+/* Transit Focus Badge */
+.lp-transit-focus-badge {
+  position: absolute;
+  top: 48%;
+  right: 18%;
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid #ffffff;
+  padding: 20px 26px;
+  border-radius: 2px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.25);
+  pointer-events: auto;
+  min-width: 300px;
+}
+
+.lp-badge-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.lp-badge-tag {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--lp-muted);
+}
+
+.lp-badge-id {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.lp-badge-seat {
+  font-size: 15px;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 6px;
+}
+
+.lp-badge-seat strong {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.lp-badge-match {
+  font-size: 11px;
+  color: var(--lp-muted);
+  letter-spacing: 0.06em;
+  margin-bottom: 12px;
+}
+
+.lp-badge-status {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 10px;
+}
+
+.lp-dot-online {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 8px #ffffff;
+}
+
+/* Persistent Stadium Telemetry HUD (Fixed Upper Right) */
+.lp-hero-telemetry-hud {
+  position: fixed;
+  top: 90px;
+  right: 40px;
+  z-index: 30;
+  pointer-events: none;
+}
+
+.lp-telemetry-box {
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 18px 24px;
+  border-radius: 2px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.9);
+}
+
+.lp-tel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.lp-tel-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px #ffffff;
+  animation: dotPulse 1.5s infinite alternate;
+}
+
+.lp-tel-venue {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  color: var(--lp-muted);
+  text-transform: uppercase;
+}
+
+.lp-tel-metric {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.lp-tel-num {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.lp-tel-sub {
+  font-size: 10px;
+  color: var(--lp-muted);
+  letter-spacing: 0.06em;
+}
+
+.lp-tel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  color: var(--lp-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 6px;
+}
+
+.lp-tel-row strong {
+  color: #ffffff;
+}
+
+/* Dynamic Scroll Stage Indicator (Lower Left) */
+.lp-hud-stage-tracker {
+  position: fixed;
+  bottom: 36px;
+  left: 40px;
+  z-index: 30;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* Virtual Scroll Container */
 .lp-scroll-track {
   position: relative;
-  height: 900vh; /* Generous 9-viewport height for calm, smooth scroll pacing */
+  height: 500vh; /* 5 viewports for smooth, controlled stage progression */
   z-index: 20;
   pointer-events: none;
-}
-
-/* Fixed Synchronized Stage Placards */
-.lp-placard-layer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 25;
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0 8vw;
-}
-
-.lp-stage-placard {
-  position: absolute;
-  max-width: 460px;
-  background: rgba(0, 0, 0, 0.7);
-  border-left: 2px solid #ffffff;
-  padding: 24px 32px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.lp-stage-placard.pos-right {
-  right: 8vw;
-  border-left: none;
-  border-right: 2px solid #ffffff;
-  text-align: right;
-}
-
-.lp-stage-placard.pos-left {
-  left: 8vw;
-}
-
-.lp-placard-kicker {
-  font-family: "JetBrains Mono", monospace;
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--lp-muted);
-  margin-bottom: 10px;
-}
-
-.lp-placard-title {
-  font-size: clamp(22px, 2.5vw, 32px);
-  font-weight: 300;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-  margin: 0 0 12px;
-  text-transform: uppercase;
-  color: #ffffff;
-}
-
-.lp-placard-desc {
-  font-size: 13px;
-  line-height: 1.65;
-  color: rgba(255, 255, 255, 0.65);
-  margin: 0;
 }
 
 /* Floating HUD Overlay */

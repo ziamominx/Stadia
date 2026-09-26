@@ -3,62 +3,13 @@
 import Link from "next/link";
 
 export default function LandingSections({ progress = 0 }) {
-  // Smooth envelope helper for each stage placard
-  const computePlacard = (start, peakStart, peakEnd, end) => {
-    if (progress < start || progress > end) return { opacity: 0, visible: false, translateY: 15 };
-    let opacity = 0;
-    let translateY = 0;
-    if (progress < peakStart) {
-      const t = (progress - start) / (peakStart - start);
-      opacity = t;
-      translateY = (1 - t) * 15;
-    } else if (progress <= peakEnd) {
-      opacity = 1;
-      translateY = 0;
-    } else {
-      const t = (progress - peakEnd) / (end - peakEnd);
-      opacity = 1 - t;
-      translateY = -t * 15;
-    }
-    return { opacity, visible: opacity > 0.01, translateY };
-  };
-
-  // Placards calibrated to continuous spline landmarks
-  const p1 = computePlacard(0.04, 0.08, 0.15, 0.18); // Stadium
-  const p2 = computePlacard(0.22, 0.26, 0.34, 0.38); // Sector Entry
-  const p3 = computePlacard(0.42, 0.46, 0.51, 0.54); // Seat
-  const p4 = computePlacard(0.56, 0.60, 0.66, 0.70); // Ticket Credential
-  const p5 = computePlacard(0.72, 0.76, 0.83, 0.86); // Mobility Fleet
-  const p6 = computePlacard(0.89, 0.92, 0.97, 0.99); // Hotel
-
-  // Bottom HUD readout label
-  let hudLabel = "01 // STADIUM ARCHITECTURE";
-  let hudEyebrow = "MACRO VENUE SCALE";
-
-  if (progress > 0.18 && progress <= 0.38) {
-    hudLabel = "02 // WEST SECTOR INGRESS";
-    hudEyebrow = "CORRIDOR PACING";
-  } else if (progress > 0.38 && progress <= 0.54) {
-    hudLabel = "03 // SEAT ALLOCATION";
-    hudEyebrow = "WEST STAND · SEC A12 · R18 · S24";
-  } else if (progress > 0.54 && progress <= 0.70) {
-    hudLabel = "04 // CREDENTIAL TOKEN";
-    hudEyebrow = "SECURE ACCESS IDENTITY";
-  } else if (progress > 0.70 && progress <= 0.87) {
-    hudLabel = "05 // MOBILITY CORRIDOR";
-    hudEyebrow = "PRIORITY ARTERIAL ROUTE";
-  } else if (progress > 0.87) {
-    hudLabel = "06 // HOSPITALITY TERMINAL";
-    hudEyebrow = "DESTINATION RECONCILIATION";
-  }
-
-  // Hero overlay visibility
-  const heroOpacity = Math.max(0, 1 - progress * 16);
-  const heroTransform = `translateY(${progress * -90}px)`;
+  // Hero overlay visibility (fades smoothly as user scrolls)
+  const heroOpacity = Math.max(0, 1 - progress * 14);
+  const heroTransform = `translateY(${progress * -80}px)`;
 
   const handleExploreClick = (e) => {
     e.preventDefault();
-    window.scrollTo({ top: window.innerHeight * 1.5, behavior: "smooth" });
+    window.scrollTo({ top: window.innerHeight * 1.2, behavior: "smooth" });
   };
 
   return (
@@ -83,140 +34,11 @@ export default function LandingSections({ progress = 0 }) {
         </p>
         <div className="lp-hero-actions">
           <button onClick={handleExploreClick} className="lp-btn-primary">
-            Explore Stadia ↓
+            Explore Stadium Mesh ↓
           </button>
           <Link href="/command-center" className="lp-btn-secondary">
             Enter Platform ↗
           </Link>
-        </div>
-      </div>
-
-      {/* Synchronized Stage Placards (Appear only when 3D object is settled) */}
-      <div className="lp-placard-layer">
-        {/* Stage 1: Stadium */}
-        {p1.visible && (
-          <div
-            className="lp-stage-placard pos-left"
-            style={{
-              opacity: p1.opacity,
-              transform: `translateY(${p1.translateY}px)`,
-            }}
-          >
-            <div className="lp-placard-kicker">STAGE 01 // MACRO ARCHITECTURE</div>
-            <h2 className="lp-placard-title">THE VENUE MODEL</h2>
-            <p className="lp-placard-desc">
-              Mega events begin at macro venue scale. Over 65,000 spectators converge from across the
-              metropolis into a single physical coordinate.
-            </p>
-          </div>
-        )}
-
-        {/* Stage 2: Sector Ingress */}
-        {p2.visible && (
-          <div
-            className="lp-stage-placard pos-right"
-            style={{
-              opacity: p2.opacity,
-              transform: `translateY(${p2.translateY}px)`,
-            }}
-          >
-            <div className="lp-placard-kicker">STAGE 02 // SECTOR PACING</div>
-            <h2 className="lp-placard-title">WEST CONCOURSE ENTRY</h2>
-            <p className="lp-placard-desc">
-              Camera descends through the perimeter gates into the grandstand concourse. Dynamic gate
-              valves regulate inflow velocity before density peaks.
-            </p>
-          </div>
-        )}
-
-        {/* Stage 3: The Seat */}
-        {p3.visible && (
-          <div
-            className="lp-stage-placard pos-left"
-            style={{
-              opacity: p3.opacity,
-              transform: `translateY(${p3.translateY}px)`,
-            }}
-          >
-            <div className="lp-placard-kicker">STAGE 03 // THE ATTENDEE NODE</div>
-            <h2 className="lp-placard-title">SEAT 24 · ROW 18</h2>
-            <p className="lp-placard-desc">
-              Every crowd is a synchronized constellation of individual seats. Sector A12, Row 18, Seat 24
-              anchors the attendee in the event state machine.
-            </p>
-          </div>
-        )}
-
-        {/* Stage 4: The Credential */}
-        {p4.visible && (
-          <div
-            className="lp-stage-placard pos-right"
-            style={{
-              opacity: p4.opacity,
-              transform: `translateY(${p4.translateY}px)`,
-            }}
-          >
-            <div className="lp-placard-kicker">STAGE 04 // ACCESS TOKEN</div>
-            <h2 className="lp-placard-title">DIGITAL CREDENTIAL</h2>
-            <p className="lp-placard-desc">
-              Physical seat lines unfold into a verified digital token. One cryptographically signed badge
-              coordinates gate turnstiles, in-bowl routing, and return transit.
-            </p>
-          </div>
-        )}
-
-        {/* Stage 5: Mobility Fleet */}
-        {p5.visible && (
-          <div
-            className="lp-stage-placard pos-left"
-            style={{
-              opacity: p5.opacity,
-              transform: `translateY(${p5.translateY}px)`,
-            }}
-          >
-            <div className="lp-placard-kicker">STAGE 05 // MULTIMODAL TRANSIT</div>
-            <h2 className="lp-placard-title">ARTERIAL PRIORITY</h2>
-            <p className="lp-placard-desc">
-              Egress congestion is prevented upstream. Autonomous shuttle fleets receive green wave signal
-              priority, clearing transit corridors minutes before whistle.
-            </p>
-          </div>
-        )}
-
-        {/* Stage 6: Hotel Arrival */}
-        {p6.visible && (
-          <div
-            className="lp-stage-placard pos-right"
-            style={{
-              opacity: p6.opacity,
-              transform: `translateY(${p6.translateY}px)`,
-            }}
-          >
-            <div className="lp-placard-kicker">STAGE 06 // HOSPITALITY RECONCILIATION</div>
-            <h2 className="lp-placard-title">DESTINATION ARRIVAL</h2>
-            <p className="lp-placard-desc">
-              The attendee journey reaches resolution. Partner hotel check-in, VIP security, and urban
-              dispersal are fully recorded and reconciled in real time.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Floating Wireframe HUD */}
-      <div className="lp-hud">
-        <div className="lp-phase-indicator">
-          <span className="lp-eyebrow">{hudEyebrow}</span>
-          <div className="lp-phase-title">{hudLabel}</div>
-        </div>
-
-        <div className="lp-timeline-bar">
-          <div className="lp-progress-track">
-            <div
-              className="lp-progress-fill"
-              style={{ width: `${Math.round(progress * 100)}%` }}
-            />
-          </div>
-          <span className="lp-mono-stat">{Math.round(progress * 100).toString().padStart(2, "0")}%</span>
         </div>
       </div>
 
