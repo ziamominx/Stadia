@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Link from "next/link";
+import { createStadiumTimeline, stageAt, chapterProgress, scrollDestination } from "@/lib/landing/timeline.mjs";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function StadiumHero({ onProgressUpdate }) {
+export default function StadiumHero() {
   const containerRef = useRef(null);
   const visualStageRef = useRef(null);
 
@@ -26,372 +26,100 @@ export default function StadiumHero({ onProgressUpdate }) {
   const badge5Ref = useRef(null);
 
   const [activeStage, setActiveStage] = useState(1);
-  const [scrollPct, setScrollPct] = useState(0);
+  const progressFillRef = useRef(null);
+  const progressTextRef = useRef(null);
 
   useEffect(() => {
-    const stage = visualStageRef.current;
-    const s1 = stage1Ref.current;
-    const s2 = stage2Ref.current;
-    const s3 = stage3Ref.current;
-    const s4 = stage4Ref.current;
-    const s5 = stage5Ref.current;
+    const container = containerRef.current;
+    const root = container?.closest(".lp-body");
+    const track = root?.querySelector(".lp-scroll-track");
+    const intro = root?.querySelector(".lp-hero-content");
+    if (!track || !intro) return;
 
-    const b1 = badge1Ref.current;
-    const b2 = badge2Ref.current;
-    const b3 = badge3Ref.current;
-    const b4 = badge4Ref.current;
-    const b5 = badge5Ref.current;
+    const media = gsap.matchMedia();
+    media.add({
+      reduced: "(prefers-reduced-motion: reduce)",
+      compact: "(max-width: 767px)",
+      desktop: "(min-width: 768px)",
+      pointer: "(hover: hover) and (pointer: fine)",
+    }, (context) => {
+      const { reduced, compact, pointer } = context.conditions;
+      const stage = visualStageRef.current;
+      const targets = {
+        layers: [stage1Ref, stage2Ref, stage3Ref, stage4Ref, stage5Ref].map(ref => ref.current),
+        badges: [badge1Ref, badge2Ref, badge3Ref, badge4Ref, badge5Ref].map(ref => ref.current),
+        intro,
+      };
+      intro.inert = false;
+      intro.removeAttribute("aria-hidden");
+      setActiveStage(1);
+      if (reduced) return;
 
-    if (!stage || !s1 || !s2 || !s3 || !s4 || !s5) return;
-
-    // --- 1. 3D MOUSE PARALLAX TILT ACROSS ALL 5 STAGES ---
-    const xTo = gsap.quickTo(stage, "rotationY", { duration: 0.8, ease: "power2.out" });
-    const yTo = gsap.quickTo(stage, "rotationX", { duration: 0.8, ease: "power2.out" });
-
-    const handleMouseMove = (e) => {
-      const { innerWidth, innerHeight } = window;
-      const mouseX = ((e.clientX / innerWidth) - 0.5) * 8; // -4deg to +4deg
-      const mouseY = -((e.clientY / innerHeight) - 0.5) * 6; // -3deg to +3deg
-      xTo(mouseX);
-      yTo(mouseY);
-    };
-    window.addEventListener("mousemove", handleMouseMove, { passive: true });
-
-    // Initial states for all 5 stages
-    gsap.set(s1, { opacity: 1, scale: 1, xPercent: 0, yPercent: 0, zIndex: 10 });
-    gsap.set(s2, { opacity: 0, scale: 0.85, zIndex: 9 });
-    gsap.set(s3, { opacity: 0, scale: 0.85, zIndex: 8 });
-    gsap.set(s4, { opacity: 0, scale: 0.85, zIndex: 7 });
-    gsap.set(s5, { opacity: 0, scale: 0.85, zIndex: 6 });
-
-    if (b1) gsap.set(b1, { opacity: 1, scale: 1 });
-    if (b2) gsap.set(b2, { opacity: 0, scale: 0.8, y: 20 });
-    if (b3) gsap.set(b3, { opacity: 0, scale: 0.8, y: 20 });
-    if (b4) gsap.set(b4, { opacity: 0, scale: 0.8, y: 20 });
-    if (b5) gsap.set(b5, { opacity: 0, scale: 0.8, y: 20 });
-
-    // --- 2. MASTER GSAP SCROLL TIMELINE (0.00 -> 1.00) ---
-    const tl = gsap.timeline({ paused: true });
-
-    // ==========================================
-    // PHASE 1: STADIUM (0.00 -> 0.22)
-    // ==========================================
-    tl.to(
-      s1,
-      {
-        scale: 1.6,
-        xPercent: 10,
-        yPercent: -4,
-        ease: "power1.inOut",
-        duration: 0.18,
-      },
-      0
-    );
-
-    // Transition S1 -> S2 (0.16 -> 0.22)
-    tl.to(
-      s1,
-      {
-        opacity: 0,
-        scale: 1.9,
-        ease: "power2.in",
-        duration: 0.06,
-      },
-      0.16
-    );
-
-    if (b1) {
-      tl.to(
-        b1,
-        {
-          opacity: 0,
-          scale: 0.8,
-          duration: 0.05,
-        },
-        0.14
-      );
-    }
-
-    // ==========================================
-    // PHASE 2: SEAT (0.18 -> 0.42)
-    // ==========================================
-    tl.to(
-      s2,
-      {
-        opacity: 1,
-        scale: 1.05,
-        ease: "power2.out",
-        duration: 0.08,
-      },
-      0.18
-    );
-
-    tl.to(
-      s2,
-      {
-        scale: 1.2,
-        xPercent: -3,
-        ease: "none",
-        duration: 0.14,
-      },
-      0.24
-    );
-
-    if (b2) {
-      tl.to(
-        b2,
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          ease: "back.out(1.4)",
-          duration: 0.07,
-        },
-        0.22
-      );
-    }
-
-    // Transition S2 -> S3 (0.36 -> 0.42)
-    tl.to(
-      s2,
-      {
-        opacity: 0,
-        scale: 1.35,
-        ease: "power2.in",
-        duration: 0.06,
-      },
-      0.36
-    );
-
-    if (b2) {
-      tl.to(
-        b2,
-        {
-          opacity: 0,
-          scale: 0.8,
-          y: -15,
-          duration: 0.05,
-        },
-        0.35
-      );
-    }
-
-    // ==========================================
-    // PHASE 3: TICKET CREDENTIAL (0.38 -> 0.62)
-    // ==========================================
-    tl.to(
-      s3,
-      {
-        opacity: 1,
-        scale: 1.0,
-        rotationY: 0,
-        ease: "power2.out",
-        duration: 0.08,
-      },
-      0.38
-    );
-
-    tl.to(
-      s3,
-      {
-        scale: 1.15,
-        rotationY: 6,
-        yPercent: -3,
-        ease: "none",
-        duration: 0.14,
-      },
-      0.44
-    );
-
-    if (b3) {
-      tl.to(
-        b3,
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          ease: "back.out(1.4)",
-          duration: 0.07,
-        },
-        0.42
-      );
-    }
-
-    // Transition S3 -> S4 (0.56 -> 0.62)
-    tl.to(
-      s3,
-      {
-        opacity: 0,
-        scale: 1.35,
-        ease: "power2.in",
-        duration: 0.06,
-      },
-      0.56
-    );
-
-    if (b3) {
-      tl.to(
-        b3,
-        {
-          opacity: 0,
-          scale: 0.8,
-          y: -15,
-          duration: 0.05,
-        },
-        0.55
-      );
-    }
-
-    // ==========================================
-    // PHASE 4: AUTONOMOUS MOBILITY (0.58 -> 0.82)
-    // ==========================================
-    tl.to(
-      s4,
-      {
-        opacity: 1,
-        scale: 1.0,
-        xPercent: 0,
-        ease: "power2.out",
-        duration: 0.08,
-      },
-      0.58
-    );
-
-    tl.to(
-      s4,
-      {
-        scale: 1.2,
-        xPercent: 4,
-        ease: "none",
-        duration: 0.14,
-      },
-      0.64
-    );
-
-    if (b4) {
-      tl.to(
-        b4,
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          ease: "back.out(1.4)",
-          duration: 0.07,
-        },
-        0.62
-      );
-    }
-
-    // Transition S4 -> S5 (0.76 -> 0.82)
-    tl.to(
-      s4,
-      {
-        opacity: 0,
-        scale: 1.35,
-        ease: "power2.in",
-        duration: 0.06,
-      },
-      0.76
-    );
-
-    if (b4) {
-      tl.to(
-        b4,
-        {
-          opacity: 0,
-          scale: 0.8,
-          y: -15,
-          duration: 0.05,
-        },
-        0.75
-      );
-    }
-
-    // ==========================================
-    // PHASE 5: HOTEL & RECONCILIATION (0.78 -> 1.00)
-    // ==========================================
-    tl.to(
-      s5,
-      {
-        opacity: 1,
-        scale: 1.0,
-        ease: "power2.out",
-        duration: 0.08,
-      },
-      0.78
-    );
-
-    tl.to(
-      s5,
-      {
-        scale: 1.08,
-        yPercent: -2,
-        ease: "none",
-        duration: 0.14,
-      },
-      0.84
-    );
-
-    if (b5) {
-      tl.to(
-        b5,
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          ease: "back.out(1.4)",
-          duration: 0.07,
-        },
-        0.82
-      );
-    }
-
-    // Bind timeline to ScrollTrigger with smooth scrub
-    const st = ScrollTrigger.create({
-      trigger: ".lp-scroll-track",
-      start: "top top",
-      end: "bottom bottom",
-      scrub: 1.2,
-      onUpdate: (self) => {
-        const p = self.progress;
-        tl.progress(p);
-        setScrollPct(Math.round(p * 100));
-
-        if (p < 0.2) {
-          setActiveStage(1);
-        } else if (p < 0.4) {
-          setActiveStage(2);
-        } else if (p < 0.6) {
-          setActiveStage(3);
-        } else if (p < 0.8) {
-          setActiveStage(4);
-        } else {
-          setActiveStage(5);
+      const tl = createStadiumTimeline(gsap, targets, compact);
+      let previousStage = 1;
+      tl.eventCallback("onUpdate", () => {
+        // Read rendered progress, not the raw scroll target: captions and image
+        // stay together during scrub catch-up and when reversing direction.
+        const progress = tl.progress();
+        const nextStage = stageAt(progress);
+        if (progressFillRef.current) progressFillRef.current.style.transform = `scaleX(${progress})`;
+        if (progressTextRef.current) progressTextRef.current.textContent = `${Math.round(progress * 100).toString().padStart(2, "0")}%`;
+        if (nextStage !== previousStage) {
+          previousStage = nextStage;
+          setActiveStage(nextStage);
         }
+        const hidden = progress >= 0.09;
+        intro.inert = hidden;
+        intro.setAttribute("aria-hidden", String(hidden));
+      });
 
-        if (onProgressUpdate) onProgressUpdate(p);
-      },
-    });
+      const scroll = ScrollTrigger.create({
+        trigger: track,
+        start: "top top",
+        end: "bottom bottom",
+        animation: tl,
+        scrub: 0.65,
+        invalidateOnRefresh: true,
+      });
 
-    const handleResize = () => {
-      ScrollTrigger.refresh();
-    };
-    window.addEventListener("resize", handleResize);
+      // Initialize restored scroll positions before the first paint/update.
+      tl.progress(scroll.progress);
 
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("resize", handleResize);
-      st.kill();
-      tl.kill();
-    };
-  }, [onProgressUpdate]);
+      let resetPointer = () => {};
+      let handlePointer = () => {};
+      if (pointer && !compact) {
+        const xTo = gsap.quickTo(stage, "rotationY", { duration: 0.65, ease: "power2.out" });
+        const yTo = gsap.quickTo(stage, "rotationX", { duration: 0.65, ease: "power2.out" });
+        handlePointer = (event) => {
+          if (!scroll.isActive) return;
+          xTo((event.clientX / window.innerWidth - 0.5) * 4);
+          yTo(-(event.clientY / window.innerHeight - 0.5) * 3);
+        };
+        resetPointer = () => { xTo(0); yTo(0); };
+        window.addEventListener("pointermove", handlePointer, { passive: true });
+        document.addEventListener("pointerleave", resetPointer);
+        window.addEventListener("blur", resetPointer);
+      }
+
+      // MatchMedia reverts its timeline, trigger, quickTo tweens, and inline
+      // styles on unmount or breakpoint/preference changes.
+      return () => {
+        window.removeEventListener("pointermove", handlePointer);
+        document.removeEventListener("pointerleave", resetPointer);
+        window.removeEventListener("blur", resetPointer);
+        intro.inert = false;
+        intro.removeAttribute("aria-hidden");
+      };
+    }, root);
+
+    return () => media.revert();
+  }, []);
 
   const scrollToStage = (stageNum) => {
     const scrollTrack = document.querySelector(".lp-scroll-track");
     if (!scrollTrack) return;
-    const trackHeight = scrollTrack.offsetHeight;
-    const targetMap = { 1: 0.02, 2: 0.28, 3: 0.48, 4: 0.68, 5: 0.88 };
-    const targetScroll = (targetMap[stageNum] || 0) * trackHeight;
+    const start = scrollTrack.getBoundingClientRect().top + window.scrollY;
+    const targetScroll = scrollDestination(start, scrollTrack.offsetHeight, window.innerHeight, chapterProgress[stageNum - 1]);
     window.scrollTo({ top: targetScroll, behavior: "smooth" });
   };
 
@@ -699,6 +427,8 @@ export default function StadiumHero({ onProgressUpdate }) {
               onClick={() => scrollToStage(num)}
               className={`lp-pip-btn ${activeStage === num ? "is-active" : ""}`}
               title={`Jump to Stage 0${num}`}
+              aria-label={`Show ${["stadium", "seat", "ticket", "mobility", "hotel"][num - 1]} stage`}
+              aria-current={activeStage === num ? "step" : undefined}
             >
               0{num}
             </button>
@@ -706,9 +436,9 @@ export default function StadiumHero({ onProgressUpdate }) {
         </div>
         <div className="lp-timeline-bar-hero">
           <div className="lp-progress-track">
-            <div className="lp-progress-fill" style={{ width: `${scrollPct}%` }} />
+            <div className="lp-progress-fill" ref={progressFillRef} />
           </div>
-          <span className="lp-mono-stat">{scrollPct.toString().padStart(2, "0")}%</span>
+          <span className="lp-mono-stat" ref={progressTextRef}>00%</span>
         </div>
       </div>
     </div>

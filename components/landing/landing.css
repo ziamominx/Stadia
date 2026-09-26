@@ -1,4 +1,12 @@
 /* STADIA Cinematic 3D Landing Page Styles */
+/* Keep hidden layers from flashing before the animation module initializes. */
+.lp-stage-layer:not(:first-child) { visibility: hidden; }
+.lp-hero-timeline-scrubber .lp-progress-fill {
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: none;
+}
 :root {
   --lp-bg: #000000;
   --lp-fg: #ffffff;
@@ -9,6 +17,7 @@
 }
 
 .lp-body {
+  position: relative;
   background-color: var(--lp-bg);
   color: var(--lp-fg);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -101,8 +110,8 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100svh;
   z-index: 10;
   pointer-events: none;
   overflow: hidden;
@@ -124,10 +133,9 @@
 
 .lp-stadium-wrapper {
   position: relative;
-  width: 100vw;
-  height: 100vh;
-  max-width: 1920px;
-  max-height: 1080px;
+  width: min(100vw, 177.778svh, 1920px);
+  height: auto;
+  aspect-ratio: 16 / 9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -193,7 +201,6 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease;
 }
 
 .lp-telemetry-chip {
@@ -325,10 +332,9 @@
 
 .lp-stage-asset-wrapper {
   position: relative;
-  width: 100vw;
-  height: 100vh;
-  max-width: 1920px;
-  max-height: 1080px;
+  width: min(100vw, 177.778svh, 1920px);
+  height: auto;
+  aspect-ratio: 16 / 9;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -549,13 +555,14 @@
 /* Virtual Scroll Container */
 .lp-scroll-track {
   position: relative;
-  height: 600vh; /* 5 rich stages for smooth, controlled 2.5D progression */
+  height: 600svh;
   z-index: 20;
   pointer-events: none;
 }
 
 /* Interactive Timeline Navigation Scrubber (Lower Right) */
 .lp-hero-timeline-scrubber {
+  pointer-events: auto;
   position: fixed;
   bottom: 32px;
   right: 40px;
@@ -678,8 +685,8 @@
   left: 8vw;
   max-width: 580px;
   z-index: 30;
-  pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: auto;
+  will-change: transform, opacity;
 }
 
 .lp-hero-eyebrow {
@@ -763,6 +770,7 @@
 }
 
 .lp-section {
+  scroll-margin-top: 100px;
   max-width: 1100px;
   margin: 0 auto 160px;
 }
@@ -937,4 +945,64 @@
   .lp-platform-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.lp-skip-journey {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 12px;
+  color: #a1a1aa;
+  text-underline-offset: 4px;
+}
+
+.lp-body a:focus-visible,
+.lp-body button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 5px;
+}
+
+@media (max-width: 767px) {
+  .lp-hero-content {
+    top: 23%;
+    left: 6vw;
+    right: 6vw;
+  }
+  .lp-hero-actions { flex-wrap: wrap; gap: 10px; }
+  .lp-hero-telemetry-hud { display: none; }
+  .lp-hud-stage-tracker { left: 6vw; right: 6vw; bottom: 82px; }
+  .lp-hero-timeline-scrubber { left: 6vw; right: 6vw; bottom: 24px; gap: 12px; }
+  .lp-hero-timeline-scrubber .lp-progress-track { width: 64px; }
+  .lp-phase-title { font-size: 13px; }
+  .lp-stadium-stage { padding-top: 20svh; }
+  .lp-telemetry-chip { padding: 5px; gap: 4px; }
+  .lp-chip-title { font-size: 7px; letter-spacing: 0; }
+  .lp-chip-stat { display: none; }
+  .lp-sector-focus-badge,
+  .lp-transit-focus-badge,
+  .lp-stage-badge {
+    left: 10%;
+    right: auto;
+    top: 22%;
+    width: 76%;
+    min-width: 0;
+    padding: 12px;
+    backdrop-filter: none;
+  }
+  .lp-badge-header { gap: 8px; }
+  .lp-badge-tag, .lp-badge-id { font-size: 7px; letter-spacing: 0; }
+  .lp-badge-seat { font-size: 11px; }
+  .lp-badge-match, .lp-badge-status { font-size: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.lp-body) { scroll-behavior: auto; }
+  .lp-body *, .lp-body *::before, .lp-body *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .lp-scroll-track { height: max(100svh, 640px); }
+  .lp-viewport { position: absolute; height: max(100svh, 640px); }
+  .lp-hero-content { position: absolute; top: 160px; }
+  .lp-hud-stage-tracker, .lp-hero-telemetry-hud, .lp-hero-timeline-scrubber { display: none; }
+  .lp-skip-journey { display: none; }
 }

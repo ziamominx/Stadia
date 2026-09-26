@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingSections from "@/components/landing/LandingSections";
 import "@/components/landing/landing.css";
@@ -13,13 +12,11 @@ const StadiumHero = dynamic(
 );
 
 export default function Home() {
-  const [scrollProgress, setScrollProgress] = useState(0);
-
   return (
     <main className="lp-body">
       <LandingNav />
-      <StadiumHero onProgressUpdate={setScrollProgress} />
-      <LandingSections progress={scrollProgress} />
+      <StadiumHero />
+      <LandingSections />
     </main>
   );
 }

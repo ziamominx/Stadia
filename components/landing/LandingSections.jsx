@@ -1,15 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { chapterProgress, scrollDestination } from "@/lib/landing/timeline.mjs";
 
-export default function LandingSections({ progress = 0 }) {
-  // Hero overlay visibility (fades smoothly as user scrolls)
-  const heroOpacity = Math.max(0, 1 - progress * 14);
-  const heroTransform = `translateY(${progress * -80}px)`;
-
+export default function LandingSections() {
   const handleExploreClick = (e) => {
     e.preventDefault();
-    window.scrollTo({ top: window.innerHeight * 1.2, behavior: "smooth" });
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.getElementById("problem")?.scrollIntoView({ behavior: "instant" });
+      return;
+    }
+    const track = document.getElementById("stadium-journey");
+    if (!track) return;
+    const start = track.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+      top: scrollDestination(start, track.offsetHeight, window.innerHeight, chapterProgress[1]),
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -17,11 +24,6 @@ export default function LandingSections({ progress = 0 }) {
       {/* Hero Overlay (Only visible at start of journey) */}
       <div
         className="lp-hero-content"
-        style={{
-          opacity: heroOpacity,
-          transform: heroTransform,
-          pointerEvents: heroOpacity > 0.05 ? "auto" : "none",
-        }}
       >
         <div className="lp-hero-eyebrow">INTELLIGENT EVENT ORCHESTRATION</div>
         <h1 className="lp-hero-title">
@@ -40,10 +42,10 @@ export default function LandingSections({ progress = 0 }) {
             Enter Platform ↗
           </Link>
         </div>
+        <a className="lp-skip-journey" href="#problem">Skip animation ↓</a>
       </div>
 
-      {/* Virtual Scroll Container for smooth GSAP scrub control */}
-      <div className="lp-scroll-track" />
+      <div className="lp-scroll-track" id="stadium-journey" aria-hidden="true" />
 
       {/* Post-Journey Editorial Sections */}
       <section className="lp-editorial">
