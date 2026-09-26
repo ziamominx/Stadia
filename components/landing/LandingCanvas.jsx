@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { createJourneyWorld } from "@/lib/landing/journey-world.mjs";
-import { chapters, clamp, damp, smoothstep, sampleFlight, sceneState, flightChapter } from "@/lib/landing/flight.mjs";
+import { chapters, clamp, smoothScroll, smoothstep, sampleFlight, sceneState, flightChapter } from "@/lib/landing/flight.mjs";
 import { scrollDestination } from "@/lib/landing/timeline.mjs";
 
 export default function LandingCanvas() {
@@ -28,14 +29,29 @@ export default function LandingCanvas() {
       setFailed(true);
       return () => { delete root.dataset.journey; };
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    const mobile = container.clientWidth < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, mobile ? 1 : 1.5));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.domElement.setAttribute("aria-label", "A 3D flight from the stadium to your seat, shuttle, and hotel");
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.domElement.setAttribute("aria-label", "A 3D flight from the stadium to your seat, sports car, and hotel");
     container.appendChild(renderer.domElement);
     const world = createJourneyWorld();
+    world.sun.shadow.mapSize.set(mobile ? 1024 : 2048, mobile ? 1024 : 2048);
+    const environmentRoom = new RoomEnvironment();
+    const environmentGenerator = new THREE.PMREMGenerator(renderer);
+    const environment = environmentGenerator.fromScene(environmentRoom, 0.04);
+    world.scene.environment = environment.texture;
+    world.scene.environmentIntensity = 0.55;
+    environmentRoom.dispose();
+    environmentGenerator.dispose();
+    const roadLength = world.roadCurve.getLength();
     const camera = new THREE.PerspectiveCamera(50, 1, 0.05, 650);
     const target = new THREE.Vector3();
-    let current = 0, destination = 0, lastTime = 0, frame = 0, lastChapter = -1;
+    let current = 0, destination = 0, velocity = 0, lastTime = 0, frame = 0, lastChapter = -1;
+    let slowFrames = 0, economical = mobile;
     let active = true, disposed = false, lost = false;
 
     const requestFrame = () => {
@@ -50,6 +66,13 @@ export default function LandingCanvas() {
     };
     const resize = () => {
       const width = container.clientWidth, height = container.clientHeight;
+      if (!economical && width < 768) {
+        economical = true;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+        world.sun.shadow.mapSize.set(1024, 1024);
+        world.sun.shadow.map?.dispose();
+        world.sun.shadow.map = null;
+      }
       camera.aspect = width / Math.max(1, height);
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
@@ -58,10 +81,26 @@ export default function LandingCanvas() {
     function render(time) {
       frame = 0;
       if (disposed || lost || document.hidden) return;
-      const dt = Math.min((time - (lastTime || time)) / 1000, 0.05);
+      const dt = Math.min((time - (lastTime || time)) / 1000, 0.1);
+      if (!economical && dt > 0.03 && active) {
+        slowFrames++;
+        if (slowFrames >= 12) {
+          economical = true;
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+          world.sun.shadow.mapSize.set(1024, 1024);
+          world.sun.shadow.map?.dispose();
+          world.sun.shadow.map = null;
+        }
+      } else if (dt <= 0.025) slowFrames = Math.max(0, slowFrames - 1);
       lastTime = time;
-      current = motion.matches ? 0 : damp(current, destination, dt);
-      if (Math.abs(current - destination) < 0.00001) current = destination;
+      if (motion.matches) { current = 0; velocity = 0; }
+      else {
+        const scroll = smoothScroll(current, destination, velocity, dt);
+        current = scroll.progress; velocity = scroll.velocity;
+        if (Math.abs(current - destination) < 0.00001 && Math.abs(velocity) < 0.0001) {
+          current = destination; velocity = 0;
+        }
+      }
       const p = current;
       const pose = sampleFlight(p);
       const state = sceneState(p);
@@ -78,11 +117,13 @@ export default function LandingCanvas() {
       world.focalSeat.visible = state.seatScale > 0.002;
       world.ticketGroup.scale.setScalar(state.ticketScale);
       world.ticketGroup.visible = state.ticketScale > 0.002;
-      world.ticketGroup.position.y = world.seatOrigin.y + 0.9 + state.ticketLift;
+      world.ticketGroup.position.x = world.seatOrigin.x + state.ticketOffset;
+      world.ticketGroup.position.y = world.seatOrigin.y + 0.9 + 0.45 * (1 - state.ticketOffset / 2.1) + state.ticketLift;
       world.ticketPlane.material.opacity = state.ticketOpacity;
       const tangent = world.roadCurve.getTangentAt(state.carProgress);
       world.carGroup.position.copy(roadPosition);
       world.carGroup.rotation.y = Math.atan2(tangent.z, -tangent.x);
+      world.wheels.forEach(wheel => { wheel.rotation.z = state.carProgress * roadLength / 0.49; });
       if (active) renderer.render(world.scene, camera);
       if (intro) {
         const opacity = motion.matches ? 1 : Math.max(0, 1 - p / 0.07);
@@ -97,7 +138,10 @@ export default function LandingCanvas() {
         navRef.current.inert = !active;
         navRef.current.style.visibility = active ? "visible" : "hidden";
       }
-      if (captionRef.current) captionRef.current.style.opacity = String(clamp((p - 0.06) / 0.04));
+      if (captionRef.current) {
+        const transition = Math.min(1, ...[0.33, 0.48, 0.64, 0.93].map(at => Math.abs(p - at) / 0.018));
+        captionRef.current.style.opacity = String(clamp((p - 0.06) / 0.04) * transition);
+      }
       const nextChapter = flightChapter(p);
       if (nextChapter !== lastChapter) {
         lastChapter = nextChapter;
@@ -113,7 +157,7 @@ export default function LandingCanvas() {
       setFailed(true);
       if (intro) { intro.style.cssText = ""; intro.inert = false; intro.removeAttribute("aria-hidden"); }
     };
-    const preferenceChanged = () => { current = 0; resize(); };
+    const preferenceChanged = () => { current = 0; velocity = 0; resize(); };
     const observer = new ResizeObserver(resize);
     observer.observe(container);
     window.addEventListener("scroll", measureScroll, { passive: true });
@@ -122,7 +166,7 @@ export default function LandingCanvas() {
     motion.addEventListener("change", preferenceChanged);
     renderer.domElement.addEventListener("webglcontextlost", contextLost);
     resize();
-    current = destination; // Respect a restored scroll position on navigation.
+    current = destination; velocity = 0; // Respect a restored scroll position on navigation.
 
     return () => {
       disposed = true;
@@ -134,6 +178,7 @@ export default function LandingCanvas() {
       motion.removeEventListener("change", preferenceChanged);
       renderer.domElement.removeEventListener("webglcontextlost", contextLost);
       world.dispose();
+      environment.dispose();
       renderer.dispose();
       renderer.forceContextLoss();
       renderer.domElement.remove();
