@@ -10,8 +10,10 @@ const links = [
   ["/crowd", "Crowd"],
   ["/ground", "Ground"],
   ["/transport", "Transport"],
+  ["/hospitality", "Hospitality"],
   ["/incidents", "Incidents"],
   ["/event-control", "Event Control"],
+  ["/setup", "Event Setup"],
   ["/analytics", "Analytics"],
 ];
 function Frame({ children }) {
