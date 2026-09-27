@@ -5,7 +5,7 @@ import {
   createState,
   snapshot,
 } from "@/lib/operations/engine.mjs";
-import { canCommand, readSession, SESSION_COOKIE } from "@/lib/operations/auth.mjs";
+import { canCommand, isSameRequestOrigin, readSession, SESSION_COOKIE } from "@/lib/operations/auth.mjs";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -54,7 +54,7 @@ export async function POST(request) {
     const role = await currentRole(request);
     if (!role) return NextResponse.json({ error: "Sign in required." }, { status: 401 });
     const origin = request.headers.get("origin");
-    if (origin && origin !== new URL(request.url).origin) return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
+    if (!isSameRequestOrigin(origin, request.url, request.headers.get("host"))) return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
     const action = await request.json();
     if (!canCommand(role, action, current())) return NextResponse.json({ error: "This action is outside your role." }, { status: 403 });
     globalThis[key] = command(current(), action);

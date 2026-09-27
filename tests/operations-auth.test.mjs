@@ -1,9 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { issueSession, readSession, canAccess, canCommand } from "../lib/operations/auth.mjs";
+import { issueSession, readSession, canAccess, canCommand, isSameRequestOrigin } from "../lib/operations/auth.mjs";
 import { createState, command } from "../lib/operations/engine.mjs";
 
 const secret = "test-session-secret-is-at-least-32-characters";
+test("origin check accepts the local preview alias without allowing foreign sites", () => {
+  assert.equal(isSameRequestOrigin("http://127.0.0.1:3001", "http://localhost:3001/api/ops-session", "127.0.0.1:3001"), true);
+  assert.equal(isSameRequestOrigin("http://localhost:3001", "http://127.0.0.1:3001/api/ops-session", "localhost:3001"), true);
+  assert.equal(isSameRequestOrigin("https://stadia.example", "https://internal.example/api/ops-session", "stadia.example"), true);
+  assert.equal(isSameRequestOrigin("https://stadia.example", "http://internal.example/api/ops-session", "stadia.example"), false);
+  assert.equal(isSameRequestOrigin("http://evil.example", "http://localhost:3001/api/ops-session", "localhost:3001"), false);
+  assert.equal(isSameRequestOrigin("http://localhost:4000", "http://localhost:3001/api/ops-session", "localhost:3001"), false);
+});
 test("sessions expire and cannot be changed to another role", async () => {
   const value = await issueSession("ground", secret, 1000);
   assert.equal(await readSession(value, secret, 1001), "ground");

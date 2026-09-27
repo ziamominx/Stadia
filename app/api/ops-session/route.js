@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { issueSession, readSession, roleHome, SESSION_COOKIE } from "@/lib/operations/auth.mjs";
+import { isSameRequestOrigin, issueSession, readSession, roleHome, SESSION_COOKIE } from "@/lib/operations/auth.mjs";
 export const runtime = "nodejs";
 export async function GET(request) {
   const role = await readSession(request.cookies.get(SESSION_COOKIE)?.value, process.env.STADIA_SESSION_SECRET);
@@ -7,7 +7,7 @@ export async function GET(request) {
 }
 export async function POST(request) {
   const origin = request.headers.get("origin");
-  if (origin && origin !== new URL(request.url).origin) return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
+  if (!isSameRequestOrigin(origin, request.url, request.headers.get("host"))) return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
   const { role, password } = await request.json();
   if (!roleHome[role] || !process.env.STADIA_SESSION_SECRET || process.env.STADIA_SESSION_SECRET.length < 32) return NextResponse.json({ error: "Operations authentication is not configured." }, { status: 503 });
   const expected = process.env[`STADIA_${role.toUpperCase()}_PASSWORD`];
@@ -18,7 +18,7 @@ export async function POST(request) {
 }
 export async function DELETE(request) {
   const origin = request.headers.get("origin");
-  if (origin && origin !== new URL(request.url).origin) return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
+  if (!isSameRequestOrigin(origin, request.url, request.headers.get("host"))) return NextResponse.json({ error: "Invalid origin." }, { status: 403 });
   const response = NextResponse.json({ ok: true });
   response.cookies.delete(SESSION_COOKIE);
   return response;
