@@ -2347,3 +2347,40 @@
   .ops-main > * { animation: none; }
   .ops-destination, .ops-hospitality-map-controls button, .ops-theme-toggle { transition: none; }
 }
+.ops-hazard-disclosure { margin: 0 0 18px; padding: 12px 16px; border: 1px solid var(--line); color: var(--muted); font-size: 12px; line-height: 1.6; }
+.ops-hazard-disclosure strong { margin-right: 10px; color: var(--ink); letter-spacing: .12em; }
+.ops-hazard-zone { display: inline-flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
+.ops-hazard-zone select { min-height: 38px; padding: 6px 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.ops-hazard-status { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1px solid var(--line); margin-bottom: 20px; background: var(--surface); }
+.ops-hazard-status > div { display: flex; flex-direction: column; gap: 5px; padding: 16px; border-right: 1px solid var(--line); min-width: 0; }
+.ops-hazard-status > div:last-child { border-right: 0; }
+.ops-hazard-status strong { font-size: clamp(16px, 2.2vw, 28px); line-height: 1; letter-spacing: -.05em; }
+.ops-hazard-status strong.critical { color: var(--red); }
+.ops-hazard-status small { color: var(--muted); font-size: 11px; line-height: 1.4; }
+.ops-hazard-layout { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(320px, .85fr); gap: 20px; align-items: start; }
+.ops-hazard-main, .ops-hazard-rail { display: grid; gap: 20px; min-width: 0; }
+.ops-hazard-cameras { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ops-hazard-cameras button { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; gap: 7px; padding: 18px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: left; background: transparent; color: var(--ink); }
+.ops-hazard-cameras button:nth-child(2n) { border-right: 0; }
+.ops-hazard-cameras button[aria-pressed="true"] { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.ops-hazard-cameras button:hover { background: color-mix(in srgb, var(--ink) 9%, transparent); }
+.ops-hazard-camera-id { color: var(--muted); font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: .12em; }
+.ops-hazard-camera-name { font-size: 14px; font-weight: 600; }
+.ops-hazard-cameras strong { font-size: 19px; letter-spacing: -.04em; }
+.ops-hazard-cameras strong.critical { color: var(--red); }
+.ops-hazard-cameras strong.attention { color: var(--amber); }
+.ops-hazard-cameras small { color: var(--muted); font-size: 11px; }
+.ops-hazard-heat { width: 100%; height: 6px; background: var(--line); overflow: hidden; }
+.ops-hazard-heat > span { display: block; height: 100%; background: var(--ink); }
+.ops-hazard-comms { display: grid; gap: 16px; padding: 18px; }
+.ops-hazard-comms > p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.ops-hazard-comms-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+.ops-hazard-comms-row div { display: flex; flex-direction: column; gap: 4px; }
+.ops-hazard-comms-row strong { font-size: 12px; }
+.ops-hazard-comms-row small { color: var(--muted); font-size: 11px; }
+.ops-hazard-comms-row button { flex: none; }
+.ops-hazard-roster { padding: 4px 18px; }
+.ops-hazard-roster > div { display: flex; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
+.ops-hazard-roster span { color: var(--muted); }
+@media (max-width: 1100px) { .ops-hazard-status { grid-template-columns: repeat(3, minmax(0, 1fr)); } .ops-hazard-status > div { border-bottom: 1px solid var(--line); } .ops-hazard-layout { grid-template-columns: 1fr; } }
+@media (max-width: 650px) { .ops-hazard-status { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ops-hazard-cameras { grid-template-columns: 1fr; } .ops-hazard-cameras button { border-right: 0; } .ops-hazard-comms-row { align-items: flex-start; flex-direction: column; } }

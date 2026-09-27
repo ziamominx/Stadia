@@ -1,4 +1,4 @@
-// components/LiveGeospatialLayersHome.jsx — Dynamic Geospatial Layers for Next.js
+// Fan-facing reference layers around DY Patil Stadium.
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -36,6 +36,7 @@ const SHUTTLE = [
 export default function LiveGeospatialLayersHome() {
   const [active, setActive] = useState('gate');
   const [mounted, setMounted] = useState(false);
+  const [mapError, setMapError] = useState(false);
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
   const layerGroup = useRef(null);
@@ -68,11 +69,13 @@ export default function LiveGeospatialLayersHome() {
 
           mapInstance.current = map;
           layerGroup.current = L.layerGroup().addTo(map);
+          requestAnimationFrame(() => map.invalidateSize());
         }
 
         renderLayer(active);
       } catch (err) {
         console.error('Leaflet load error:', err);
+        if (!isCancelled) setMapError(true);
       }
     }
 
@@ -99,16 +102,16 @@ export default function LiveGeospatialLayersHome() {
 
     // Always draw gates
     GATES.forEach((g) => {
-      const color = g.side === 'local' ? '#38bdf8' : '#fb7185';
+      const color = g.side === 'local' ? '#fff' : '#b0b0b0';
       const icon = L.divIcon({
         className: 'custom-gate-pin',
-        html: `<div style="background:${color};width:14px;height:14px;border-radius:50%;border:2px solid #ffffff;box-shadow:0 0 10px ${color}"></div>`,
+        html: `<div style="background:${color};width:14px;height:14px;border-radius:50%;border:2px solid #0b0b0b;box-shadow:0 0 0 2px #fff"></div>`,
         iconSize: [14, 14],
         iconAnchor: [7, 7],
       });
       L.marker([g.lat, g.lng], { icon })
         .addTo(group)
-        .bindPopup(`<strong>${g.name}</strong><br/>Side: ${g.side.toUpperCase()}`);
+        .bindPopup(`<strong>${g.name}</strong><br/>Reference entry point`);
     });
 
     if (layerKey === 'gate') {
@@ -117,22 +120,22 @@ export default function LiveGeospatialLayersHome() {
       HOTELS.forEach((h) => {
         const icon = L.divIcon({
           className: 'custom-hotel-pin',
-          html: `<div style="background:#f59e0b;padding:3px 6px;border-radius:6px;border:1px solid #fff;color:#000;font-size:10px;font-weight:bold;box-shadow:0 0 8px #f59e0b">₹${h.rate / 1000}k</div>`,
-          iconSize: [50, 20],
+          html: '<div style="background:#ededed;padding:3px 6px;border:1px solid #111;color:#111;font-size:10px;font-weight:bold;white-space:nowrap">STAY</div>',
+          iconSize: [46, 20],
         });
         L.marker([h.lat, h.lng], { icon })
           .addTo(group)
-          .bindPopup(`<strong>${h.name}</strong><br/>Rate: ₹${h.rate.toLocaleString('en-IN')}`);
+          .bindPopup(`<strong>${h.name}</strong><br/>Reference location · check availability with hotel`);
       });
       map.flyTo([19.055, 73.01], 13, { duration: 1.2 });
     } else if (layerKey === 'transit') {
       TRANSIT.forEach((seg) => {
-        L.polyline(seg, { color: '#00e5ff', weight: 4, opacity: 0.85 }).addTo(group);
+        L.polyline(seg, { color: '#f1f1f1', weight: 4, opacity: 0.85 }).addTo(group);
       });
       map.flyTo([19.05, 73.015], 13, { duration: 1.2 });
     } else if (layerKey === 'shuttle') {
       SHUTTLE.forEach((seg) => {
-        L.polyline(seg, { color: '#10b981', weight: 4, opacity: 0.85, dashArray: '6, 8' }).addTo(group);
+        L.polyline(seg, { color: '#c5c5c5', weight: 4, opacity: 0.85, dashArray: '6, 8' }).addTo(group);
       });
       map.flyTo([19.06, 72.95], 12, { duration: 1.2 });
     }
@@ -146,22 +149,20 @@ export default function LiveGeospatialLayersHome() {
   ];
 
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-neutral-800/80 bg-[#0e0e12] p-6 shadow-2xl backdrop-blur-md">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+    <div className="fx-geo">
+      <div className="fx-geo-header">
         <div>
-          <p className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 font-mono">Live Geospatial Layers</p>
-          <h3 className="text-xl font-black text-white">Interactive Stadium &amp; Route Map</h3>
+          <p>VENUE / REFERENCE LAYERS</p>
+          <h3>DY PATIL / NERUL</h3>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="fx-geo-controls" role="group" aria-label="Map layers">
           {layerPills.map((pill) => (
             <button
               key={pill.key}
+              type="button"
+              aria-pressed={active === pill.key}
               onClick={() => setActive(pill.key)}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
-                active === pill.key
-                  ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
-                  : 'border border-neutral-800 bg-neutral-900/60 text-neutral-400 hover:text-white hover:border-neutral-700'
-              }`}
+              className={active === pill.key ? 'fx-geo-active' : ''}
             >
               {pill.label}
             </button>
@@ -169,15 +170,16 @@ export default function LiveGeospatialLayersHome() {
         </div>
       </div>
 
-      <div className="relative h-[380px] w-full overflow-hidden rounded-xl border border-neutral-800">
-        {!mounted ? (
-          <div className="flex h-full w-full items-center justify-center bg-[#09090b] text-xs text-neutral-500">
-            Initializing satellite radar...
-          </div>
+      <div className="fx-geo-map">
+        {mapError ? (
+          <div className="fx-geo-placeholder" role="alert">Map could not load. <a href="https://www.openstreetmap.org/?mlat=19.04194&mlon=73.02667#map=16/19.04194/73.02667" target="_blank" rel="noreferrer">Open venue in OpenStreetMap</a></div>
+        ) : !mounted ? (
+          <div className="fx-geo-placeholder" role="status">Loading venue map…</div>
         ) : (
           <div ref={mapRef} className="map-dark-tiles h-full w-full" />
         )}
       </div>
+      <p className="fx-geo-note">© OpenStreetMap contributors <span>Illustrative layers · confirm routes with event staff</span></p>
     </div>
   );
 }

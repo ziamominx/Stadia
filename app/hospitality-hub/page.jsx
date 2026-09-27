@@ -1,270 +1,117 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
 import { api, useApi } from '../../lib/api.js';
-import { useRole } from '../../components/RoleContext.jsx';
-import { Hotel, Bus, Utensils, CheckCircle, ArrowRight, BarChart3, Users, Zap, Ticket, Sparkles } from '../../components/Icons';
+import { ArrowRight, Hotel, Utensils } from '../../components/Icons';
 
 export default function HospitalityHubPage() {
-  const { role } = useRole();
-  const isFan = role === 'fan';
+  const { data, error, loading, reload } = useApi(api.fanPerks);
+  const [activeTab, setActiveTab] = useState('offers');
+  const [copyStatus, setCopyStatus] = useState('');
+  const offers = data?.offers || [];
+  const areas = data?.areas || [];
 
-  const { data: zonesData, loading: loadingZones } = useApi(api.hospitalityZones);
-  const { data: merchantsData } = useApi(api.hospitalityMerchants);
-
-  const [activeTab, setActiveTab] = useState('zones'); // 'zones' or 'merchants'
-  const [partnerEnrolled, setPartnerEnrolled] = useState(false);
-  const [copiedVoucher, setCopiedVoucher] = useState(null);
-
-  useEffect(() => {
-    if (isFan) {
-      setActiveTab('merchants');
+  const copyCode = async (code) => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopyStatus(code + ' copied to clipboard.');
+    } catch {
+      setCopyStatus('Copy unavailable. Use the displayed code ' + code + '.');
     }
-  }, [isFan]);
-
-  if (loadingZones || !zonesData) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <div className="h-96 animate-pulse rounded-3xl bg-neutral-900/60 border border-neutral-800" />
-      </div>
-    );
-  }
-
-  const zones = Array.isArray(zonesData) ? zonesData : (zonesData?.zones || []);
-  const merchants = Array.isArray(merchantsData) ? merchantsData : (merchantsData?.merchants || []);
-
-  const copyVoucher = (code) => {
-    navigator.clipboard?.writeText(code);
-    setCopiedVoucher(code);
-    setTimeout(() => setCopiedVoucher(null), 2500);
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 space-y-8 fade-up">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-neutral-800/80 pb-6">
-        <div>
-          <div className="flex items-center gap-2">
-            {isFan ? (
-              <Utensils className="h-4 w-4 text-emerald-400" />
-            ) : (
-              <Hotel className="h-4 w-4 text-emerald-400" />
-            )}
-            <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-400">
-              {isFan ? 'Fan Matchday Perks & Post-Match Dispersal' : 'Hospitality & Commercial Services Coordination'}
-            </span>
-          </div>
-          <h1 className="mt-1 text-3xl font-black tracking-tight text-white sm:text-4xl">
-            {isFan ? 'Post-Match Perks, Dining & Fan Zones' : 'Hospitality Partner Hub'}
-          </h1>
-          <p className="mt-1 text-sm text-neutral-400">
-            {isFan
-              ? 'Present your digital matchday pass to claim 10%–20% discounts at official partner dining venues and fan parks while post-match highway traffic clears.'
-              : 'Synchronize accommodation room allotments, dynamic feeder shuttles, and post-event dining dispersal across the city.'}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 bg-[#111114] border border-neutral-800 p-1 rounded-full">
-          <button
-            onClick={() => setActiveTab('merchants')}
-            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
-              activeTab === 'merchants' ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'
-            }`}
-          >
-            Dining & Perks ({merchants.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('zones')}
-            className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
-              activeTab === 'zones' ? 'bg-white text-black' : 'text-neutral-400 hover:text-white'
-            }`}
-          >
-            Accommodation Zones ({zones.length})
-          </button>
-        </div>
-      </div>
-
-      {/* Fan Ingress Perk Callout if Fan Mode */}
-      {isFan && (
-        <div className="rounded-3xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/20 to-neutral-900 p-5 shadow-xl flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shrink-0">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold text-white">Smart Crowd Dispersal Bonus</h3>
-              <p className="text-xs text-neutral-300">
-                Fans who relax at partner venues for 45+ minutes after full-time receive an additional ₹150 ride-hailing credit on Uber/Ola!
-              </p>
+    <div className="min-h-screen bg-black text-white">
+      <div className="mx-auto max-w-7xl px-5 pb-20 pt-12 sm:px-8 sm:pt-20">
+        <div className="grid gap-10 border-b border-white/20 pb-12 lg:grid-cols-[1fr_300px] lg:items-end">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Stadia / Fan experience / 03</p>
+            <h1 className="mt-5 max-w-3xl text-5xl font-light uppercase leading-[0.98] tracking-[-0.065em] sm:text-7xl">
+              Make more of <span className="font-bold">matchday.</span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-sm leading-7 text-neutral-300 sm:text-base">
+              Explore example dining offers and accommodation areas around DY Patil Stadium. Plan your onward trip before the final whistle.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href="/matches" className="inline-flex items-center gap-2 border border-white bg-white px-5 py-3 text-xs font-semibold uppercase tracking-wider text-black transition hover:bg-neutral-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+                Find a match <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/journey-planner" className="inline-flex items-center gap-2 border border-white/30 px-5 py-3 text-xs font-semibold uppercase tracking-wider text-white transition hover:border-white hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+                Plan your journey <ArrowRight className="h-4 w-4" />
+              </Link>
             </div>
           </div>
-          <button
-            onClick={() => copyVoucher('STADIA-DISPERSE-150')}
-            className="rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-2 text-xs font-bold text-black transition"
-          >
-            {copiedVoucher === 'STADIA-DISPERSE-150' ? 'Voucher Copied!' : 'Copy Dispersal Voucher'}
-          </button>
-        </div>
-      )}
-
-      {/* KPI Overview (Organizer or Context) */}
-      {!isFan && (
-        <div className="grid sm:grid-cols-3 gap-4">
-          <div className="rounded-3xl border border-neutral-800/80 bg-[#111114] p-5 shadow-xl">
-            <div className="text-xs text-neutral-400 font-medium">Core Zone Saturation</div>
-            <div className="mt-2 text-3xl font-black text-rose-400">95% Full</div>
-            <p className="mt-1 text-xs text-neutral-500">Nerul Stadium proximity rooms exhausted</p>
-          </div>
-
-          <div className="rounded-3xl border border-neutral-800/80 bg-[#111114] p-5 shadow-xl">
-            <div className="text-xs text-neutral-400 font-medium">Peripheral Capacity Absorption</div>
-            <div className="mt-2 text-3xl font-black text-emerald-400">11,700 Rooms</div>
-            <p className="mt-1 text-xs text-neutral-500">Available across Belapur, Kharghar & Panvel</p>
-          </div>
-
-          <div className="rounded-3xl border border-neutral-800/80 bg-[#111114] p-5 shadow-xl">
-            <div className="text-xs text-neutral-400 font-medium">Post-Event Dispersal Absorption</div>
-            <div className="mt-2 text-3xl font-black text-white">10,500 Pax</div>
-            <p className="mt-1 text-xs text-neutral-500">Capacity to absorb stadium exit crowd</p>
+          <div className="border-l border-white/30 pl-5 text-sm leading-6 text-neutral-400">
+            <span className="block text-4xl font-light text-white">01 / 02</span>
+            <p className="mt-4">Browse a meal after the match, then check nearby areas and transit links for your stay.</p>
           </div>
         </div>
-      )}
 
-      {/* Tab: Dining & Dispersal Partners */}
-      {activeTab === 'merchants' && (
-        <div className="space-y-6">
-          <div className="rounded-3xl border border-neutral-800/80 bg-[#111114] p-6 shadow-xl space-y-4">
-            <div>
-              <h3 className="text-base font-bold text-white">Official Partner Dining & Fan Festivals</h3>
-              <p className="text-xs text-neutral-400">
-                Flash your digital matchday pass or use the verified voucher codes below to unlock exclusive discounts.
-              </p>
-            </div>
+        <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-b border-white/20 pb-4">
+          <div className="flex gap-6" role="group" aria-label="Fan perks sections">
+            <button type="button" aria-pressed={activeTab === 'offers'} onClick={() => setActiveTab('offers')} className={'pb-3 text-xs font-semibold uppercase tracking-[0.14em] transition focus-visible:outline-2 focus-visible:outline-white ' + (activeTab === 'offers' ? 'border-b-2 border-white text-white' : 'text-neutral-500 hover:text-white')}>
+              Dining & perks <span className="ml-1 text-neutral-500">{offers.length.toString().padStart(2, '0')}</span>
+            </button>
+            <button type="button" aria-pressed={activeTab === 'areas'} onClick={() => setActiveTab('areas')} className={'pb-3 text-xs font-semibold uppercase tracking-[0.14em] transition focus-visible:outline-2 focus-visible:outline-white ' + (activeTab === 'areas' ? 'border-b-2 border-white text-white' : 'text-neutral-500 hover:text-white')}>
+              Stay & travel <span className="ml-1 text-neutral-500">{areas.length.toString().padStart(2, '0')}</span>
+            </button>
+          </div>
+          <p className="max-w-md text-xs leading-5 text-neutral-500">Reference content for this demo. Confirm any offer or hotel availability with the provider before making plans.</p>
+        </div>
 
-            <div className="grid md:grid-cols-2 gap-4 pt-2">
-              {merchants.map((m) => (
-                <div key={m.id} className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-5 space-y-3">
-                  <div className="flex items-start justify-between">
+        {loading && <p className="py-16 text-sm text-neutral-400" role="status">Loading fan perks…</p>}
+        {!loading && error && (
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/20 py-12" role="alert">
+            <p className="text-sm text-neutral-300">Fan perks are unavailable right now. {error.message}</p>
+            <button type="button" onClick={reload} className="border border-white/40 px-4 py-2 text-xs font-semibold uppercase tracking-wider hover:border-white">Try again</button>
+          </div>
+        )}
+
+        {!loading && !error && activeTab === 'offers' && (
+          <section id="fan-offers" aria-label="Dining and fan zones" className="pt-8">
+            <div className="mb-7 flex items-center gap-3"><Utensils className="h-5 w-5" /><h2 className="text-xl font-light uppercase tracking-[-0.03em]">Dining & fan zones</h2></div>
+            {offers.length === 0 ? <p className="py-12 text-sm text-neutral-400">No example offers are available.</p> : (
+              <div className="grid border-l border-t border-white/20 md:grid-cols-2 xl:grid-cols-3">
+                {offers.map((offer, index) => (
+                  <article key={offer.id} className="flex min-h-72 flex-col justify-between border-b border-r border-white/20 p-6 transition hover:bg-white/[0.04]">
                     <div>
-                      <span className="rounded-full bg-violet-500/20 text-violet-300 px-2.5 py-0.5 text-[10px] font-bold uppercase">
-                        {m.category} · {m.zone}
-                      </span>
-                      <h4 className="mt-2 text-sm font-bold text-white">{m.name}</h4>
-                    </div>
-                    <span className="rounded-full bg-emerald-500/20 text-emerald-400 px-2.5 py-1 text-xs font-bold">
-                      {m.discount_pct}% OFF
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-neutral-400">{m.description}</p>
-
-                  <div className="flex items-center justify-between text-xs pt-3 border-t border-neutral-800/80">
-                    <span className="text-neutral-400">Dispersal Window: <strong>+{m.egress_delay_mins} mins</strong></span>
-                    <button
-                      onClick={() => copyVoucher(m.voucher_code)}
-                      className="font-mono text-xs font-bold text-emerald-400 hover:text-emerald-300 bg-neutral-800 hover:bg-neutral-700 px-3 py-1 rounded-lg transition"
-                    >
-                      {copiedVoucher === m.voucher_code ? 'Copied!' : `CODE: ${m.voucher_code}`}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Tab: Accommodation Zones */}
-      {activeTab === 'zones' && (
-        <div className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
-            {zones.map((zone) => {
-              const isOverloaded = zone.occupancy_pct >= 90;
-              const isRecommended = zone.is_overflow_recommended === 1;
-
-              return (
-                <div
-                  key={zone.id}
-                  className={`rounded-3xl border p-6 shadow-xl space-y-4 transition ${
-                    isOverloaded
-                      ? 'border-rose-500/30 bg-gradient-to-br from-[#141418] to-rose-950/10'
-                      : isRecommended
-                        ? 'border-emerald-500/30 bg-gradient-to-br from-[#141418] to-emerald-950/10'
-                        : 'border-neutral-800 bg-[#141418]'
-                  }`}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-black text-white">{zone.zone_name}</span>
-                        {isRecommended && (
-                          <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                            Recommended Overflow
-                          </span>
-                        )}
-                        {isOverloaded && (
-                          <span className="rounded-full bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-400">
-                            Saturated
-                          </span>
-                        )}
+                      <div className="flex items-start justify-between gap-4">
+                        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-500">{String(index + 1).padStart(2, '0')} / {offer.zone}</p>
+                        <span className="text-sm font-semibold text-white">{offer.discountPct}% off</span>
                       </div>
-                      <p className="text-xs text-neutral-400 mt-1">{zone.distance_km} km to DY Patil Stadium</p>
+                      <h3 className="mt-9 text-2xl font-light tracking-[-0.04em]">{offer.name}</h3>
+                      <p className="mt-3 text-sm leading-6 text-neutral-400">{offer.description}</p>
                     </div>
+                    <div className="mt-8 flex flex-wrap items-end justify-between gap-3 border-t border-white/20 pt-4">
+                      <div><span className="block text-[10px] uppercase tracking-widest text-neutral-500">Example code</span><span className="mt-1 block font-mono text-xs text-white">{offer.code}</span></div>
+                      <button type="button" onClick={() => copyCode(offer.code)} className="border border-white/40 px-3 py-2 text-[10px] font-semibold uppercase tracking-widest transition hover:border-white hover:bg-white hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Copy code</button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+            <p role="status" aria-live="polite" className="min-h-8 pt-3 text-xs text-neutral-400">{copyStatus}</p>
+          </section>
+        )}
 
-                    <div className="text-right">
-                      <div className="text-lg font-black text-white">{zone.occupancy_pct}%</div>
-                      <div className="text-[10px] uppercase tracking-wider text-neutral-500 font-mono">Occupancy</div>
-                    </div>
+        {!loading && !error && activeTab === 'areas' && (
+          <section id="fan-areas" aria-label="Accommodation areas" className="pt-8">
+            <div className="mb-7 flex items-center gap-3"><Hotel className="h-5 w-5" /><h2 className="text-xl font-light uppercase tracking-[-0.03em]">Areas to consider</h2></div>
+            {areas.length === 0 ? <p className="py-12 text-sm text-neutral-400">No accommodation areas are available.</p> : (
+              <div className="border-t border-white/20">
+                {areas.map((area, index) => (
+                  <div key={area.id} className="grid gap-3 border-b border-white/20 py-6 sm:grid-cols-[65px_1fr_1fr] sm:items-center">
+                    <span className="font-mono text-xs text-neutral-500">{String(index + 1).padStart(2, '0')}</span>
+                    <h3 className="text-xl font-light tracking-[-0.04em]">{area.name}</h3>
+                    <p className="text-sm text-neutral-400">{area.transit}</p>
                   </div>
-
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-neutral-800">
-                    <div
-                      className={`h-full rounded-full transition-all duration-500 ${
-                        isOverloaded ? 'bg-rose-500' : isRecommended ? 'bg-emerald-500' : 'bg-blue-500'
-                      }`}
-                      style={{ width: `${zone.occupancy_pct}%` }}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 text-xs pt-1">
-                    <div className="rounded-xl border border-neutral-800/80 bg-neutral-900/60 p-2.5">
-                      <span className="text-neutral-400">Available Rooms:</span>
-                      <p className="text-sm font-bold text-white mt-0.5">{zone.available_rooms?.toLocaleString() || zone.available_rooms}</p>
-                    </div>
-                    <div className="rounded-xl border border-neutral-800/80 bg-neutral-900/60 p-2.5">
-                      <span className="text-neutral-400">Surge Multiplier:</span>
-                      <p className="text-sm font-bold text-white mt-0.5">{zone.surge_multiplier}x</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Alliance Request Banner */}
-      <div className="rounded-3xl border border-neutral-800/80 bg-gradient-to-r from-neutral-900 to-[#141418] p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="space-y-1">
-          <h3 className="text-base font-bold text-white">Join the Mega-Event Hospitality Alliance</h3>
-          <p className="text-xs text-neutral-400 max-w-xl">
-            Are you a hotelier or restaurant operator in MMR? Synchronize your real-time inventory with Stadia Nexus to receive guaranteed shuttle-connected tourist bookings.
-          </p>
-        </div>
-
-        <button
-          onClick={() => setPartnerEnrolled(true)}
-          className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-2.5 text-xs font-bold text-black hover:bg-neutral-200 transition shrink-0"
-        >
-          {partnerEnrolled ? (
-            <>
-              <CheckCircle className="h-3.5 w-3.5 text-black" />
-              Partnership Request Logged
-            </>
-          ) : (
-            'Enroll Property'
-          )}
-        </button>
+                ))}
+              </div>
+            )}
+            <Link href="/journey-planner" className="mt-8 inline-flex items-center gap-2 border-b border-white pb-2 text-xs font-semibold uppercase tracking-wider hover:text-neutral-300">Build a travel plan <ArrowRight className="h-4 w-4" /></Link>
+          </section>
+        )}
       </div>
     </div>
   );

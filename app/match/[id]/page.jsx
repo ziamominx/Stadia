@@ -66,12 +66,6 @@ export default function MatchDetailPage() {
           >
             ← Public Matches Directory
           </Link>
-          <Link
-            href={`/organizer/events/${localEvent.id}`}
-            className="rounded-full bg-emerald-500 hover:bg-emerald-400 px-5 py-2.5 text-xs font-black text-black"
-          >
-            Open Executive Console &amp; Put Live
-          </Link>
         </div>
       </div>
     );
@@ -100,7 +94,7 @@ export default function MatchDetailPage() {
 
       <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">
+          <p className="text-xs font-bold uppercase tracking-widest text-neutral-300">
             {kickoffLong(match.kickoff_time)}
           </p>
           <h1 className="mt-1 text-3xl font-black text-white sm:text-4xl">
@@ -126,7 +120,7 @@ export default function MatchDetailPage() {
         <div>
           {!block ? (
             <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-6 text-center space-y-4">
-              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center border border-neutral-500 bg-neutral-900 text-white">
                 <Ticket className="h-6 w-6" />
               </div>
               <div>
@@ -136,25 +130,9 @@ export default function MatchDetailPage() {
                 </p>
               </div>
 
-              {/* What's Included Callout */}
-              <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 p-3.5 text-left space-y-2">
-                <span className="text-[10px] font-mono uppercase font-bold text-emerald-400 tracking-wider">
-                  Included Free with Every Pass:
-                </span>
-                <ul className="text-xs text-neutral-300 space-y-1.5 font-medium">
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
-                    <span>Auto-Reserved Parking Bay (P1) or Metro Corridor</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
-                    <span>₹250 Stadium Food Voucher (T-3h Early Ingress)</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shrink-0" />
-                    <span>Turnstile Fast-Track Lane + Offline Wallet Pass</span>
-                  </li>
-                </ul>
+              <div className="border-t border-neutral-700 pt-4 text-left">
+                <span className="text-[10px] font-mono uppercase font-bold text-neutral-300 tracking-wider">How this demo works</span>
+                <p className="mt-2 text-xs leading-relaxed text-neutral-400">Choose a block and seat, enter your details, and generate a pass you can reopen from My Pass. This reservation does not grant real venue entry.</p>
               </div>
             </div>
           ) : (

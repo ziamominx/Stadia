@@ -1,30 +1,41 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SEAT_ROWS, SEAT_COLS, seatLabel } from '../lib/seats.js';
 import { inr } from '../lib/format.js';
 
 export default function SeatPicker({ block, onConfirm, onClose }) {
   const [selected, setSelected] = useState(null);
+  const closeRef = useRef(null);
   const sold = new Set(block?.soldSeats ?? []);
   const available = block?.available ?? 0;
+  useEffect(() => {
+    closeRef.current?.focus();
+    const closeOnEscape = (event) => { if (event.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [onClose]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onClose}>
       <div
-        className="fade-up flex max-h-[92vh] w-full max-w-2xl flex-col rounded-2xl border border-neutral-800 bg-[#0e0e12] p-5 shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="seat-picker-title"
+        className="fade-up flex max-h-[92vh] w-full max-w-2xl flex-col border border-neutral-600 bg-[#0e0e12] p-5 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-bold text-white">
+            <h3 id="seat-picker-title" className="text-lg font-bold text-white">
               Block {block?.block_name} · {inr(block?.price)}
             </h3>
             <p className="text-xs text-neutral-400">
-              {available} seats left · click a seat to select it, then confirm
+              {available} seats left · select a seat, then confirm
             </p>
           </div>
           <button
+            ref={closeRef}
             onClick={onClose}
             aria-label="Close"
             className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/5 text-neutral-400 hover:bg-white/10 hover:text-white transition"
@@ -36,7 +47,8 @@ export default function SeatPicker({ block, onConfirm, onClose }) {
           </button>
         </div>
 
-        <div className="mb-3 grid grid-cols-[24px_repeat(24,minmax(0,1fr))] gap-1 overflow-y-auto pr-1 max-h-[52vh]">
+        <div className="mb-3 overflow-x-auto overflow-y-auto max-h-[52vh]">
+        <div className="grid min-w-[660px] grid-cols-[24px_repeat(24,minmax(0,1fr))] gap-1 pr-1">
           <div />
           {Array.from({ length: SEAT_COLS }, (_, c) => (
             <div key={c} className="text-center text-[9px] font-semibold text-neutral-500">
@@ -58,12 +70,14 @@ export default function SeatPicker({ block, onConfirm, onClose }) {
                     disabled={isSold}
                     onClick={() => setSelected(label)}
                     title={label}
+                    aria-label={`Seat ${label}${isSold ? ', sold' : ''}`}
+                    aria-pressed={isSel}
                     className={`h-5 w-full rounded-[4px] text-[8px] font-bold transition ${
                       isSold
                         ? 'cursor-not-allowed bg-neutral-900 border border-neutral-800 text-neutral-600'
                         : isSel
-                          ? 'bg-emerald-500 text-black ring-2 ring-emerald-400'
-                          : 'bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 hover:bg-emerald-500 hover:text-black'
+                          ? 'bg-white text-black ring-2 ring-neutral-400'
+                          : 'bg-neutral-800 border border-neutral-600 text-neutral-100 hover:bg-white hover:text-black'
                     }`}
                   >
                     {isSold ? '' : c + 1}
@@ -72,6 +86,7 @@ export default function SeatPicker({ block, onConfirm, onClose }) {
               })}
             </div>
           ))}
+        </div>
         </div>
 
         <div className="flex items-center justify-between gap-3 border-t border-neutral-800 pt-3">
@@ -94,7 +109,7 @@ export default function SeatPicker({ block, onConfirm, onClose }) {
             <button
               disabled={!selected}
               onClick={() => selected && onConfirm(selected)}
-              className="rounded-xl bg-emerald-500 hover:bg-emerald-400 px-5 py-2.5 text-xs font-black text-black shadow-lg shadow-emerald-500/20 transition disabled:cursor-not-allowed disabled:opacity-40 flex items-center gap-1.5"
+              className="bg-white hover:bg-neutral-200 px-5 py-2.5 text-xs font-black text-black transition disabled:cursor-not-allowed disabled:opacity-40 flex items-center gap-1.5"
             >
               <span>Proceed to 1-Click Pass Checkout → ₹{block?.price?.toLocaleString('en-IN')}</span>
             </button>

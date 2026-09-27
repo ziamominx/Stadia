@@ -11,6 +11,7 @@ const links = [
   ["/stadium", "Stadium"],
   ["/street-map", "Street Map"],
   ["/crowd", "Crowd"],
+  ["/hazard-drill", "Hazard Drill"],
   ["/ground", "Ground"],
   ["/transport", "Transport"],
   ["/hospitality", "Hospitality"],

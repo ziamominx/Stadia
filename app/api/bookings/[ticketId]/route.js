@@ -7,7 +7,10 @@ export async function GET(request, { params }) {
   const { ticketId } = await params;
 
   const booking = stadiaStore.getBooking(ticketId);
-  const match = MATCHES_DATA.find((m) => m.id === booking.matchId) || MATCHES_DATA[0];
+  if (!booking) {
+    return NextResponse.json({ error: 'Ticket not found. Check the pass ID or book a match first.' }, { status: 404 });
+  }
+  const match = booking.matchSnapshot || MATCHES_DATA.find((m) => m.id === booking.matchId) || MATCHES_DATA[0];
   const block = BLOCKS_DATA.find((b) => b.id === booking.seatBlockId) || BLOCKS_DATA[0];
 
   const isLocal = booking.visitor_type !== 'outstation';
@@ -158,7 +161,7 @@ export async function GET(request, { params }) {
     block: {
       id: block.id,
       block_name: block.block_name,
-      price: block.price,
+      price: booking.price ?? block.price,
       capacity: block.capacity,
       side: block.side,
     },
