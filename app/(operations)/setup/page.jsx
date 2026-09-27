@@ -115,17 +115,17 @@ export default function EventSetupWizard() {
               border: "1px solid",
               borderColor:
                 currentStep === s.id
-                  ? "#ffffff"
+                  ? "var(--ink)"
                   : currentStep > s.id
-                  ? "rgba(255, 255, 255, 0.4)"
+                  ? "var(--muted)"
                   : "var(--ops-line)",
               background:
                 currentStep === s.id
-                  ? "rgba(255, 255, 255, 0.08)"
-                  : "rgba(255, 255, 255, 0.015)",
+                  ? "var(--active-nav)"
+                  : "var(--surface)",
               borderTop:
                 currentStep === s.id
-                  ? "2px solid #ffffff"
+                  ? "2px solid var(--ink)"
                   : "1px solid var(--ops-line)",
               transition: "all 0.2s ease",
             }}
@@ -134,13 +134,13 @@ export default function EventSetupWizard() {
               style={{
                 fontFamily: "JetBrains Mono, monospace",
                 fontSize: "10px",
-                color: currentStep >= s.id ? "#ffffff" : "var(--ops-muted)",
+                color: currentStep >= s.id ? "var(--ink)" : "var(--ops-muted)",
                 marginBottom: "4px",
               }}
             >
               0{s.id} // {s.id < currentStep ? "✓ DONE" : s.id === currentStep ? "ACTIVE" : "PENDING"}
             </div>
-            <div style={{ fontSize: "12px", fontWeight: "600", color: "#ffffff" }}>
+            <div style={{ fontSize: "12px", fontWeight: "600", color: "var(--ink)" }}>
               {s.title}
             </div>
           </button>
@@ -165,8 +165,7 @@ export default function EventSetupWizard() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="ops-input"
-                  style={{ width: "100%", background: "#000", border: "1px solid var(--ops-line)", color: "#fff", padding: "10px 14px" }}
+                  className="ops-setup-text"
                 />
               </div>
 
@@ -178,7 +177,7 @@ export default function EventSetupWizard() {
                   type="text"
                   value={formData.venue}
                   onChange={(e) => setFormData({ ...formData, venue: e.target.value })}
-                  style={{ width: "100%", background: "#000", border: "1px solid var(--ops-line)", color: "#fff", padding: "10px 14px" }}
+                  className="ops-setup-text"
                 />
               </div>
 
@@ -190,7 +189,7 @@ export default function EventSetupWizard() {
                   type="number"
                   value={formData.capacity}
                   onChange={(e) => setFormData({ ...formData, capacity: Number(e.target.value) })}
-                  style={{ width: "100%", background: "#000", border: "1px solid var(--ops-line)", color: "#fff", padding: "10px 14px" }}
+                  className="ops-setup-text"
                 />
               </div>
 
@@ -202,7 +201,7 @@ export default function EventSetupWizard() {
                   type="number"
                   value={formData.expected}
                   onChange={(e) => setFormData({ ...formData, expected: Number(e.target.value) })}
-                  style={{ width: "100%", background: "#000", border: "1px solid var(--ops-line)", color: "#fff", padding: "10px 14px" }}
+                  className="ops-setup-text"
                 />
               </div>
               <label className="ops-setup-field">VENUE LATITUDE

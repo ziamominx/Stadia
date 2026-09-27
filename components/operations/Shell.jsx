@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OperationsProvider, useOperations } from "./OperationsProvider";
 import { Badge, Button, clock, Modal } from "./UI";
 import { canAccess } from "@/lib/operations/auth.mjs";
@@ -17,7 +17,7 @@ const links = [
   ["/setup", "Event Setup"],
   ["/analytics", "Analytics"],
 ];
-function Frame({ children }) {
+function Frame({ children, theme, onToggleTheme }) {
   const { state, send, busy, role } = useOperations();
   const path = usePathname(),
     router = useRouter();
@@ -45,6 +45,10 @@ function Frame({ children }) {
           <span className="ops-clock">
             {clock(state?.minute || 0, state?.event.startTime)} <small>SIM / IST</small>
           </span>
+          <button className="ops-theme-toggle" type="button" onClick={onToggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} aria-pressed={theme === "light"}>
+            <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+            <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+          </button>
           {role === "executive" && <Button onClick={() => setBroadcast(true)}>↗ PA Broadcast</Button>}
           <span className="ops-kicker">{role || "Connecting"}</span>
           <Button onClick={async () => { await fetch("/api/ops-session", { method: "DELETE" }); router.replace("/login"); router.refresh(); }}>Sign out</Button>
@@ -148,10 +152,22 @@ function Frame({ children }) {
   );
 }
 export default function Shell({ children }) {
+  const [theme, setTheme] = useState("dark");
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("stadia_ops_theme");
+      if (saved === "light" || saved === "dark") setTheme(saved);
+    } catch {}
+  }, []);
+  const toggleTheme = () => setTheme((current) => {
+    const next = current === "dark" ? "light" : "dark";
+    try { window.localStorage.setItem("stadia_ops_theme", next); } catch {}
+    return next;
+  });
   return (
-    <div className="ops">
+    <div className="ops" data-theme={theme}>
       <OperationsProvider>
-        <Frame>{children}</Frame>
+        <Frame theme={theme} onToggleTheme={toggleTheme}>{children}</Frame>
       </OperationsProvider>
     </div>
   );
