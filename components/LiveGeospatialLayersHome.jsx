@@ -61,9 +61,9 @@ export default function LiveGeospatialLayersHome() {
             scrollWheelZoom: false,
           }).setView([STADIUM.lat, STADIUM.lng], 16);
 
-          L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
-            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
           }).addTo(map);
 
           mapInstance.current = map;
@@ -175,7 +175,7 @@ export default function LiveGeospatialLayersHome() {
             Initializing satellite radar...
           </div>
         ) : (
-          <div ref={mapRef} className="h-full w-full" />
+          <div ref={mapRef} className="map-dark-tiles h-full w-full" />
         )}
       </div>
     </div>

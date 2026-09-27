@@ -2223,7 +2223,7 @@
 .ops-geo-map { width: 100%; min-height: 360px; height: min(52vw, 540px); }
 .ops-geo-wrap > p { position: absolute; z-index: 500; bottom: 18px; left: 16px; right: 60px; width: fit-content; background: var(--map-caption-bg); color: var(--map-caption-ink); border: 1px solid var(--line); padding: 6px 9px; font-size: 10px; }
 .ops-geo-map .leaflet-container { border-radius: 0; }
-.ops[data-theme="light"] .ops-geo-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) saturate(.45) contrast(.9); }
+.ops[data-theme="dark"] .ops-geo-map .leaflet-tile-pane { filter: invert(1) hue-rotate(180deg) saturate(.45) brightness(.82) contrast(1.08); }
 .ops-geo-error { position: absolute; z-index: 600; top: 12px; left: 12px; right: 12px; width: fit-content; padding: 8px 11px; background: var(--surface); color: var(--red); border: 1px solid var(--red); font-size: 11px; }
 .ops-map-pin > span, .ops-map-pin > strong { background: var(--surface); color: var(--ink); }
 .ops-map-coordinate, .ops-map-coordinate span { color: var(--ink); }

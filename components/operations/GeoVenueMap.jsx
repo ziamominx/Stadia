@@ -22,10 +22,9 @@ export default function GeoVenueMap({ state, selected, onSelect, layer = "gates"
     import("leaflet").then(({ default: L }) => {
       if (!active || !container.current) return;
       map.current = L.map(container.current, { scrollWheelZoom: false, zoomControl: true }).setView([lat, lng], 17);
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
-        subdomains: "abcd",
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; CARTO',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
       }).on("tileerror", () => setError("Map tiles are unavailable; check your internet connection.")).addTo(map.current);
       markers.current = L.layerGroup().addTo(map.current);
       observer = new ResizeObserver(() => map.current?.invalidateSize({ pan: false }));
@@ -105,6 +104,6 @@ export default function GeoVenueMap({ state, selected, onSelect, layer = "gates"
   return <div className="ops-geo-wrap">
     <div ref={container} className="ops-geo-map" role="application" aria-label="Street map of the venue with eight selectable stadium gates and reference layers" />
     {error && <div className="ops-geo-error" role="status">{error}</div>}
-    <p>OpenStreetMap/CARTO tiles · Gates A–H use DY Patil reference positions · Gate load is four-sector simulation · {dyPatil ? "Parking, hotel and route locations are reference data." : "Off-site landmarks are hidden for this venue."}</p>
+    <p>OpenStreetMap tiles · Gates A–H use DY Patil reference positions · Gate load is four-sector simulation · {dyPatil ? "Parking, hotel and route locations are reference data." : "Off-site landmarks are hidden for this venue."}</p>
   </div>;
 }

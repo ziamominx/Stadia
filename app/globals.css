@@ -74,6 +74,12 @@ body {
   border-radius: 1.5rem;
 }
 
+/* Keep OpenStreetMap's keyless street tiles in the dark visual system.
+   The filter is limited to the tile pane, so route and gate colours stay true. */
+.map-dark-tiles .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) saturate(.45) brightness(.82) contrast(1.08);
+}
+
 /* Nexus Glows and Animations */
 @keyframes pulseGlow {
   0%, 100% { opacity: 0.4; transform: scale(1); }
