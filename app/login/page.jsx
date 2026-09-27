@@ -7,6 +7,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [role, setRole] = useState("executive");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   async function submit(event) {
@@ -30,9 +31,13 @@ export default function LoginPage() {
       <h1>Enter the event.</h1>
       <p>Sign in with your assigned operations role. The executive account controls the full platform; team accounts open only their console.</p>
       <label>Assigned role<select value={role} onChange={(event) => setRole(event.target.value)}><option value="executive">Executive</option><option value="ground">Ground team</option><option value="transport">Transport team</option><option value="hospitality">Hospitality team</option></select></label>
-      <label>Password<input type="password" autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} /></label>
+      <label htmlFor="ops-password">Password</label>
+      <div className="ops-password-field">
+        <input id="ops-password" type={showPassword ? "text" : "password"} autoComplete="current-password" required value={password} onChange={(event) => setPassword(event.target.value)} />
+        <button type="button" className="ops-password-toggle" aria-pressed={showPassword} aria-controls="ops-password" onClick={() => setShowPassword((visible) => !visible)}>{showPassword ? "Hide" : "Show"}</button>
+      </div>
       {error && <p role="alert" className="ops-login-error">{error}</p>}
-      <button type="submit" disabled={busy}>{busy ? "Signing in…" : "Open my console ↗"}</button>
+      <button type="submit" className="ops-login-submit" disabled={busy}>{busy ? "Signing in…" : "Open my console ↗"}</button>
     </form>
   </main>;
 }
