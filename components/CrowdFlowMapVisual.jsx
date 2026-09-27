@@ -23,7 +23,7 @@ export default function CrowdFlowMapVisual({
 
       if (!mapInstanceRef.current) {
         // DY Patil Stadium coordinates
-        const center = [19.0583, 73.0075];
+        const center = [19.04194, 73.02667];
         const map = L.map(mapContainerRef.current, {
           center,
           zoom: 15,
@@ -144,7 +144,7 @@ export default function CrowdFlowMapVisual({
         iconAnchor: [60, 12],
       });
 
-      L.marker([19.0583, 73.0075], { icon: stadiumIcon }).addTo(layerGroup);
+      L.marker([19.04194, 73.02667], { icon: stadiumIcon }).addTo(layerGroup);
     });
   }, [segments, mixingPoints, selectedPoint, onSelectPoint]);
 

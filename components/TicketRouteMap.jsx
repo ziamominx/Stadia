@@ -20,7 +20,7 @@ export default function TicketRouteMap({ route, height = '340px' }) {
       }
 
       // Default center around DY Patil Stadium
-      const defaultCenter = [19.0565, 73.0075];
+      const defaultCenter = [19.04194, 73.02667];
       const map = L.map(mapContainerRef.current, {
         center: defaultCenter,
         zoom: 14,

@@ -30,9 +30,9 @@ export default function EventSetupWizard() {
   // Form state initialized with standard stadium parameters
   const [formData, setFormData] = useState({
     name: "India vs Australia — World Cup Group Stage",
-    venue: "Mumbai International Stadium (Wankhede)",
-    lat: 18.9389,
-    lng: 72.8258,
+    venue: "DY Patil Stadium, Nerul",
+    lat: 19.04194,
+    lng: 73.02667,
     capacity: 54000,
     expected: 48500,
     date: "2026-10-01",

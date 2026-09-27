@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useApi, api } from '../../lib/api.js';
+import { DY_PATIL, STADIUM_GATES } from '../../lib/operations/dy-patil.mjs';
 import {
   DoorClosed,
   Navigation,
@@ -15,68 +16,36 @@ import {
   Ticket,
 } from '../../components/Icons';
 
-const GATE_RADAR_DATA = [
-  {
-    id: 1,
-    name: 'Gate A · North Concourse',
-    side: 'Local & VIP Transit',
-    waitMins: 4,
-    status: 'OPTIMAL',
-    statusColor: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30',
-    turnstilesOpen: 12,
-    lat: 19.0601,
-    lng: 73.0075,
-    note: 'Fast-track express lanes active. Optimal for Blocks A & H.',
-  },
-  {
-    id: 2,
-    name: 'Gate B · West Concourse',
-    side: 'Local Vehicle & Rail Spine',
-    waitMins: 18,
-    status: 'CONGESTED',
-    statusColor: 'text-rose-400 bg-rose-500/15 border-rose-500/30',
-    turnstilesOpen: 10,
-    lat: 19.0592,
-    lng: 73.0065,
-    note: 'Heavy queue. Divert 150m North to Gate A for 4-min entry.',
-  },
-  {
-    id: 3,
-    name: 'Gate C · East Concourse',
-    side: 'Hotel Shuttle Drop Hub',
-    waitMins: 5,
-    status: 'OPTIMAL',
-    statusColor: 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30',
-    turnstilesOpen: 14,
-    lat: 19.0585,
-    lng: 73.0090,
-    note: 'Dedicated outstation high-throughput turnstiles. Smooth flow.',
-  },
-  {
-    id: 4,
-    name: 'Gate D · South Concourse',
-    side: 'Highway Express Corridor',
-    waitMins: 9,
-    status: 'MODERATE',
-    statusColor: 'text-amber-400 bg-amber-500/15 border-amber-500/30',
-    turnstilesOpen: 8,
-    lat: 19.0575,
-    lng: 73.0080,
-    note: 'Moderate pacing. Best for Blocks D & E.',
-  },
-];
+const SAMPLE_WAITS = [4, 18, 5, 9, 7, 6, 12, 4];
+const GATE_RADAR_DATA = STADIUM_GATES.map((gate, index) => {
+  const waitMins = SAMPLE_WAITS[index];
+  const status = waitMins > 15 ? 'CONGESTED' : waitMins >= 8 ? 'MODERATE' : 'OPTIMAL';
+  return {
+    id: gate.id,
+    name: `Gate ${gate.id} · ${gate.name}`,
+    side: `${gate.corridor === 'local' ? 'Local' : 'Outstation'} approach`,
+    waitMins,
+    status,
+    statusColor: status === 'CONGESTED' ? 'text-rose-400 bg-rose-500/15 border-rose-500/30' : status === 'MODERATE' ? 'text-amber-400 bg-amber-500/15 border-amber-500/30' : 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30',
+    lat: gate.lat,
+    lng: gate.lng,
+    note: 'Illustrative wait estimate. Confirm current conditions with venue staff.',
+  };
+});
 
 const FAN_WAYPOINTS = [
-  { name: 'Water Refill Point 1', type: 'water', lat: 19.0605, lng: 73.0072, desc: 'Free chilled RO water' },
-  { name: 'Medical Station North', type: 'medical', lat: 19.0608, lng: 73.0069, desc: 'First-aid & paramedic' },
-  { name: 'Official Fan Store', type: 'merch', lat: 19.0598, lng: 73.0085, desc: 'Team jerseys & caps' },
-  { name: 'Food Court & Lounge', type: 'food', lat: 19.0580, lng: 73.0088, desc: 'Food trucks & beverages' },
+  { name: 'Water refill area', type: 'water', lat: 19.0437, lng: 73.0262, desc: 'Indicative north concourse location' },
+  { name: 'Medical support area', type: 'medical', lat: 19.0436, lng: 73.0269, desc: 'Indicative first-aid location' },
+  { name: 'Fan merchandise area', type: 'merch', lat: 19.0419, lng: 73.0285, desc: 'Indicative east concourse location' },
+  { name: 'Food and lounge area', type: 'food', lat: 19.0403, lng: 73.0269, desc: 'Indicative south concourse location' },
 ];
 
 export default function FanCrowdFlowPage() {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
-  const [selectedGate, setSelectedGate] = useState(1);
+  const amenitiesRef = useRef(null);
+  const [mapReady, setMapReady] = useState(false);
+  const [selectedGate, setSelectedGate] = useState('A');
   const [filterAmenities, setFilterAmenities] = useState(true);
   const { data: ecosystem } = useApi(api.ecosystem);
 
@@ -89,7 +58,7 @@ export default function FanCrowdFlowPage() {
       if (!isMounted || !containerRef.current || mapRef.current) return;
       const L = leafletModule.default || leafletModule;
 
-      const map = L.map(containerRef.current, { zoomControl: true }).setView([19.0588, 73.0075], 16);
+      const map = L.map(containerRef.current, { zoomControl: true }).setView([DY_PATIL.lat, DY_PATIL.lng], 17);
       mapRef.current = map;
 
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -112,10 +81,28 @@ export default function FanCrowdFlowPage() {
         });
 
         const marker = L.marker([gate.lat, gate.lng], { icon }).addTo(map);
-        marker.bindPopup(`<b>${gate.name}</b><br/>Wait time: <b>${gate.waitMins} mins</b><br/>${gate.note}`);
+        marker.bindPopup(`<b>${gate.name}</b><br/>Illustrative wait: <b>${gate.waitMins} mins</b><br/>${gate.note}`);
+        marker.on('click', () => setSelectedGate(gate.id));
       });
+      amenitiesRef.current = L.layerGroup().addTo(map);
+      setMapReady(true);
+    });
 
-      // Add Amenity Markers
+    return () => {
+      isMounted = false;
+      mapRef.current?.remove();
+      mapRef.current = null;
+      amenitiesRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mapReady || !amenitiesRef.current) return;
+    let active = true;
+    import('leaflet').then((leafletModule) => {
+      if (!active || !amenitiesRef.current) return;
+      const L = leafletModule.default || leafletModule;
+      amenitiesRef.current.clearLayers();
       if (filterAmenities) {
         FAN_WAYPOINTS.forEach((pt) => {
           const icon = L.divIcon({
@@ -126,15 +113,18 @@ export default function FanCrowdFlowPage() {
             </div>`,
             iconSize: [0, 0],
           });
-          L.marker([pt.lat, pt.lng], { icon }).addTo(map);
+          L.marker([pt.lat, pt.lng], { icon }).addTo(amenitiesRef.current).bindTooltip(`${pt.name} · indicative location`);
         });
       }
     });
 
-    return () => {
-      isMounted = false;
-    };
-  }, [filterAmenities]);
+    return () => { active = false; };
+  }, [mapReady, filterAmenities]);
+
+  useEffect(() => {
+    const gate = GATE_RADAR_DATA.find((item) => item.id === selectedGate);
+    if (mapReady && gate) mapRef.current?.panTo([gate.lat, gate.lng], { animate: true });
+  }, [mapReady, selectedGate]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-6 fade-up">
@@ -144,14 +134,14 @@ export default function FanCrowdFlowPage() {
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-emerald-400" />
             <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-emerald-400">
-              Live Stadium Radar · Ingress Telemetry
+              Stadium Gate Reference · Illustrative Waits
             </span>
           </div>
           <h1 className="mt-1 text-2xl font-black text-white sm:text-3xl">
             Walkway Crowd Radar & Gate Wait Times
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-neutral-400">
-            Real-time turnstile queue tracker, pedestrian approach paths, and fan waypoint amenities around DY Patil Stadium.
+            DY Patil Stadium gate locations with illustrative wait estimates and sample amenity positions. No live turnstile feed is connected.
           </p>
         </div>
 
@@ -180,7 +170,7 @@ export default function FanCrowdFlowPage() {
               </span>
             </div>
             <p className="mt-1 text-xs text-neutral-200">
-              Gate B West Concourse is experiencing heavy lines. All ticket holders can use <strong className="text-white">Gate A North Concourse</strong> with verified QR fast-track access.
+              A demo diversion is active. Follow venue staff directions and check your ticket before switching gates.
             </p>
           </div>
         </div>
@@ -202,7 +192,7 @@ export default function FanCrowdFlowPage() {
                 onChange={(e) => setFilterAmenities(e.target.checked)}
                 className="h-3.5 w-3.5 rounded border-neutral-700 bg-neutral-800 text-emerald-500 focus:ring-0"
               />
-              <span>Show Water & First-Aid</span>
+              <span>Show sample amenities</span>
             </label>
           </div>
 
@@ -220,22 +210,23 @@ export default function FanCrowdFlowPage() {
                 <span className="h-2.5 w-2.5 rounded-full bg-rose-400 inline-block" /> &gt;15 min wait
               </span>
             </div>
-            <span className="font-mono text-neutral-500">Auto-refreshes every 30s</span>
+            <span className="font-mono text-neutral-500">Reference map · waits are illustrative</span>
           </div>
         </div>
 
         {/* Live Gate Cards */}
         <div className="space-y-3">
           <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-400 font-mono">
-            Turnstile Ingress Queue Status
+            Illustrative Gate Wait Estimates
           </h2>
 
           <div className="space-y-3">
             {GATE_RADAR_DATA.map((g) => (
-              <div
+              <button type="button"
                 key={g.id}
                 onClick={() => setSelectedGate(g.id)}
-                className={`cursor-pointer rounded-2xl border p-4 transition shadow-lg ${
+                aria-pressed={selectedGate === g.id}
+                className={`block w-full text-left cursor-pointer rounded-2xl border p-4 transition shadow-lg ${
                   selectedGate === g.id
                     ? 'border-emerald-500/80 bg-neutral-900/90 ring-1 ring-emerald-500/50'
                     : 'border-neutral-800 bg-[#0e0e12] hover:border-neutral-700'
@@ -251,16 +242,12 @@ export default function FanCrowdFlowPage() {
                     </div>
                     <p className="text-[11px] text-neutral-400 mt-0.5">{g.side}</p>
                   </div>
-                  <div className="text-right">
-                    <div className="font-mono text-xs font-bold text-neutral-300">{g.turnstilesOpen} Lanes</div>
-                    <div className="text-[10px] text-neutral-500 uppercase font-mono">Turnstiles Open</div>
-                  </div>
                 </div>
 
                 <p className="mt-2 text-xs text-neutral-300 leading-relaxed border-t border-neutral-800/80 pt-2">
                   {g.note}
                 </p>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -276,7 +263,7 @@ export default function FanCrowdFlowPage() {
             <div key={idx} className="rounded-2xl border border-neutral-800 bg-[#141418] p-3.5 space-y-1">
               <div className="text-xs font-bold text-white">{w.name}</div>
               <div className="text-[11px] text-neutral-400">{w.desc}</div>
-              <div className="text-[10px] text-emerald-400 font-mono pt-1">Free Access · Walkway</div>
+              <div className="text-[10px] text-emerald-400 font-mono pt-1">Illustrative location · confirm on site</div>
             </div>
           ))}
         </div>
