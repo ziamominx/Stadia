@@ -34,6 +34,10 @@ function Frame({ children, theme, onToggleTheme }) {
         <Link href="/command-center" className="ops-brand">
           STADIA<span>●</span>
         </Link>
+        <button className="ops-theme-toggle" type="button" onClick={onToggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} aria-pressed={theme === "light"}>
+          <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+          <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+        </button>
         <div className="ops-event">
           <strong>{state?.event.name || "Event command"}</strong>
           <span>{state?.event.date ? `${state.event.date} · ` : ""}{state?.event.venue || "Connecting to venue"}</span>
@@ -45,10 +49,6 @@ function Frame({ children, theme, onToggleTheme }) {
           <span className="ops-clock">
             {clock(state?.minute || 0, state?.event.startTime)} <small>SIM / IST</small>
           </span>
-          <button className="ops-theme-toggle" type="button" onClick={onToggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} aria-pressed={theme === "light"}>
-            <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
-            <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
-          </button>
           {role === "executive" && <Button onClick={() => setBroadcast(true)}>↗ PA Broadcast</Button>}
           <span className="ops-kicker">{role || "Connecting"}</span>
           <Button onClick={async () => { await fetch("/api/ops-session", { method: "DELETE" }); router.replace("/login"); router.refresh(); }}>Sign out</Button>
