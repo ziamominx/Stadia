@@ -577,7 +577,6 @@
 .ops-map-canvas {
   position: relative;
   aspect-ratio: 900/570;
-  min-height: 360px;
 }
 .ops-stadium {
   display: block;
@@ -1730,9 +1729,6 @@
   .ops-workspace {
     grid-template-columns: minmax(0, 1fr) 420px;
   }
-  .ops-map-canvas {
-    min-height: 530px;
-  }
   .ops-heading h1 {
     font-size: 34px;
   }
@@ -1781,9 +1777,6 @@
   }
   .ops-hub strong {
     font-size: 10px;
-  }
-  .ops-map-canvas {
-    min-height: 350px;
   }
   .ops-map-pin > span {
     font-size: 8px;
@@ -1844,9 +1837,6 @@
   }
   .ops-workspace {
     grid-template-columns: 1fr;
-  }
-  .ops-map-canvas {
-    min-height: 380px;
   }
   .ops-map-toolbar {
     flex-direction: row;
@@ -1994,10 +1984,6 @@
   }
   .ops-rail {
     display: flex;
-  }
-  .ops-map-canvas {
-    min-height: 330px;
-    aspect-ratio: auto;
   }
   .ops-map-toolbar {
     flex-wrap: wrap;
@@ -2153,11 +2139,6 @@
   .ops-metrics {
     padding: 18px 0;
     margin-bottom: 20px;
-  }
-  .ops-map-canvas {
-    aspect-ratio: auto;
-    height: 440px;
-    min-height: 0;
   }
   .ops-response {
     padding: 16px;

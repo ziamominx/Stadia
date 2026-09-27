@@ -68,7 +68,7 @@ export default function VenueMap({
         </div>
         <svg
           viewBox="0 0 900 570"
-          preserveAspectRatio="none"
+          preserveAspectRatio="xMidYMid meet"
           className="ops-stadium"
           aria-hidden="true"
         >
