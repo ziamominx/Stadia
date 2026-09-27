@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { gateStatus } from "@/lib/operations/engine.mjs";
 import { Badge } from "./UI";
+import GeoVenueMap from "./GeoVenueMap";
 const positions = {
   north: [50, 20],
   east: [83, 51],
@@ -15,6 +16,7 @@ export default function VenueMap({
   mode = "crowd",
 }) {
   const [layer, setLayer] = useState("density");
+  const [view, setView] = useState("schematic");
   const west = state.zones[0],
     active = west.occupancy >= state.rules.warning;
   const color = (id) => {
@@ -26,7 +28,7 @@ export default function VenueMap({
         : "#087855";
   };
   return (
-    <section className="ops-map" aria-label="Interactive stadium schematic">
+    <section className="ops-map" aria-label="Interactive venue map">
       <div className="ops-map-toolbar">
         <span className="ops-kicker">
           {mode === "transport"
@@ -35,7 +37,9 @@ export default function VenueMap({
               ? "Personnel deployment map"
               : "Level 0 · Ground & concourse"}
         </span>
-        <div className="ops-segment" aria-label="Map layer">
+        <div className="ops-map-toolbar-actions"><div className="ops-segment" aria-label="Map view">
+          {["schematic", "street"].map((option) => <button key={option} type="button" aria-pressed={view === option} onClick={() => setView(option)}>{option === "street" ? "Street map" : "Schematic"}</button>)}
+        </div>{view === "schematic" && <div className="ops-segment" aria-label="Map layer">
           {["density", "flow", "exits"].map((l) => (
             <button
               key={l}
@@ -45,8 +49,9 @@ export default function VenueMap({
               {l}
             </button>
           ))}
-        </div>
+        </div>}</div>
       </div>
+      {view === "street" ? <GeoVenueMap state={state} selected={selected} onSelect={onSelect} /> : <>
       <div className="ops-map-canvas">
         <div className="ops-map-coordinate">
           VENUE SCHEMATIC / NOT TO SCALE
@@ -295,6 +300,7 @@ export default function VenueMap({
           <small>EAST RELIEF CORRIDOR</small>
         </div>
       </div>
+      </>}
       <div className="ops-map-legend">
         <Badge>Normal &lt;{state.rules.warning}%</Badge>
         <Badge tone="attention">

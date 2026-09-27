@@ -72,6 +72,12 @@ export default function CommandCenter() {
           <small>{state.tasks.filter((t) => t.flagged).length} tasks flagged</small>
         </div>
       </div>
+      {!!state.hospitalityRequests?.length && <Panel title="Hospitality requests" meta="EXECUTIVE ACTION">
+        <div className="ops-resource-grid">{state.hospitalityRequests.map((request) => <div key={request.id} className="ops-row">
+          <div><strong>{request.id}</strong><p>{request.message}</p></div>
+          {request.status === "open" ? <Button disabled={busy} onClick={() => send({ type: "hospitality_ack", id: request.id }, "Hospitality request acknowledged.")}>Acknowledge</Button> : <Badge>Acknowledged</Badge>}
+        </div>)}</div>
+      </Panel>}
 
       {/* MAP HERO — full width, situation card floats inside */}
       <div className="ops-map-hero">

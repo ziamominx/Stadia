@@ -261,8 +261,8 @@ function Configuration({ state, send, busy }) {
               </Button>
             </div>
             <p className="ops-muted">
-              State is held in server memory and resets on server restart. Demo
-              roles are presentation views, not authentication.
+              State is held in server memory and resets on server restart.
+              Operations accounts are role protected; telemetry remains simulated.
             </p>
           </div>
         </Panel>

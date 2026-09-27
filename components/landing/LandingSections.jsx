@@ -1,12 +1,66 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { scrollDestination } from "@/lib/landing/timeline.mjs";
 import { chapters } from "@/lib/landing/flight.mjs";
 
+const journey = [
+  ["Ticket", "One verified credential links the attendee to a seat, arrival window, gate, and onward journey."],
+  ["Transit", "Arrival and departure plans connect the venue to transport corridors and pickup points."],
+  ["Gate", "Gate assignments and queue forecasts help staff redirect pressure before bottlenecks form."],
+  ["Seat", "A seat anchors each guest's route from the correct entrance to the nearest concourse."],
+  ["Egress", "Exit readiness and incident response coordinate the route back out."],
+  ["Fleet", "Transport teams receive dispatch tasks and report progress against the same event state."],
+  ["Hospitality", "Hospitality teams see arrivals affecting their own capacity and service windows."],
+];
+const stakeholders = [
+  ["Venue", "Inspect gate loads, zone density, exit availability, and incidents.", "/crowd"],
+  ["Ground", "Receive tasks, acknowledge them, report blockers, and close work in the field.", "/ground"],
+  ["Transport", "Monitor the fleet and confirm route changes as they are dispatched.", "/transport"],
+  ["Executive", "Review the full event, configure thresholds, and approve interventions.", "/command-center"],
+  ["Hospitality", "Monitor guest services alongside the wider event response.", "/hospitality"],
+];
+const pipeline = [
+  ["Configure", "Set event capacity, gate thresholds, staffing, and response rules before opening."],
+  ["Observe", "Inspect readings and staff reports in one shared operational picture."],
+  ["Predict", "Flag rising pressure and prepare a response while there is time to act."],
+  ["Dispatch", "Send tasks to ground and transport, with status visible to command."],
+  ["Resolve", "Verify the outcome, close incidents, and keep an event timeline."],
+];
+const consoles = [
+  ["Command center", "/command-center", "Full event state, incidents, and coordinated decisions."],
+  ["Event creation", "/setup", "Configure the next event and commit operating parameters."],
+  ["Ground operations", "/ground", "Assigned tasks, personnel, and zone-level response."],
+  ["Transport operations", "/transport", "Fleet allocation, route instructions, and hub pressure."],
+  ["Incident response", "/incidents", "Investigate reports, dispatch teams, and verify resolution."],
+  ["Analytics", "/analytics", "Incident outcomes, occupancy history, and an audit log."],
+];
+
 export default function LandingSections() {
-  const handleExploreClick = (e) => {
-    e.preventDefault();
+  const [selected, setSelected] = useState(null);
+  const dialog = useRef(null);
+  useEffect(() => {
+    const targets = document.querySelectorAll(".lp-reveal");
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.IntersectionObserver) {
+      targets.forEach((target) => target.classList.add("is-visible"));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) if (entry.isIntersecting) {
+        entry.target.classList.add("is-visible");
+        observer.unobserve(entry.target);
+      }
+    }, { threshold: 0.12, rootMargin: "0px 0px -20px 0px" });
+    targets.forEach((target) => observer.observe(target));
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    if (selected && dialog.current && !dialog.current.open) dialog.current.showModal();
+    if (!selected && dialog.current?.open) dialog.current.close();
+  }, [selected]);
+  const explore = (event) => {
+    event.preventDefault();
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       document.getElementById("problem")?.scrollIntoView({ behavior: "instant" });
       return;
@@ -14,253 +68,59 @@ export default function LandingSections() {
     const track = document.getElementById("stadium-journey");
     if (!track) return;
     const start = track.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({
-      top: scrollDestination(start, track.offsetHeight, window.innerHeight, chapters[0].at),
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: scrollDestination(start, track.offsetHeight, window.innerHeight, chapters[0].at), behavior: "smooth" });
   };
-
-  return (
-    <>
-      {/* Hero Overlay (Only visible at start of journey) */}
-      <div
-        className="lp-hero-content"
-      >
-        <div className="lp-hero-eyebrow">INTELLIGENT EVENT ORCHESTRATION</div>
-        <h1 className="lp-hero-title">
-          THE JOURNEY
-          <strong>IS THE CROWD.</strong>
-        </h1>
-        <p className="lp-hero-desc">
-          STADIA connects the complete attendee journey — from ticket issuance and stadium
-          access to autonomous transport and hospitality — through one synchronized operational layer.
-        </p>
-        <div className="lp-hero-actions">
-          <button onClick={handleExploreClick} className="lp-btn-primary">
-            Begin the flight ↓
-          </button>
-          <Link href="/command-center" className="lp-btn-secondary">
-            Enter Platform ↗
-          </Link>
-        </div>
-        <a className="lp-skip-journey" href="#problem">Skip animation ↓</a>
-      </div>
-
-      <div className="lp-scroll-track" id="stadium-journey" aria-hidden="true" />
-
-      {/* Post-Journey Editorial Sections */}
-      <section className="lp-editorial">
-        <div id="problem" className="lp-section">
-          <div className="lp-section-kicker">01 // THE SYSTEM PROBLEM</div>
-          <h2 className="lp-section-heading">
-            MEGA EVENTS DON'T FAIL <strong>IN ONE PLACE.</strong>
-          </h2>
-          <p className="lp-section-body">
-            Congestion is rarely caused by a single gate, road, shuttle, or security checkpoint.
-            It emerges when tens of thousands of individual journeys collide across isolated operational
-            silos. Traditional event operations respond to symptoms at bottlenecks rather than anticipating
-            the systemic flow upstream.
-          </p>
-
-          <div className="lp-network-track">
-            <div className="lp-network-node">01 TICKET ISSUANCE</div>
-            <div className="lp-network-arrow">→</div>
-            <div className="lp-network-node">02 URBAN TRANSIT</div>
-            <div className="lp-network-arrow">→</div>
-            <div className="lp-network-node">03 PERIMETER GATES</div>
-            <div className="lp-network-arrow">→</div>
-            <div className="lp-network-node">04 SEAT ASSIGNMENT</div>
-            <div className="lp-network-arrow">→</div>
-            <div className="lp-network-node">05 CONCOURSE EGRESS</div>
-            <div className="lp-network-arrow">→</div>
-            <div className="lp-network-node">06 MOBILITY FLEET</div>
-            <div className="lp-network-arrow">→</div>
-            <div className="lp-network-node">07 HOSPITALITY SYNC</div>
-          </div>
-        </div>
-
-        <div className="lp-section">
-          <div className="lp-section-kicker">02 // THE ARCHITECTURAL SHIFT</div>
-          <h2 className="lp-section-heading">
-            MANAGE THE JOURNEY. <strong>AND YOU MANAGE THE CROWD.</strong>
-          </h2>
-          <p className="lp-section-body">
-            Attendee behavior inside the bowl is directly governed by external transit timing,
-            credential distribution, and perimeter pacing. When all stakeholders share a single
-            predictive state model, crowd surges are dissipated 20 minutes before physical density peaks.
-          </p>
-        </div>
-
-        <div id="architecture" className="lp-section">
-          <div className="lp-section-kicker">03 // UNIFIED EVENT MESH</div>
-          <h2 className="lp-section-heading">
-            FIVE STAKEHOLDERS. <strong>ONE IMMUTABLE TRUTH.</strong>
-          </h2>
-          <p className="lp-section-body">
-            STADIA replaces isolated radios, spreadsheets, and separate dispatch centers with an
-            integrated event state engine updated at sub-second frequency.
-          </p>
-
-          <div className="lp-stages-grid">
-            <div className="lp-stage-card">
-              <div className="lp-stage-num">01 / VENUE</div>
-              <div className="lp-stage-title">Turnstiles & Concourses</div>
-              <div className="lp-stage-desc">
-                High-throughput optical gates, concourse density pressure sensors, and adaptive egress routing.
-              </div>
-            </div>
-
-            <div className="lp-stage-card">
-              <div className="lp-stage-num">02 / GROUND</div>
-              <div className="lp-stage-title">Stewards & Security</div>
-              <div className="lp-stage-desc">
-                Automated incident dispatch, perimeter barricade management, and real-time medical escort corridors.
-              </div>
-            </div>
-
-            <div className="lp-stage-card">
-              <div className="lp-stage-num">03 / TRANSPORT</div>
-              <div className="lp-stage-title">Fleets & Corridors</div>
-              <div className="lp-stage-desc">
-                Smart shuttle balancing, dynamic signal priority vectors, and arterial congestion relief dispatch.
-              </div>
-            </div>
-
-            <div className="lp-stage-card">
-              <div className="lp-stage-num">04 / ORGANIZER</div>
-              <div className="lp-stage-title">Executive Command</div>
-              <div className="lp-stage-desc">
-                Global event timeline calibration, match scheduling sync, and automated inter-agency broadcast feeds.
-              </div>
-            </div>
-
-            <div className="lp-stage-card">
-              <div className="lp-stage-num">05 / HOSPITALITY</div>
-              <div className="lp-stage-title">VIP & Partners</div>
-              <div className="lp-stage-desc">
-                Hotel arrival check-in sync, luxury fleet pre-positioning, and frictionless verified VIP credentials.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="lp-section">
-          <div className="lp-section-kicker">04 // ORCHESTRATION PIPELINE</div>
-          <h2 className="lp-section-heading">
-            CONTINUOUS <strong>AUTONOMOUS CONTROL.</strong>
-          </h2>
-          <p className="lp-section-body">
-            Five synchronized stages execute cyclically throughout the event lifecycle:
-          </p>
-
-          <div className="lp-stages-grid">
-            <div className="lp-stage-card">
-              <div className="lp-stage-num">STAGE 01</div>
-              <div className="lp-stage-title">Configure</div>
-              <div className="lp-stage-desc">
-                Ingest venue spatial geometry, gate limits, transit schedules, and historical crowd velocity profiles.
-              </div>
-            </div>
-
-            <div className="lp-stage-card">
-              <div className="lp-stage-num">STAGE 02</div>
-              <div className="lp-stage-title">Observe</div>
-              <div className="lp-stage-desc">
-                Aggregate turnstile deltas, vehicle GPS coordinates, sensor telemetry, and steward incident alerts.
-              </div>
-            </div>
-
-            <div className="lp-stage-card">
-              <div className="lp-stage-num">STAGE 03</div>
-              <div className="lp-stage-title">Predict</div>
-              <div className="lp-stage-desc">
-                Forecast surge velocities and queuing buildup up to 25 minutes prior to physical manifestation.
-              </div>
-            </div>
-
-            <div className="lp-stage-card">
-              <div className="lp-stage-num">STAGE 04</div>
-              <div className="lp-stage-title">Dispatch</div>
-              <div className="lp-stage-desc">
-                Deploy dynamic gate valves, shuttle reassignments, and targeted crowd guidance notifications.
-              </div>
-            </div>
-
-            <div className="lp-stage-card">
-              <div className="lp-stage-num">STAGE 05</div>
-              <div className="lp-stage-title">Resolve</div>
-              <div className="lp-stage-desc">
-                Close perimeter loops, log response metrics, and publish automated audit records for safety authorities.
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div id="platform" className="lp-section">
-          <div className="lp-section-kicker">05 // OPERATIONAL PLATFORM</div>
-          <h2 className="lp-section-heading">
-            BUILT FOR <strong>REAL-TIME OPERATIONS.</strong>
-          </h2>
-          <p className="lp-section-body">
-            Explore the deployed operational consoles governing live venues worldwide:
-          </p>
-
-          <div className="lp-platform-grid">
-            <Link href="/command-center" className="lp-platform-card" style={{ textDecoration: "none", color: "inherit" }}>
-              <h4>Command Center ↗</h4>
-              <p>
-                Panoramic radar, real-time stadium corridor telemetry, health metrics, and automated alert dispatch.
-              </p>
-            </Link>
-
-            <Link href="/ground" className="lp-platform-card" style={{ textDecoration: "none", color: "inherit" }}>
-              <h4>Ground Dispatch ↗</h4>
-              <p>
-                Perimeter gate status, steward zone tracking, medical rapid-response teams, and gate pressure relief.
-              </p>
-            </Link>
-
-            <Link href="/transport" className="lp-platform-card" style={{ textDecoration: "none", color: "inherit" }}>
-              <h4>Transport Operations ↗</h4>
-              <p>
-                Autonomous shuttle tracking, arterial signal clearance vectors, congestion heatmaps, and bus dispatch.
-              </p>
-            </Link>
-
-            <Link href="/event-control" className="lp-platform-card" style={{ textDecoration: "none", color: "inherit" }}>
-              <h4>Incident Response ↗</h4>
-              <p>
-                Structured SOP playbooks, inter-agency escalation workflows, and coordinated emergency protocols.
-              </p>
-            </Link>
-
-            <Link href="/analytics" className="lp-platform-card" style={{ textDecoration: "none", color: "inherit" }}>
-              <h4>Event Analytics ↗</h4>
-              <p>
-                Ingress/egress throughput curves, gate efficiency analysis, incident response latency, and safety audits.
-              </p>
-            </Link>
-
-            <Link href="/command-center" className="lp-platform-card" style={{ textDecoration: "none", color: "inherit" }}>
-              <h4>Master Simulation ↗</h4>
-              <p>
-                Synthetic stress-testing engine simulating catastrophic transit failures and surge cascades.
-              </p>
-            </Link>
-          </div>
-        </div>
-
-        <div className="lp-final-cta">
-          <div className="lp-section-kicker">THE COMPLETE PLATFORM</div>
-          <h2>
-            EVERY EVENT HAS A JOURNEY.
-            <strong>STADIA ORCHESTRATES IT.</strong>
-          </h2>
-          <Link href="/command-center" className="lp-btn-primary">
-            Enter STADIA Platform ↗
-          </Link>
-        </div>
-      </section>
-    </>
+  const card = ([title, detail, href], index, prefix) => (
+    <button className="lp-stage-card lp-reveal" key={title} type="button" onClick={() => setSelected({ title, detail, href })} aria-label={`Explore ${title}`}>
+      <span className="lp-stage-num">{prefix} {String(index + 1).padStart(2, "0")}</span>
+      <span className="lp-stage-title">{title}</span>
+      <span className="lp-stage-open">Explore ↗</span>
+    </button>
   );
+  return <>
+    <div className="lp-hero-content">
+      <div className="lp-hero-eyebrow">INTELLIGENT EVENT ORCHESTRATION</div>
+      <h1 className="lp-hero-title">THE JOURNEY<strong>IS THE CROWD.</strong></h1>
+      <p className="lp-hero-desc">One shared view of every moment, from stadium entry to the journey home.</p>
+      <div className="lp-hero-actions">
+        <button onClick={explore} className="lp-btn-primary">Begin the flight ↓</button>
+        <Link href="/command-center" className="lp-btn-secondary">Enter Platform ↗</Link>
+      </div>
+      <a className="lp-skip-journey" href="#problem">Skip animation ↓</a>
+    </div>
+    <div className="lp-scroll-track" id="stadium-journey" aria-hidden="true" />
+    <section className="lp-editorial">
+      <div id="problem" className="lp-section lp-reveal">
+        <div className="lp-section-kicker">01 // ONE JOURNEY</div>
+        <h2 className="lp-section-heading">CROWDS MOVE <strong>BETWEEN SYSTEMS.</strong></h2>
+        <p className="lp-section-body">Select a moment to see how it connects to the next.</p>
+        <div className="lp-network-track">{journey.map(([title, detail], index) => <button key={title} type="button" className="lp-network-node" onClick={() => setSelected({ title, detail })}>{String(index + 1).padStart(2, "0")} {title} <span aria-hidden="true">↗</span></button>)}</div>
+      </div>
+      <div id="architecture" className="lp-section">
+        <div className="lp-section-kicker lp-reveal">02 // SHARED OPERATIONS</div>
+        <h2 className="lp-section-heading lp-reveal">FIVE TEAMS. <strong>ONE EVENT STATE.</strong></h2>
+        <div className="lp-stages-grid">{stakeholders.map((item, index) => card(item, index, "TEAM"))}</div>
+      </div>
+      <div className="lp-section">
+        <div className="lp-section-kicker lp-reveal">03 // RESPONSE LOOP</div>
+        <h2 className="lp-section-heading lp-reveal">SEE IT. <strong>ACT TOGETHER.</strong></h2>
+        <div className="lp-stages-grid">{pipeline.map((item, index) => card(item, index, "STEP"))}</div>
+      </div>
+      <div id="platform" className="lp-section">
+        <div className="lp-section-kicker lp-reveal">04 // PLATFORM</div>
+        <h2 className="lp-section-heading lp-reveal">OPEN THE <strong>RIGHT CONSOLE.</strong></h2>
+        <div className="lp-platform-grid">{consoles.map(([title, href, detail]) => <Link key={href} href={href} className="lp-platform-card lp-reveal"><span className="lp-stage-title">{title} ↗</span><span className="lp-platform-summary">{detail}</span></Link>)}</div>
+      </div>
+      <div className="lp-final-cta lp-reveal">
+        <div className="lp-section-kicker">THE COMPLETE PLATFORM</div>
+        <h2>EVERY EVENT HAS A JOURNEY.<strong>STADIA ORCHESTRATES IT.</strong></h2>
+        <Link href="/command-center" className="lp-btn-primary">Enter STADIA Platform ↗</Link>
+      </div>
+    </section>
+    <dialog className="lp-detail-dialog" ref={dialog} onClose={() => setSelected(null)} onClick={(event) => { if (event.target === dialog.current) setSelected(null); }} aria-label={selected?.title || "Details"}>
+      <div className="lp-detail-top"><span>STADIA / SYSTEM DETAIL</span><button type="button" onClick={() => setSelected(null)} aria-label="Close details">×</button></div>
+      <h2>{selected?.title}</h2><p>{selected?.detail}</p>
+      {selected?.href && <Link href={selected.href} onClick={() => setSelected(null)}>Open {selected.title} ↗</Link>}
+    </dialog>
+  </>;
 }

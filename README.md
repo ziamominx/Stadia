@@ -1,6 +1,14 @@
-# STADIA — Event Command Platform (`hc002`)
+# STADIA — Landing and Event Command Platform (`landing-page`)
 
-The new operations experience opens at `/command-center` (also the default `/` route). It implements the six supplied UI references in Next.js, with a connected crowd-response simulation, fire/medical tasks, parking controls, and outcome analytics.
+## Landing branch operations access
+
+The landing branch uses a dark operations theme and role-checked access. Create `.env.local` from [`.env.example`](.env.example) and set a random 32+ character session secret and distinct passwords for the executive, ground, transport, and hospitality accounts. Then run `npm run dev` or `npm run build && npm start`. Open `/login`; accounts have eight-hour HTTP-only signed sessions. Executive can open every operations console. Team accounts are restricted to their own page and permitted commands, including direct API calls.
+
+`/setup` commits event name, venue coordinates, capacity, expected attendance, staffing, gate processing capacity, fleet size, and warning thresholds into the shared operations state. The new map toggle uses live OpenStreetMap/CARTO tiles. Gate pins are approximate and occupancy remains simulated. Hotel inventory is a seeded reference dataset. There is no connected turnstile, GPS, hotel, payment, or public-address provider, so those functions must not be presented as live field data. The operations state remains in server memory and does not persist across restarts or reliably synchronize across multiple server instances.
+
+The six landing consoles are accessible from the post-flight platform section. A user can expand the journey and system cards with mouse, touch, or keyboard. Motion respects reduced-motion preferences.
+
+The public 3D landing journey opens at `/`. The operations experience opens at `/command-center` after role sign-in. It implements the six supplied UI references in Next.js, with a connected crowd-response simulation, fire/medical tasks, parking controls, and outcome analytics.
 
 ```sh
 npm ci
@@ -9,7 +17,7 @@ npm run build
 npm start
 ```
 
-Read [hc002 implementation and demo guide](MD/HC002_IMPLEMENTATION.md) for the walkthrough, architecture, and simulation boundaries. The original landing page is available at `/fan`; the earlier project documentation follows below.
+Read [hc002 implementation and demo guide](MD/HC002_IMPLEMENTATION.md) for the original operations walkthrough and simulation boundaries. The fan experience is available at `/fan`; the earlier project documentation follows below.
 
 ---
 
@@ -46,7 +54,7 @@ exists.
 | Backend & APIs | Native Next.js Route Handlers (`app/api/*`) |
 | State & Domain Mesh | In-Memory Master Domain Registry (`lib/eventsData.js` & `lib/stadiaStore.js`) |
 | Geospatial / Routing | Leaflet OpenStreetMap layers, Haversine route assignment, perimeter buffers |
-| Notifications | WhatsApp Business API (mock webhook / dispatch engine) |
+| Notifications | Local WhatsApp message preview; no provider connected |
 
 Payments, hotel inventory and partner referrals are mock stubs returning realistic mega-event data.
 
@@ -93,18 +101,11 @@ npm start          # starts Next.js production server on :3000
 6. **Routing decision proof** — book a west-side seat as a local driver and the ticket shows
    the load-aware assignment in action, e.g. *"P3 was 88% full — reassigned to P4 (60%)"*,
    also logged to the server console.
-7. **WhatsApp** — every booking/completion triggers the WhatsApp sender; without env vars it
-   prints a formatted message to the server console (also resendable from the ticket page).
+7. **WhatsApp preview** — the ticket page generates a message preview. It does not send a message.
 
-## WhatsApp Cloud API (optional)
+## WhatsApp delivery
 
-Set these env vars to send real messages via Meta's sandbox instead of the mock log:
-
-```
-WHATSAPP_TOKEN=...
-WHATSAPP_PHONE_ID=...
-WHATSAPP_TO=<verified recipient number>
-```
+The current routes are preview-only. Connecting a verified WhatsApp Business account and delivery API is future integration work.
 
 ## Project layout
 

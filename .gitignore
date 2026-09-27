@@ -9,6 +9,8 @@ build/
 *.db-wal
 *.log
 .env
+.env.local
+.env.*.local
 .DS_Store
 .freebuff/
 .agent/skills/

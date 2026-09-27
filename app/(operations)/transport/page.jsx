@@ -152,7 +152,7 @@ export default function Transport() {
             <div className="ops-padded">
               <div className="ops-row">
                 <span className="ops-kicker">Active coaches</span>
-                <strong>{25 - standby} / 25</strong>
+                <strong>{state.buses.length - standby} / {state.buses.length}</strong>
               </div>
               <div className="ops-row" style={{ marginTop: 10 }}>
                 <span className="ops-kicker">Diverted · P3 → P4</span>

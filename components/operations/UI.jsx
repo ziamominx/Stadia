@@ -2,8 +2,11 @@
 
 import { useEffect, useRef } from "react";
 export const number = (value) => new Intl.NumberFormat("en-IN").format(value);
-export const clock = (minute) =>
-  `${String(19 + Math.floor((30 + minute) / 60)).padStart(2, "0")}:${String((30 + minute) % 60).padStart(2, "0")}`;
+export const clock = (minute, startTime = "19:30") => {
+  const [hour, minuteOfHour] = startTime.split(":").map(Number);
+  const total = (hour * 60 + minuteOfHour + minute + 1440) % 1440;
+  return `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+};
 export const label = (value) => String(value).replaceAll("_", " ");
 export function Badge({ tone = "normal", children }) {
   return (

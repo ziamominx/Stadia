@@ -478,7 +478,7 @@ export default function ConfirmationPage() {
               <h3 className="font-bold text-white">WhatsApp Matchday Media Pass</h3>
             </div>
             <p className="mt-0.5 text-xs text-neutral-400">
-              Offline digital pass image and turnstile directions sent straight to your phone.
+              Preview the matchday message. No WhatsApp provider is connected.
             </p>
           </div>
           <button
@@ -486,7 +486,7 @@ export default function ConfirmationPage() {
             disabled={waBusy}
             className="rounded-xl bg-emerald-500 hover:bg-emerald-400 px-4 py-2 text-xs font-bold text-black transition disabled:opacity-50"
           >
-            {waBusy ? 'Sending…' : 'Push to WhatsApp'}
+            {waBusy ? 'Preparing…' : 'Preview WhatsApp message'}
           </button>
         </div>
 
@@ -498,7 +498,7 @@ export default function ConfirmationPage() {
               <p className="flex items-start gap-2 text-emerald-300">
                 <CheckCircle className="h-4 w-4 shrink-0 mt-0.5" />
                 <span>
-                  Pass dispatched in <b>mock demo mode</b>. Server console logged full payload for ticket <b>{t.unique_ticket_id}</b>.
+                  Message preview generated for ticket <b>{t.unique_ticket_id}</b>. Nothing was sent to a phone.
                 </span>
               </p>
             ) : (

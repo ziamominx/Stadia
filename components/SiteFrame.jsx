@@ -13,6 +13,7 @@ const standalonePaths = [
   "/event-control",
   "/setup",
   "/analytics",
+  "/login",
 ];
 export default function SiteFrame({ children }) {
   const path = usePathname();

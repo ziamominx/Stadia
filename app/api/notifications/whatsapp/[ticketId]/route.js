@@ -18,14 +18,14 @@ export async function POST(request, { params }) {
       `Ticket: ${ticketId}\n` +
       `Gate: ${gate}\n` +
       `Seat: ${seat}\n` +
-      `Digital Pass: https://stadia-platform.vercel.app/ticket/${ticketId}/confirmation\n\n` +
+      `Digital Pass: ${new URL(`/ticket/${ticketId}/confirmation`, request.url).toString()}\n\n` +
       `Show QR code at optical express turnstiles for fast contactless entry.`;
 
     return NextResponse.json({
       ok: true,
-      status: 'dispatched',
-      channel: 'whatsapp_business_api',
-      recipient: booking.user?.phone || '+91 98200 12345',
+      status: 'preview_only',
+      channel: 'local_preview',
+      recipient: booking.user?.phone || null,
       messagePreview: message,
       mock: true,
       timestamp: new Date().toISOString(),

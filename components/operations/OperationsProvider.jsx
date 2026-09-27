@@ -15,6 +15,7 @@ export function OperationsProvider({ children }) {
   const [connectionError, setConnectionError] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
+  const [role, setRole] = useState(null);
   const pending = useRef(false),
     serial = useRef(0),
     mounted = useRef(true);
@@ -23,6 +24,10 @@ export function OperationsProvider({ children }) {
     const id = ++serial.current;
     try {
       const res = await fetch("/api/operations", { cache: "no-store" });
+      if (res.status === 401) {
+        window.location.assign("/login");
+        return;
+      }
       if (!res.ok)
         throw new Error("Telemetry unavailable. Retrying automatically.");
       const data = await res.json();
@@ -37,6 +42,7 @@ export function OperationsProvider({ children }) {
   }, []);
   useEffect(() => {
     mounted.current = true;
+    fetch("/api/ops-session", { cache: "no-store" }).then((response) => response.json()).then((data) => { if (mounted.current) setRole(data.role); }).catch(() => {});
     refresh();
     const timer = setInterval(refresh, 1000);
     return () => {
@@ -62,6 +68,10 @@ export function OperationsProvider({ children }) {
         body: JSON.stringify(action),
       });
       const data = await res.json();
+      if (res.status === 401) {
+        window.location.assign("/login");
+        return false;
+      }
       if (!res.ok) throw new Error(data.error || "The operation failed.");
       setState(data);
       setError("");
@@ -76,7 +86,7 @@ export function OperationsProvider({ children }) {
     }
   }, []);
   return (
-    <Context.Provider value={{ state, send, busy, error, refresh }}>
+    <Context.Provider value={{ state, send, busy, error, refresh, role }}>
       {(error || connectionError) && (
         <div className="ops-error" role="alert">
           {error || connectionError}{" "}

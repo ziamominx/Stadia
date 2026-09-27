@@ -61,7 +61,7 @@ export default function Navbar() {
               </span>
               <span className="hidden sm:inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                LIVE
+                DEMO
               </span>
             </div>
             <span className="text-[10px] text-neutral-400 font-medium truncate max-w-[150px] sm:max-w-none">

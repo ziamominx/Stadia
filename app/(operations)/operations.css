@@ -1,14 +1,18 @@
 @import url("https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
 
 .ops {
-  --canvas: #f7f8f5;
-  --surface: #fff;
-  --line: #dfe3dc;
-  --ink: #18201b;
-  --muted: #68716a;
-  --green: #087855;
-  --amber: #925b00;
-  --red: #bc2029;
+  --canvas: #0c0e0f;
+  --surface: #191d1e;
+  --surface-soft: #222829;
+  --line: #343c3c;
+  --ink: #f2f5f3;
+  --muted: #aab5af;
+  --green: #6cd0aa;
+  --amber: #f2b960;
+  --red: #ff8d90;
+  --ops-muted: var(--muted);
+  --ops-line: var(--line);
+  --ops-ink: var(--ink);
   background: var(--canvas);
   color: var(--ink);
   font:
@@ -16,7 +20,7 @@
     Arial,
     sans-serif;
   min-height: 100vh;
-  color-scheme: light;
+  color-scheme: dark;
   letter-spacing: -0.01em;
 }
 .ops * {
@@ -129,7 +133,7 @@
     box-shadow 0.15s;
 }
 .ops-button:hover:not(:disabled) {
-  background: #e9eee7;
+  background: var(--surface-soft);
 }
 .ops-button:active:not(:disabled) {
   transform: scale(0.98);
@@ -152,7 +156,7 @@
 .ops-button.danger {
   color: var(--red);
   border-color: var(--red);
-  background: #fff8f7;
+  background: var(--surface-soft);
 }
 .ops-button.full {
   width: 100%;
@@ -200,20 +204,20 @@
   font-size: 7px;
 }
 .ops-badge.normal {
-  background: #f1f8f2;
+  background: var(--surface-soft);
 }
 .ops-badge.attention {
-  background: #fff8e8;
+  background: var(--surface-soft);
 }
 .ops-badge.critical {
-  background: #fff1f0;
+  background: var(--surface-soft);
 }
 .ops-header {
   display: flex;
   gap: 20px;
   align-items: center;
   padding: 16px 28px;
-  background: #fff;
+  background: var(--surface);
   border-bottom: 1px solid var(--line);
 }
 .ops-brand {
@@ -273,7 +277,7 @@
   display: flex;
   gap: 5px;
   border-bottom: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   padding: 0 24px;
   overflow-x: auto;
   scrollbar-width: thin;
@@ -289,11 +293,11 @@
 }
 .ops-nav > a[aria-current] {
   border-color: var(--ink);
-  background: #f1f3ee;
+  background: var(--surface-soft);
   font-weight: 700;
 }
 .ops-nav > a:hover {
-  background: #f4f5f2;
+  background: var(--surface-soft);
 }
 .ops-nav .ops-fan {
   margin-left: auto;
@@ -311,7 +315,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 7px 28px;
-  background: #eaf0e7;
+  background: var(--surface-soft);
   color: #53604f;
   font-size: 10px;
   gap: 10px;
@@ -374,7 +378,7 @@
 .ops-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  background: #fff;
+  background: var(--surface);
   padding: 22px 0;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -487,7 +491,7 @@
 }
 .ops-map {
   border: 1px solid var(--line);
-  background: #f5f7f2;
+  background: var(--surface-soft);
   overflow: hidden;
 }
 .ops-map-toolbar {
@@ -497,7 +501,7 @@
   gap: 8px;
   padding: 12px 14px;
   border-bottom: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
 }
 .ops-segment {
   display: flex;
@@ -510,7 +514,7 @@
   font-weight: 500 !important;
   letter-spacing: 0.035em;
   text-transform: uppercase;
-  background: #f4f5f1;
+  background: var(--surface-soft);
   border: 0;
   border-right: 1px solid var(--line);
   padding: 6px 10px;
@@ -569,7 +573,7 @@
   cursor: pointer;
 }
 .ops-map-pin > span {
-  background: #fff;
+  background: var(--surface);
   border: 1px solid #dce1d9;
   box-shadow: 0 1px 3px #00000007;
   padding: 5px 7px;
@@ -585,7 +589,7 @@
   place-items: center;
   width: 37px;
   height: 37px;
-  background: #fff;
+  background: var(--surface);
   border: 1.5px solid currentColor;
   border-radius: 50%;
   font:
@@ -615,7 +619,7 @@
   animation: ops-sonar-pulse 2s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 }
 .ops-map-pin small {
-  background: #fff;
+  background: var(--surface);
   text-transform: uppercase;
   font:
     8px "JetBrains Mono",
@@ -678,7 +682,7 @@
 }
 .ops-situation-overlay-header {
   padding: 10px 14px;
-  background: #f1f3ef;
+  background: var(--surface-soft);
   border-bottom: 1px solid var(--line);
   display: flex;
   align-items: center;
@@ -707,7 +711,7 @@
 .ops-stat-bar {
   display: flex;
   gap: 0;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-bottom: none;
   font-variant-numeric: tabular-nums;
@@ -727,7 +731,7 @@
   position: relative;
 }
 .ops-stat-bar-item:hover {
-  background: #f8faf6;
+  background: var(--surface-soft);
 }
 .ops-stat-bar-item:last-child {
   border-right: 0;
@@ -789,7 +793,7 @@
   bottom: 9%;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   border-left: 3px solid currentColor;
   padding: 10px 12px;
@@ -819,7 +823,7 @@
   flex-wrap: wrap;
   align-items: center;
   padding: 12px;
-  background: #fff;
+  background: var(--surface);
   border-top: 1px solid var(--line);
 }
 .ops-map-legend .ops-badge {
@@ -838,7 +842,7 @@
   grid-template-columns: 1.2fr 1fr 100px;
   gap: 16px;
   padding: 18px;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
 }
 .ops-inspector h2 {
@@ -887,7 +891,7 @@
   align-items: start;
   gap: 5px;
   padding: 18px;
-  background: #fff;
+  background: var(--surface);
   border: 0;
   border-right: 1px solid var(--line);
   text-align: left;
@@ -899,7 +903,7 @@
     box-shadow 0.18s ease;
 }
 .ops-zone-strip > button:hover {
-  background: #f8faf6;
+  background: var(--surface-soft);
   transform: translateY(-1px);
 }
 .ops-zone-strip > button:active {
@@ -909,7 +913,7 @@
   border-right: 0;
 }
 .ops-zone-strip > button.selected {
-  background: #f0f5ec;
+  background: var(--surface-soft);
   box-shadow: inset 0 -3px 0 var(--green, #087855);
 }
 .ops-zone-strip strong {
@@ -944,7 +948,7 @@
 .ops-diagnostic {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  background: #f3f4f0;
+  background: var(--surface-soft);
   padding: 12px 6px;
 }
 .ops-diagnostic > div {
@@ -996,7 +1000,7 @@
   height: fit-content;
 }
 .ops-prediction {
-  background: #eff5ed;
+  background: var(--surface-soft);
   padding: 12px;
   margin-top: 16px;
   display: flex;
@@ -1028,7 +1032,7 @@
 }
 .ops-progress {
   height: 5px;
-  background: #e9ece5;
+  background: var(--surface-soft);
   margin: 10px 0;
   color: var(--green);
 }
@@ -1053,7 +1057,7 @@
   animation: ops-log-entry 0.25s ease-out both;
 }
 .ops-log > div:hover {
-  background: #fbfcf9;
+  background: var(--surface-soft);
 }
 .ops-log > div:last-child {
   border: 0;
@@ -1113,7 +1117,7 @@
   padding: 20px;
   border: 1px solid var(--line);
   font-size: 12px;
-  background: #eef2e9;
+  background: var(--surface-soft);
 }
 .ops-note p,
 .ops-weather p {
@@ -1126,7 +1130,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .ops-outlook > button {
-  background: #fff;
+  background: var(--surface);
   border: 0;
   border-bottom: 1px solid var(--line);
   border-right: 1px solid var(--line);
@@ -1134,7 +1138,7 @@
   padding: 20px;
 }
 .ops-outlook > button.selected {
-  background: #f3f6ef;
+  background: var(--surface-soft);
 }
 .ops-outlook h3 {
   font-size: 15px;
@@ -1210,7 +1214,7 @@
 .ops-task-card {
   border: 1px solid var(--line);
   border-left: 4px solid var(--green);
-  background: #fff;
+  background: var(--surface);
   border-radius: 4px;
   padding: 18px;
   margin-bottom: 16px;
@@ -1237,7 +1241,7 @@
 }
 .ops-task-card.flagged {
   border-left-color: var(--red);
-  background: #fffafa;
+  background: var(--surface-soft);
   animation: ops-card-entrance 0.3s ease-out both, ops-flagged-glow 1.8s ease-in-out infinite;
 }
 @keyframes ops-flagged-glow {
@@ -1271,7 +1275,7 @@
   text-transform: uppercase;
   letter-spacing: 0;
   flex: 1;
-  background: #eff1eb;
+  background: var(--surface-soft);
   color: #7d857a;
   padding: 7px 3px;
   text-align: center;
@@ -1319,7 +1323,7 @@
   font-size: 12px;
 }
 .ops-table th {
-  background: #f5f6f1;
+  background: var(--surface-soft);
   font-size: 9px;
   color: var(--muted);
   font-weight: 500;
@@ -1350,14 +1354,14 @@
 .ops-parking-grid > div {
   padding: 24px;
   border-right: 1px solid var(--line);
-  background: #fff;
+  background: var(--surface);
   transition:
     background 0.2s ease,
     transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
     box-shadow 0.2s ease;
 }
 .ops-parking-grid > div:hover {
-  background: #fafbf8;
+  background: var(--surface-soft);
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
 }
@@ -1394,10 +1398,10 @@
   border: 0;
   border-bottom: 1px solid var(--line);
   border-left: 3px solid transparent;
-  background: #fff;
+  background: var(--surface);
 }
 .ops-incident-item.selected {
-  background: #f2f6ed;
+  background: var(--surface-soft);
   border-left-color: var(--green);
 }
 .ops-incident-item h3 {
@@ -1449,7 +1453,7 @@
   display: flex;
   gap: 16px;
   align-items: center;
-  background: #edf3e8;
+  background: var(--surface-soft);
   border: 1px solid #d8e4d1;
   padding: 16px 20px;
   font-size: 12px;
@@ -1470,7 +1474,7 @@
 .ops-field textarea,
 .ops-exit-row select {
   border: 1px solid #ccd3c8;
-  background: #f7f9f4;
+  background: var(--surface-soft);
   color: var(--ink);
   padding: 10px 12px;
   border-radius: 0;
@@ -1518,7 +1522,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 30px;
-  background: #fff;
+  background: var(--surface);
 }
 .ops-emergency-panel .ops-kicker {
   color: var(--red);
@@ -1551,7 +1555,7 @@
   font:
     9px "JetBrains Mono",
     monospace;
-  background: #fff;
+  background: var(--surface);
   color: var(--muted);
 }
 .ops-footer strong {
@@ -1565,7 +1569,7 @@
   position: fixed;
   top: -100px;
   left: 20px;
-  background: #fff;
+  background: var(--surface);
   border: 2px solid var(--green);
   padding: 12px;
   z-index: 200;
@@ -1640,7 +1644,7 @@
   font-size: 18px;
 }
 .ops-error {
-  background: #ffebe8;
+  background: var(--surface-soft);
   color: var(--red);
   padding: 12px 28px;
   font-size: 12px;
@@ -1666,7 +1670,7 @@
 .ops-skeleton {
   height: 80px;
   max-width: 800px;
-  background: #e9ede4;
+  background: var(--surface-soft);
   margin-bottom: 20px;
   animation: ops-pulse 1.4s infinite alternate;
 }
@@ -2163,7 +2167,7 @@
   width: 65px;
   padding: 7px;
   border: 1px solid var(--line);
-  background: #f7f9f4;
+  background: var(--surface-soft);
   font-size: 12px;
 }
 .ops-resource-input .ops-button {
@@ -2173,3 +2177,33 @@
 .ops-emergency-panel {
   margin-top: 24px;
 }
+.ops-map-toolbar-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.ops-geo-wrap { position: relative; background: #121617; }
+.ops-geo-map { width: 100%; min-height: 360px; height: min(52vw, 540px); }
+.ops-geo-wrap > p { position: absolute; z-index: 500; bottom: 18px; left: 16px; right: 60px; width: fit-content; background: #121617e8; color: #e0e7e3; border: 1px solid #46504c; padding: 6px 9px; font-size: 10px; }
+.ops-geo-map .leaflet-container { border-radius: 0; }
+.ops-stadium ellipse[fill="#fff"] { fill: #181e1d; }
+.ops-stadium ellipse[fill="#e6eee8"] { fill: #25342d; }
+.ops-stadium rect[fill="#d8caac"] { fill: #777; }
+.ops-map-pin > span, .ops-map-pin > strong { background: var(--surface); color: var(--ink); }
+.ops-map-coordinate, .ops-map-coordinate span { color: var(--ink); }
+.ops-svg-label { fill: #aeb9b2; }
+.ops-setup-field { color: var(--muted); font-size: 11px; }
+.ops-setup-field input { width: 100%; margin-top: 6px; padding: 10px 14px; background: #050606; color: var(--ink); border: 1px solid var(--line); }
+.ops-setup-number { width: min(100%, 120px); padding: 8px 10px; background: #050606; color: var(--ink); border: 1px solid var(--line); font-family: "JetBrains Mono", monospace; }
+.ops-setup-review { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); text-align: left; margin: 0 0 24px; border: 1px solid var(--line); }
+.ops-setup-review > div { padding: 12px; border-bottom: 1px solid var(--line); }
+.ops-setup-review > div:nth-child(odd) { border-right: 1px solid var(--line); }
+.ops-setup-review dt { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .09em; }
+.ops-setup-review dd { margin: 5px 0 0; font-size: 12px; }
+@media (max-width: 600px) { .ops-setup-review { grid-template-columns: 1fr; } .ops-setup-review > div:nth-child(odd) { border-right: 0; } }
+.ops .ops-button.primary, .ops .ops-segment button[aria-pressed="true"], .ops .ops-toast { color: var(--canvas); }
+.ops .ops-nav > a[aria-current] { color: var(--ink); background: #2a3330; }
+.ops .ops-button.primary:hover:not(:disabled) { background: #d4e4dd; color: #101614; }
+.ops .ops-demo { color: var(--muted); }
+.ops .ops-note p, .ops .ops-map-coordinate, .ops .ops-map-coordinate span { color: var(--muted); }
+.ops .ops-badge.normal { color: #9de2bb; }
+.ops .ops-badge.attention { color: #f5c680; }
+.ops .ops-badge.critical { color: #ff9c9f; }
+.ops .ops-stadium { filter: brightness(.55); }
+@media (max-width: 650px) { .ops-geo-wrap > p { position: static; margin: 0; width: auto; } .ops-map-toolbar-actions { width: 100%; } }

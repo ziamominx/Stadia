@@ -10,7 +10,6 @@ import {
   Loading,
   Panel,
   Progress,
-  number,
 } from "@/components/operations/UI";
 
 const STEPS = [
@@ -32,9 +31,12 @@ export default function EventSetupWizard() {
   const [formData, setFormData] = useState({
     name: "India vs Australia — World Cup Group Stage",
     venue: "Mumbai International Stadium (Wankhede)",
+    lat: 18.9389,
+    lng: 72.8258,
     capacity: 54000,
     expected: 48500,
-    startTime: "19:30 IST",
+    date: "2026-10-01",
+    startTime: "19:30",
     gates: {
       west: { capacity: 18000, warningPct: 75, criticalPct: 90 },
       north: { capacity: 12000, warningPct: 75, criticalPct: 90 },
@@ -73,19 +75,12 @@ export default function EventSetupWizard() {
     if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
-  const handleLaunch = () => {
-    setCommitted(true);
-    send(
-      {
-        type: "task",
-        team: "ground",
-        desc: `Event core setup committed: ${formData.name} initialized with ${number(formData.expected)} expected spectators.`,
-      },
-      "Pre-event architecture committed to shared state."
-    );
-    setTimeout(() => {
+  const handleLaunch = async () => {
+    const result = await send({ type: "setup", config: formData }, "Event configuration committed.");
+    if (result) {
+      setCommitted(true);
       router.push("/command-center");
-    }, 1800);
+    }
   };
 
   return (
@@ -110,9 +105,10 @@ export default function EventSetupWizard() {
         }}
       >
         {STEPS.map((s) => (
-          <div
+          <button type="button"
             key={s.id}
             onClick={() => setCurrentStep(s.id)}
+            aria-current={currentStep === s.id ? "step" : undefined}
             style={{
               cursor: "pointer",
               padding: "12px",
@@ -147,7 +143,7 @@ export default function EventSetupWizard() {
             <div style={{ fontSize: "12px", fontWeight: "600", color: "#ffffff" }}>
               {s.title}
             </div>
-          </div>
+          </button>
         ))}
       </div>
 
@@ -209,6 +205,18 @@ export default function EventSetupWizard() {
                   style={{ width: "100%", background: "#000", border: "1px solid var(--ops-line)", color: "#fff", padding: "10px 14px" }}
                 />
               </div>
+              <label className="ops-setup-field">VENUE LATITUDE
+                <input type="number" step="any" min="-90" max="90" value={formData.lat} onChange={(e) => setFormData({ ...formData, lat: Number(e.target.value) })} />
+              </label>
+              <label className="ops-setup-field">VENUE LONGITUDE
+                <input type="number" step="any" min="-180" max="180" value={formData.lng} onChange={(e) => setFormData({ ...formData, lng: Number(e.target.value) })} />
+              </label>
+              <label className="ops-setup-field">EVENT DATE
+                <input type="date" value={formData.date} onChange={(e) => setFormData({ ...formData, date: e.target.value })} />
+              </label>
+              <label className="ops-setup-field">START TIME (VENUE LOCAL)
+                <input type="time" value={formData.startTime} onChange={(e) => setFormData({ ...formData, startTime: e.target.value })} />
+              </label>
             </div>
           )}
 
@@ -216,7 +224,7 @@ export default function EventSetupWizard() {
           {currentStep === 2 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
               <p style={{ fontSize: "12px", color: "var(--ops-muted)", margin: "0 0 8px" }}>
-                Calibrate throughput capacities and saturation alert thresholds per perimeter valve:
+                Set each gate's processing capacity. Global warning and critical thresholds are configured in step 5.
               </p>
               <div className="ops-table-wrap">
                 <table className="ops-table">
@@ -224,8 +232,6 @@ export default function EventSetupWizard() {
                     <tr>
                       <th>Gate Valve</th>
                       <th>Capacity (Spectators)</th>
-                      <th>Warning Threshold</th>
-                      <th>Critical Threshold</th>
                       <th>Target Flow</th>
                     </tr>
                   </thead>
@@ -235,13 +241,7 @@ export default function EventSetupWizard() {
                         <td>
                           <strong>{key.toUpperCase()} GATE</strong>
                         </td>
-                        <td>{number(gate.capacity)}</td>
-                        <td>
-                          <span className="ops-mono" style={{ color: "#eab308" }}>{gate.warningPct}%</span>
-                        </td>
-                        <td>
-                          <span className="ops-mono" style={{ color: "#ef4444" }}>{gate.criticalPct}%</span>
-                        </td>
+                        <td><input className="ops-setup-number" type="number" min="100" max={formData.capacity} value={gate.capacity} aria-label={`${key} gate capacity`} onChange={(e) => setFormData((previous) => ({ ...previous, gates: { ...previous.gates, [key]: { ...previous.gates[key], capacity: Number(e.target.value) } } }))} /></td>
                         <td>
                           <span className="ops-mono">{Math.round(gate.capacity / 90)} / min</span>
                         </td>
@@ -268,9 +268,7 @@ export default function EventSetupWizard() {
                   <div style={{ fontSize: "11px", color: "var(--ops-muted)", textTransform: "uppercase", marginBottom: "8px" }}>
                     {role} Headcount
                   </div>
-                  <div style={{ fontSize: "28px", fontWeight: "700", fontFamily: "JetBrains Mono, monospace" }}>
-                    {count}
-                  </div>
+                  <input className="ops-setup-number" type="number" min="0" max="2000" value={count} aria-label={`${role} headcount`} onChange={(e) => setFormData((previous) => ({ ...previous, staffing: { ...previous.staffing, [role]: Number(e.target.value) } }))} />
                   <div style={{ fontSize: "10px", color: "var(--ops-muted)", marginTop: "6px" }}>
                     Initial shift deployment ready
                   </div>
@@ -283,15 +281,13 @@ export default function EventSetupWizard() {
           {currentStep === 4 && (
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
               <div style={{ border: "1px solid var(--ops-line)", padding: "18px" }}>
-                <h4 style={{ margin: "0 0 12px", fontSize: "14px" }}>Autonomous Shuttle Fleet</h4>
+                <h4 style={{ margin: "0 0 12px", fontSize: "14px" }}>Shuttle Fleet</h4>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "10px", marginBottom: "8px" }}>
-                  <span style={{ fontSize: "32px", fontWeight: "700", fontFamily: "JetBrains Mono" }}>
-                    {formData.transit.shuttleBuses}
-                  </span>
+                  <input className="ops-setup-number" type="number" min="1" max="200" value={formData.transit.shuttleBuses} aria-label="Shuttle fleet size" onChange={(e) => setFormData((previous) => ({ ...previous, transit: { ...previous.transit, shuttleBuses: Number(e.target.value) } }))} />
                   <span style={{ fontSize: "12px", color: "var(--ops-muted)" }}>VEHICLES PROVISIONED</span>
                 </div>
                 <p style={{ fontSize: "12px", color: "var(--ops-muted)", margin: 0 }}>
-                  High-capacity electric shuttles operating on 3-minute headways between transit hubs and perimeter gates.
+                  Configure the number of vehicles available in the shared dispatch simulation.
                 </p>
               </div>
 
@@ -318,31 +314,37 @@ export default function EventSetupWizard() {
           {/* STEP 5: SURGE & ALERT RULES */}
           {currentStep === 5 && (
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <label className="ops-setup-field">WARNING THRESHOLD %
+                <input type="number" min="50" max="98" value={formData.rules.warningThreshold} onChange={(e) => setFormData((previous) => ({ ...previous, rules: { ...previous.rules, warningThreshold: Number(e.target.value) } }))} />
+              </label>
+              <label className="ops-setup-field">CRITICAL THRESHOLD %
+                <input type="number" min="51" max="99" value={formData.rules.criticalThreshold} onChange={(e) => setFormData((previous) => ({ ...previous, rules: { ...previous.rules, criticalThreshold: Number(e.target.value) } }))} />
+              </label>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", border: "1px solid var(--ops-line)" }}>
                 <div>
                   <strong style={{ display: "block", fontSize: "13px" }}>Autonomous Inflow Incident Creation</strong>
                   <span style={{ fontSize: "11px", color: "var(--ops-muted)" }}>
-                    Automatically instantiate incidents when any gate exceeds 75% strain for {">"} 3 minutes.
+                    Incidents are raised when a gate reaches the configured critical threshold.
                   </span>
                 </div>
-                <Badge tone="good">ENABLED</Badge>
+                <Badge tone="good">ENGINE RULE</Badge>
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", border: "1px solid var(--ops-line)" }}>
                 <div>
                   <strong style={{ display: "block", fontSize: "13px" }}>Pre-Computed Route Diversion Recommendations</strong>
                   <span style={{ fontSize: "11px", color: "var(--ops-muted)" }}>
-                    Propose shuttle diversions to P4 Relief when West Gate approaches 90% threshold.
+                    Command can dispatch a shuttle diversion when crowd pressure requires it.
                   </span>
                 </div>
-                <Badge tone="good">ENABLED</Badge>
+                <Badge tone="good">AVAILABLE</Badge>
               </div>
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 16px", border: "1px solid var(--ops-line)" }}>
                 <div>
                   <strong style={{ display: "block", fontSize: "13px" }}>Emergency Mode Escalation Protocol</strong>
                   <span style={{ fontSize: "11px", color: "var(--ops-muted)" }}>
-                    Unlock all optical turnstiles and open emergency concourse corridors on code-red alert.
+                    Emergency mode is a simulated escalation; route approval remains a human decision.
                   </span>
                 </div>
                 <Badge tone="normal">ARMED</Badge>
@@ -354,20 +356,27 @@ export default function EventSetupWizard() {
           {currentStep === 6 && (
             <div style={{ textAlign: "center", padding: "32px 20px" }}>
               <div style={{ fontSize: "42px", marginBottom: "16px" }}>⚡</div>
-              <h3 style={{ fontSize: "20px", fontWeight: "600", margin: "0 0 12px" }}>
-                Ready to Commit Configuration to Shared Live State
-              </h3>
+              <h3 style={{ fontSize: "20px", fontWeight: "600", margin: "0 0 12px" }}>Review event configuration</h3>
               <p style={{ maxWidth: "540px", margin: "0 auto 28px", fontSize: "13px", color: "var(--ops-muted)", lineHeight: "1.7" }}>
-                Committing will initialize the real-time simulation engine for <strong>{formData.name}</strong>,
-                lock perimeter gate allocations, assign personnel rosters, and establish live inter-agency telemetry.
+                Committing updates the shared simulation for this server session. Verify the parameters before launching command.
               </p>
+              <dl className="ops-setup-review">
+                <div><dt>Event</dt><dd>{formData.name}</dd></div>
+                <div><dt>When</dt><dd>{formData.date} · {formData.startTime} venue local</dd></div>
+                <div><dt>Venue</dt><dd>{formData.venue}</dd></div>
+                <div><dt>Map coordinates</dt><dd>{formData.lat}, {formData.lng}</dd></div>
+                <div><dt>Attendance</dt><dd>{formData.expected.toLocaleString()} expected / {formData.capacity.toLocaleString()} capacity</dd></div>
+                <div><dt>Ground team</dt><dd>{Object.values(formData.staffing).reduce((sum, count) => sum + count, 0)} staff</dd></div>
+                <div><dt>Fleet</dt><dd>{formData.transit.shuttleBuses} shuttle vehicles</dd></div>
+                <div><dt>Thresholds</dt><dd>{formData.rules.warningThreshold}% warning / {formData.rules.criticalThreshold}% critical</dd></div>
+              </dl>
               <Button
                 variant="primary"
-                disabled={committed}
+                disabled={committed || busy}
                 onClick={handleLaunch}
                 style={{ padding: "14px 32px", fontSize: "12px" }}
               >
-                {committed ? "✓ Launching Live Command Center…" : "⚡ Commit Architecture & Launch Live Event"}
+                {committed ? "✓ Opening command center…" : "Commit event setup ↗"}
               </Button>
             </div>
           )}

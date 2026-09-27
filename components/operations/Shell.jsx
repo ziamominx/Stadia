@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { OperationsProvider, useOperations } from "./OperationsProvider";
 import { Badge, Button, clock, Modal } from "./UI";
+import { canAccess } from "@/lib/operations/auth.mjs";
 const links = [
   ["/command-center", "Command Center"],
   ["/crowd", "Crowd"],
@@ -17,7 +18,7 @@ const links = [
   ["/analytics", "Analytics"],
 ];
 function Frame({ children }) {
-  const { state, send, busy } = useOperations();
+  const { state, send, busy, role } = useOperations();
   const path = usePathname(),
     router = useRouter();
   const [broadcast, setBroadcast] = useState(false),
@@ -35,46 +36,22 @@ function Frame({ children }) {
         </Link>
         <div className="ops-event">
           <strong>{state?.event.name || "Event command"}</strong>
-          <span>{state?.event.venue || "Connecting to venue"}</span>
+          <span>{state?.event.date ? `${state.event.date} · ` : ""}{state?.event.venue || "Connecting to venue"}</span>
         </div>
         <div className="ops-header-right">
           <Badge tone={state?.posture || "normal"}>
             {state?.posture || "connecting"}
           </Badge>
           <span className="ops-clock">
-            {clock(state?.minute || 0)} <small>SIM / IST</small>
+            {clock(state?.minute || 0, state?.event.startTime)} <small>SIM / IST</small>
           </span>
-          <Button onClick={() => setBroadcast(true)}>↗ PA Broadcast</Button>
-          <label className="ops-role">
-            <span className="ops-kicker">Demo role</span>
-            <select
-              aria-label="Switch demo role"
-              value={
-                path === "/ground"
-                  ? "ground"
-                  : path === "/transport"
-                    ? "transport"
-                    : "executive"
-              }
-              onChange={(e) =>
-                router.push(
-                  e.target.value === "ground"
-                    ? "/ground"
-                    : e.target.value === "transport"
-                      ? "/transport"
-                      : "/command-center",
-                )
-              }
-            >
-              <option value="executive">Executive</option>
-              <option value="ground">Ground team</option>
-              <option value="transport">Transport team</option>
-            </select>
-          </label>
+          {role === "executive" && <Button onClick={() => setBroadcast(true)}>↗ PA Broadcast</Button>}
+          <span className="ops-kicker">{role || "Connecting"}</span>
+          <Button onClick={async () => { await fetch("/api/ops-session", { method: "DELETE" }); router.replace("/login"); router.refresh(); }}>Sign out</Button>
         </div>
       </header>
       <nav className="ops-nav" aria-label="Operations">
-        {links.map(([href, title]) => (
+        {links.filter(([href]) => role && canAccess(role, href)).map(([href, title]) => (
           <Link
             href={href}
             key={href}
@@ -106,7 +83,7 @@ function Frame({ children }) {
           <span className="ops-mono">
             T+{String(state?.minute || 0).padStart(3, "0")} MIN
           </span>
-          <button
+          {role === "executive" && <button
             disabled={busy || !state}
             onClick={() =>
               send(
@@ -116,7 +93,7 @@ function Frame({ children }) {
             }
           >
             {state?.paused ? "▶ Resume" : "Ⅱ Pause"}
-          </button>
+          </button>}
         </div>
       </div>
       {state?.emergency && (
