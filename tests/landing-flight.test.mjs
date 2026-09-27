@@ -64,6 +64,7 @@ test("seat, ticket, and shuttle restore their exact state when reversing", () =>
   const forward = Array.from({ length: 101 }, (_, i) => sceneState(i / 100));
   for (let i = 100; i >= 0; i--) assert.deepEqual(sceneState(i / 100), forward[i]);
   assert.equal(sceneState(0).seatScale, 1);
+  assert.ok(forward.every(state => state.seatScale === 1), "focal chair must never shrink");
   assert.equal(sceneState(0.55).ticketScale, 1);
   assert.equal(sceneState(1).ticketOpacity, 0);
   assert.equal(sceneState(1).carProgress, 1);
@@ -72,10 +73,10 @@ test("seat, ticket, and shuttle restore their exact state when reversing", () =>
 test("physical ticket is framed at desktop and mobile widths; scene resources dispose", () => {
   // Exercise texture and QR creation with a tiny 2D context; no browser launches.
   const originalDocument = globalThis.document;
-  const context = Object.fromEntries(["fillRect","fillText","beginPath","moveTo","lineTo","stroke","setLineDash"]
+  const context = Object.fromEntries(["fillRect","strokeRect","fillText","beginPath","moveTo","lineTo","stroke","setLineDash"]
     .map(method => [method, () => {}]));
   globalThis.document = { createElement: () => ({ getContext: () => context }) };
-  const world = createJourneyWorld();
+    const world = createJourneyWorld();
   try {
     world.ticketGroup.scale.setScalar(1);
     world.ticketGroup.position.x = world.seatOrigin.x + sceneState(0.55).ticketOffset;
