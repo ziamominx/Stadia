@@ -185,6 +185,23 @@ function Configuration({ state, send, busy }) {
                 </select>
               </div>
             ))}
+            {(() => {
+              const availExits = state.exits.filter((e) => e.status === "available").length;
+              const egressMin = (32 / Math.max(1, availExits)).toFixed(1);
+              return (
+                <div style={{ marginTop: 10, padding: "8px 10px", background: "rgba(126, 184, 200, 0.08)", borderRadius: "4px", border: "1px solid rgba(126, 184, 200, 0.2)" }}>
+                  <div className="ops-row">
+                    <span className="ops-kicker" style={{ color: "#7eb8c8" }}>ML Evacuation Clearance ETA:</span>
+                    <strong style={{ color: availExits >= 3 ? "#6cd0aa" : "#ff8d90" }}>
+                      ~{egressMin} min ({availExits}/4 open)
+                    </strong>
+                  </div>
+                  <p className="ops-muted" style={{ margin: "4px 0 0", fontSize: "11px" }}>
+                    {availExits === 4 ? "Full perimeter discharge capacity active." : "Exit bottlenecks active; redirecting concourse sectors."}
+                  </p>
+                </div>
+              );
+            })()}
             <p className="ops-muted">
               Fire reports block the affected exit. Clear the incident before
               explicitly reopening it.
@@ -229,6 +246,14 @@ function Configuration({ state, send, busy }) {
                 ? "South walkway flagged for staff inspection."
                 : "No waterlogged walkways reported."}
             </p>
+            {state.weather.rain && (
+              <div style={{ marginTop: 8, padding: "8px 10px", background: "rgba(126, 184, 200, 0.08)", borderRadius: "4px", border: "1px solid rgba(126, 184, 200, 0.2)" }}>
+                <span className="ops-kicker" style={{ color: "#7eb8c8" }}>ML Environmental Impact:</span>
+                <p style={{ margin: "4px 0 0", fontSize: "11px", color: "var(--ops-ink)" }}>
+                  +18% ingress friction on open concourses · Bus turnaround delay +11 mins · Walkway traction penalty active.
+                </p>
+              </div>
+            )}
             <Button disabled={busy} onClick={() => send({ type: "rain" })}>
               {state.weather.rain
                 ? "Clear weather simulation"

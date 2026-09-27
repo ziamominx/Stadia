@@ -236,6 +236,16 @@ export default function HospitalityHubPage() {
                       <p className="text-sm font-bold text-white mt-0.5">{zone.surge_multiplier}x</p>
                     </div>
                   </div>
+
+                  <div className="pt-2 border-t border-neutral-800/80 flex items-center justify-between text-xs">
+                    <span className="text-neutral-400 font-mono">Shuttle Connected</span>
+                    <a
+                      href={`/journey-planner?zone=${encodeURIComponent(zone.zone_name)}`}
+                      className="font-bold text-emerald-400 hover:text-emerald-300 transition"
+                    >
+                      Plan Transit to Zone ↗
+                    </a>
+                  </div>
                 </div>
               );
             })}

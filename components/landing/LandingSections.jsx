@@ -6,27 +6,27 @@ import { scrollDestination } from "@/lib/landing/timeline.mjs";
 import { chapters } from "@/lib/landing/flight.mjs";
 
 const journey = [
-  ["Ticket", "One verified credential links the attendee to a seat, arrival window, gate, and onward journey."],
-  ["Transit", "Arrival and departure plans connect the venue to transport corridors and pickup points."],
-  ["Gate", "Gate assignments and queue forecasts help staff redirect pressure before bottlenecks form."],
-  ["Seat", "A seat anchors each guest's route from the correct entrance to the nearest concourse."],
-  ["Egress", "Exit readiness and incident response coordinate the route back out."],
-  ["Fleet", "Transport teams receive dispatch tasks and report progress against the same event state."],
-  ["Hospitality", "Hospitality teams see arrivals affecting their own capacity and service windows."],
+  ["Ticket", "One verified credential links the attendee to a seat, arrival window, gate, and onward journey.", "/matches", "Match & Seat Selection"],
+  ["Transit", "Arrival and departure plans connect the venue to transport corridors and pickup points.", "/journey-planner", "Multimodal Journey Planner"],
+  ["Gate", "Gate assignments and queue forecasts help staff redirect pressure before bottlenecks form.", "/crowd-flow", "Walkway & Gate Radar"],
+  ["Seat", "A seat anchors each guest's route from the correct entrance to the nearest concourse.", "/matches", "Interactive Seat Map"],
+  ["Egress", "Exit readiness and incident response coordinate the route back out.", "/event-control", "Event Control Console"],
+  ["Fleet", "Transport teams receive dispatch tasks and report progress against the same event state.", "/transport", "Transport Fleet Dashboard"],
+  ["Hospitality", "Hospitality teams see arrivals affecting their own capacity and service windows.", "/hospitality-hub", "Commercial & Dining Hub"],
 ];
 const stakeholders = [
-  ["Venue", "Inspect gate loads, zone density, exit availability, and incidents.", "/crowd"],
-  ["Ground", "Receive tasks, acknowledge them, report blockers, and close work in the field.", "/ground"],
-  ["Transport", "Monitor the fleet and confirm route changes as they are dispatched.", "/transport"],
-  ["Executive", "Review the full event, configure thresholds, and approve interventions.", "/command-center"],
-  ["Hospitality", "Monitor guest services alongside the wider event response.", "/hospitality"],
+  ["Venue Ops", "Inspect gate loads, zone density, exit availability, and incidents.", "/crowd"],
+  ["Ground Ops", "Receive tasks, acknowledge them, report blockers, and close work in the field.", "/ground"],
+  ["Transport Ops", "Monitor the fleet and confirm route changes as they are dispatched.", "/transport"],
+  ["Executive Command", "Review the full event, configure thresholds, and approve interventions.", "/command-center"],
+  ["Hospitality & VIP", "Monitor guest services alongside the wider event response.", "/hospitality"],
 ];
 const pipeline = [
-  ["Configure", "Set event capacity, gate thresholds, staffing, and response rules before opening."],
-  ["Observe", "Inspect readings and staff reports in one shared operational picture."],
-  ["Predict", "Flag rising pressure and prepare a response while there is time to act."],
-  ["Dispatch", "Send tasks to ground and transport, with status visible to command."],
-  ["Resolve", "Verify the outcome, close incidents, and keep an event timeline."],
+  ["Configure", "Set event capacity, gate thresholds, staffing, and response rules before opening.", "/setup"],
+  ["Observe", "Inspect readings and staff reports in one shared operational picture.", "/command-center"],
+  ["Predict", "Flag rising pressure and prepare a response while there is time to act.", "/crowd"],
+  ["Dispatch", "Send tasks to ground and transport, with status visible to command.", "/ground"],
+  ["Resolve", "Verify the outcome, close incidents, and keep an event timeline.", "/incidents"],
 ];
 const consoles = [
   ["Command center", "/command-center", "Full event state, incidents, and coordinated decisions."],
@@ -71,11 +71,20 @@ export default function LandingSections() {
     window.scrollTo({ top: scrollDestination(start, track.offsetHeight, window.innerHeight, chapters[0].at), behavior: "smooth" });
   };
   const card = ([title, detail, href], index, prefix) => (
-    <button className="lp-stage-card lp-reveal" key={title} type="button" onClick={() => setSelected({ title, detail, href })} aria-label={`Explore ${title}`}>
+    <Link 
+      href={href} 
+      className="lp-stage-card lp-reveal" 
+      key={title} 
+      aria-label={`Open ${title}`}
+      style={{ textDecoration: 'none', color: 'inherit' }}
+    >
       <span className="lp-stage-num">{prefix} {String(index + 1).padStart(2, "0")}</span>
       <span className="lp-stage-title">{title}</span>
-      <span className="lp-stage-open">Explore ↗</span>
-    </button>
+      <span className="lp-stage-summary" style={{ fontSize: '11px', color: 'var(--lp-muted, #8b949e)', marginTop: '4px', display: 'block', lineHeight: 1.4 }}>
+        {detail}
+      </span>
+      <span className="lp-stage-open" style={{ marginTop: '8px', display: 'inline-block' }}>Launch Console ↗</span>
+    </Link>
   );
   return <>
     <div className="lp-hero-content">
@@ -94,7 +103,18 @@ export default function LandingSections() {
         <div className="lp-section-kicker">01 // ONE JOURNEY</div>
         <h2 className="lp-section-heading">CROWDS MOVE <strong>BETWEEN SYSTEMS.</strong></h2>
         <p className="lp-section-body">Select a moment to see how it connects to the next.</p>
-        <div className="lp-network-track">{journey.map(([title, detail], index) => <button key={title} type="button" className="lp-network-node" onClick={() => setSelected({ title, detail })}>{String(index + 1).padStart(2, "0")} {title} <span aria-hidden="true">↗</span></button>)}</div>
+        <div className="lp-network-track">
+          {journey.map(([title, detail, href, routeName], index) => (
+            <button 
+              key={title} 
+              type="button" 
+              className="lp-network-node" 
+              onClick={() => setSelected({ title, detail, href, routeName })}
+            >
+              {String(index + 1).padStart(2, "0")} {title} <span aria-hidden="true">↗</span>
+            </button>
+          ))}
+        </div>
       </div>
       <div id="architecture" className="lp-section">
         <div className="lp-section-kicker lp-reveal">02 // SHARED OPERATIONS</div>
@@ -119,8 +139,20 @@ export default function LandingSections() {
     </section>
     <dialog className="lp-detail-dialog" ref={dialog} onClose={() => setSelected(null)} onClick={(event) => { if (event.target === dialog.current) setSelected(null); }} aria-label={selected?.title || "Details"}>
       <div className="lp-detail-top"><span>STADIA / SYSTEM DETAIL</span><button type="button" onClick={() => setSelected(null)} aria-label="Close details">×</button></div>
-      <h2>{selected?.title}</h2><p>{selected?.detail}</p>
-      {selected?.href && <Link href={selected.href} onClick={() => setSelected(null)}>Open {selected.title} ↗</Link>}
+      <h2>{selected?.title}</h2>
+      <p style={{ marginTop: '10px', fontSize: '14px', lineHeight: '1.6', color: '#cbd5e1' }}>{selected?.detail}</p>
+      {selected?.href && (
+        <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+          <Link 
+            href={selected.href} 
+            onClick={() => setSelected(null)}
+            className="lp-btn-primary"
+            style={{ display: 'inline-block', padding: '8px 16px', fontSize: '13px' }}
+          >
+            Launch {selected.routeName || selected.title} ↗
+          </Link>
+        </div>
+      )}
     </dialog>
   </>;
 }

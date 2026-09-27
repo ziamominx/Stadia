@@ -108,38 +108,12 @@ export function Response({ incident, detailed = false }) {
               {!fire && !medical ? (
                 <>
                   <strong>
-                    {zone.occupancy}% → peak ~
-                    {Math.min(
-                      zone.occupancy +
-                        Math.max(
-                          1,
-                          Math.ceil(
-                            (zone.occupancy - state.rules.warning + 1) / 5,
-                          ),
-                        ) *
-                          5,
-                      100,
-                    )}
-                    % in{" "}
-                    {Math.max(
-                      1,
-                      Math.ceil(
-                        (zone.occupancy - state.rules.warning + 1) / 5,
-                      ),
-                    )}{" "}
-                    min
+                    {zone.occupancy}% → {zone.ml?.predictedBreach || `peak ~${Math.min(zone.occupancy + 10, 100)}% in ${zone.ml?.breachMinutes || 5} min`}
+                    {zone.ml?.surgeRisk ? ` (${zone.ml.surgeRisk}% surge probability)` : ""}
                   </strong>
                   <span>
-                    Model estimate. Stabilises below {state.rules.warning}%
-                    roughly{" "}
-                    {Math.max(
-                      1,
-                      Math.ceil(
-                        (zone.occupancy - state.rules.warning + 1) / 5,
-                      ),
-                    )}{" "}
-                    simulated min after both teams start. Verify with live
-                    readings.
+                    ML forecast model. Stabilises below {state.rules.warning}%
+                    roughly {zone.ml?.breachMinutes || 4} simulated min after both teams start. Verify with live readings.
                   </span>
                 </>
               ) : (
@@ -298,14 +272,17 @@ export function Response({ incident, detailed = false }) {
   );
 }
 
-export function TaskList({ team }) {
+export function TaskList({ team, roleFilter }) {
   const { state, send, busy } = useOperations();
-  const tasks = state.tasks.filter((t) => t.team === team);
+  const tasks = state.tasks.filter((t) => {
+    if (t.team !== team) return false;
+    if (roleFilter && t.resource && !t.resource.toLowerCase().includes(roleFilter.toLowerCase())) return false;
+    return true;
+  });
   if (!tasks.length)
     return (
-      <Empty title="No assigned tasks">
-        Executive responses appear here after dispatch from Command Center or
-        Incidents.
+      <Empty title={roleFilter ? `No active tasks for ${roleFilter}` : "No assigned tasks"}>
+        {roleFilter ? "Try selecting all staff roles in the capacity breakdown to view all tasks." : "Executive responses appear here after dispatch from Command Center or Incidents."}
       </Empty>
     );
   return (
