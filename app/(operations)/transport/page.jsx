@@ -35,10 +35,12 @@ export default function Transport() {
           variant="primary"
           disabled={busy || !standby}
           onClick={() =>
-            send({ type: "reserve" }, "Reserve coaches deployed to P4.")
+            send({ type: "reserve" }, "Reserve coaches deployed.")
           }
         >
-          ↗ Deploy reserve coaches
+          {state.ml?.shuttle
+            ? `↗ Deploy to ${state.ml.shuttle.hub} (ML — ${state.ml.shuttle.confidence}% conf.)`
+            : "↗ Deploy reserve coaches"}
         </Button>
       </Heading>
 
@@ -127,6 +129,9 @@ export default function Transport() {
                   <div className="ops-row">
                     <h3>
                       {h.id} / {h.name}
+                      {state.ml?.shuttle?.hub === h.id && (
+                        <span className="ops-ml-chip" style={{ marginLeft: 8 }}>ML pick</span>
+                      )}
                     </h3>
                     <Badge
                       tone={
@@ -143,6 +148,9 @@ export default function Transport() {
                     value={(h.queue / h.capacity) * 100}
                     tone={h.queue / h.capacity > 0.75 ? "attention" : ""}
                   />
+                  {state.ml?.shuttle?.hub === h.id && state.ml.shuttle.reason && (
+                    <p className="ops-ml-reason">{state.ml.shuttle.reason}</p>
+                  )}
                 </div>
               ))}
             </div>
@@ -159,8 +167,8 @@ export default function Transport() {
                 <strong className="normal">{diverted}</strong>
               </div>
               <div className="ops-row" style={{ marginTop: 10 }}>
-                <span className="ops-kicker">Recommended parking</span>
-                <strong>{lots[0].name}</strong>
+                <span className="ops-kicker">ML recommended hub</span>
+                <strong className="ops-ml-value">{state.ml?.shuttle?.hub ?? lots[0].name}</strong>
               </div>
             </div>
           </Panel>

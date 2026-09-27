@@ -2207,3 +2207,229 @@
 .ops .ops-badge.critical { color: #ff9c9f; }
 .ops .ops-stadium { filter: brightness(.55); }
 @media (max-width: 650px) { .ops-geo-wrap > p { position: static; margin: 0; width: auto; } .ops-map-toolbar-actions { width: 100%; } }
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* ML INTELLIGENCE PAGE                                                        */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Zone risk grid */
+.ml-zone-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+/* Individual zone card */
+.ml-zone-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: border-color 0.3s;
+}
+.ml-zone-card.attention { border-color: #e8a020; }
+.ml-zone-card.critical  { border-color: #ff4040; box-shadow: 0 0 0 1px #ff404033; }
+
+.ml-zone-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.ml-zone-card-header strong { display: block; font-size: 13px; }
+.ml-zone-card-header .ops-mono { display: block; font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* Surge arc SVG */
+.ml-arc {
+  width: 100%;
+  max-width: 120px;
+  margin: 0 auto;
+  display: block;
+}
+
+/* Zone stats row */
+.ml-zone-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.25rem;
+  text-align: center;
+}
+.ml-zone-stats > div { display: flex; flex-direction: column; gap: 2px; }
+.ml-zone-stats .ops-kicker { font-size: 9px; }
+.ml-zone-stats strong { font-size: 12px; }
+
+/* Breach warning banner */
+.ml-breach-warn {
+  background: #ff404018;
+  border: 1px solid #ff404060;
+  border-radius: 4px;
+  padding: 0.4rem 0.6rem;
+  font-size: 11px;
+  color: #ff8888;
+  text-align: center;
+}
+.ml-breach-warn strong { color: #ff4040; }
+
+/* Confidence bar */
+.ml-conf { display: flex; flex-direction: column; gap: 0.4rem; }
+.ml-conf-header { display: flex; justify-content: space-between; font-size: 12px; }
+.ml-conf-track {
+  height: 6px;
+  background: var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.ml-conf-fill {
+  height: 100%;
+  background: #2ddc78;
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+.ml-conf-fill.recommended { background: #6cd0aa; }
+
+/* Recommendation card */
+.ml-rec {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.ml-rec-hub { display: flex; flex-direction: column; gap: 0.3rem; }
+.ml-rec-hub-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #6cd0aa;
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: -0.02em;
+}
+.ml-rec-hub p { font-size: 11px; }
+.ml-rec-detail { display: flex; flex-direction: column; gap: 0.5rem; }
+
+/* Hub rows */
+.ml-hub-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 12px;
+}
+.ml-hub-row > span:first-child { min-width: 110px; color: var(--muted); }
+.ml-hub-row .ops-mono { min-width: 80px; text-align: right; }
+
+/* Model explainability grid */
+.ml-explain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+.ml-explain-card {
+  padding: 1.25rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.ml-explain-card:nth-child(even) { border-right: 0; }
+.ml-explain-card .ops-kicker { font-size: 10px; color: #6cd0aa; }
+.ml-explain-card p { font-size: 12px; color: var(--muted); line-height: 1.6; margin: 0; }
+.ml-explain-card code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--ink);
+  background: var(--canvas);
+  padding: 2px 5px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+@media (max-width: 700px) {
+  .ml-zone-grid { grid-template-columns: 1fr 1fr; }
+  .ml-explain-grid { grid-template-columns: 1fr; }
+  .ml-explain-card { border-right: 0; }
+}
+@media (max-width: 440px) {
+  .ml-zone-grid { grid-template-columns: 1fr; }
+}
+
+/* ── ML inline indicators ─────────────────────────────────────────────────── */
+/* Uses steel-blue #7eb8c8 — separate from the green/amber/red traffic-light  */
+
+.ops-ml-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  border: 1px solid rgba(126, 184, 200, 0.25);
+  background: rgba(126, 184, 200, 0.08);
+  color: #7eb8c8;
+  font: 500 10px/1 "JetBrains Mono", monospace;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.ops-ml-value {
+  color: #7eb8c8;
+}
+
+.ops-ml-label {
+  font: 500 11px/1 "JetBrains Mono", monospace;
+  color: #7eb8c8;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ops-ml-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 4px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(126, 184, 200, 0.15);
+  background: rgba(126, 184, 200, 0.05);
+  flex-wrap: wrap;
+}
+
+.ops-ml-breach {
+  font: 500 11px/1 "JetBrains Mono", monospace;
+  color: var(--amber);
+  letter-spacing: 0.02em;
+}
+
+.ops-ml-reason {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: #7eb8c8;
+  opacity: 0.85;
+  font-style: italic;
+}
+
+/* ML demand banner in hospitality */
+.ops-ml-demand-banner {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 7px;
+  border: 1px solid rgba(126, 184, 200, 0.2);
+  background: rgba(126, 184, 200, 0.06);
+}
+.ops-ml-demand-banner p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ML-urgent state for Hold button — adds a subtle blue ring */
+.ops-ml-urgent {
+  box-shadow: 0 0 0 2px rgba(126, 184, 200, 0.4) !important;
+}

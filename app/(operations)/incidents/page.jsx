@@ -97,29 +97,37 @@ export default function Incidents() {
             </div>
           </div>
           {filtered.length ? (
-            filtered.map((i) => (
-              <button
-                key={i.id}
-                className={`ops-incident-item ${i.id === incident?.id ? "selected" : ""}`}
-                onClick={() => select(i.id)}
-              >
-                <div className="ops-row">
-                  <Badge tone={i.status === "resolved" ? "normal" : i.severity}>
-                    {i.type}
-                  </Badge>
-                  <span className="ops-mono">{i.id}</span>
-                </div>
-                <h3>{i.title}</h3>
-                <p>
-                  {state.zones.find((z) => z.id === i.zoneId)?.sector} ·
-                  Detected {clock(i.created)} IST
-                </p>
-                <div className="ops-row">
-                  <span className="ops-mono">{label(i.status)}</span>
-                  <span>Inspect →</span>
-                </div>
-              </button>
-            ))
+            filtered.map((i) => {
+              const iZone = state.zones.find((z) => z.id === i.zoneId);
+              return (
+                <button
+                  key={i.id}
+                  className={`ops-incident-item ${i.id === incident?.id ? "selected" : ""}`}
+                  onClick={() => select(i.id)}
+                >
+                  <div className="ops-row">
+                    <Badge tone={i.status === "resolved" ? "normal" : i.severity}>
+                      {i.type}
+                    </Badge>
+                    <span className="ops-mono">{i.id}</span>
+                  </div>
+                  <h3>{i.title}</h3>
+                  <p>
+                    {iZone?.sector} ·
+                    Detected {clock(i.created)} IST
+                  </p>
+                  <div className="ops-row">
+                    <span className="ops-mono">{label(i.status)}</span>
+                    <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                      {iZone?.ml?.surgeRisk != null && i.status !== "resolved" && (
+                        <span className="ops-ml-chip">{iZone.ml.surgeRisk}% risk</span>
+                      )}
+                      <span>Inspect →</span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })
           ) : (
             <Empty title="No incidents in this view">
               Report a simulated incident or trigger an inflow spike from

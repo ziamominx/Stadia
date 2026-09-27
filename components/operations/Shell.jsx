@@ -16,6 +16,7 @@ const links = [
   ["/event-control", "Event Control"],
   ["/setup", "Event Setup"],
   ["/analytics", "Analytics"],
+  ["/ml", "ML Intelligence"],
 ];
 function Frame({ children }) {
   const { state, send, busy, role } = useOperations();

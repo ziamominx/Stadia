@@ -1,11 +1,10 @@
 import './globals.css';
 import 'leaflet/dist/leaflet.css';
 import SiteFrame from '../components/SiteFrame';
-import { RoleProvider } from '../components/RoleContext';
 
 export const metadata = {
-  title: 'STADIA NEXUS · Autonomous Mega-Event & Crowd Orchestration Operating System',
-  description: 'Intelligent multi-agency crowd orchestration platform: real-time event state, predictive turnstile balancing, and dynamic attendee journey coordination.',
+  title: 'STADIA · Event Command Platform',
+  description: 'Real-time event state, crowd orchestration, and operational intelligence.',
   icons: {
     icon: '/icon.svg',
   },
@@ -23,10 +22,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="min-h-screen bg-[#09090b] text-[#f4f4f5] antialiased">
-        <RoleProvider>
-          <SiteFrame>{children}</SiteFrame>
-        </RoleProvider>
+        <SiteFrame>{children}</SiteFrame>
       </body>
     </html>
   );
 }
+

@@ -71,6 +71,12 @@ export default function CommandCenter() {
           <strong>{state.tasks.filter((t) => t.status !== "completed").length}</strong>
           <small>{state.tasks.filter((t) => t.flagged).length} tasks flagged</small>
         </div>
+        {state.ml && (
+          <div className="ops-stat-bar-item">
+            <strong className="ops-ml-value">{state.ml.globalRisk ?? 0}%</strong>
+            <small>ML surge risk{state.ml.anomalies?.length ? ` · ${state.ml.anomalies.length}σ` : ""}</small>
+          </div>
+        )}
       </div>
       {!!state.hospitalityRequests?.length && <Panel title="Hospitality requests" meta="EXECUTIVE ACTION">
         <div className="ops-resource-grid">{state.hospitalityRequests.map((request) => <div key={request.id} className="ops-row">
@@ -120,6 +126,15 @@ export default function CommandCenter() {
               values={zone.history}
               tone={gateStatus(zone, state.rules)}
             />
+            {zone.ml && (
+              <div className="ops-ml-row">
+                <span className="ops-ml-label">ML surge risk</span>
+                <span className="ops-ml-value">{zone.ml.surgeRisk}%</span>
+                {zone.ml.predictedBreach != null && (
+                  <span className="ops-ml-breach">breach in ~{zone.ml.predictedBreach} min</span>
+                )}
+              </div>
+            )}
             <Link className="ops-text-link" href="/crowd">
               Inspect crowd intelligence ↗
             </Link>
@@ -140,6 +155,7 @@ export default function CommandCenter() {
                   <span className="ops-mono">
                     {z.fire ? "FIRE ALERT" : z.open ? "GATE OPEN" : "GATE HELD"}
                   </span>
+                  {z.ml && <span className="ops-ml-chip">{z.ml.surgeRisk}% risk</span>}
                 </button>
               ))}
             </div>

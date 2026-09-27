@@ -74,12 +74,17 @@ export default function Crowd() {
                   <h3>{z.name}</h3>
                   <strong>{z.occupancy}%</strong>
                   <p>
-                    {z.occupancy >= state.rules.critical
-                      ? "Already critical. Executive response required."
-                      : z.trend > 0
-                        ? `At this trend, critical in ~${Math.ceil((state.rules.critical - z.occupancy) / z.trend)} simulated min.`
-                        : "Stable trend. No approaching threshold."}
+                    {z.ml?.predictedBreach != null
+                      ? `ML predicts threshold breach in ~${z.ml.predictedBreach} sim min.`
+                      : z.occupancy >= state.rules.critical
+                        ? "Already critical. Executive response required."
+                        : z.trend > 0
+                          ? `Trending up. Monitor for escalation.`
+                          : "Stable trend. No approaching threshold."}
                   </p>
+                  {z.ml && z.ml.surgeRisk >= 40 && (
+                    <span className="ops-ml-chip">{z.ml.surgeRisk}% surge risk</span>
+                  )}
                 </button>
               ))}
             </div>
@@ -131,9 +136,14 @@ export default function Crowd() {
               <Button
                 variant={zone.open ? "" : "primary"}
                 disabled={busy}
+                className={zone.ml?.surgeRisk >= 60 && zone.open ? "ops-ml-urgent" : ""}
                 onClick={() => send({ type: "gate", zoneId: zone.id })}
               >
-                {zone.open ? "Hold gate processing" : "Open gate processing"}
+                {zone.open
+                  ? zone.ml?.surgeRisk >= 60
+                    ? `Hold gate — ML risk ${zone.ml.surgeRisk}%`
+                    : "Hold gate processing"
+                  : "Open gate processing"}
               </Button>
               <hr />
               <span className="ops-kicker">Virtual ticket scanner</span>
@@ -163,7 +173,7 @@ export default function Crowd() {
               </div>
             </div>
           </Panel>
-          <Panel title="Alternative entry gates" meta="OPEN / BELOW WARNING">
+          <Panel title="Alternative entry gates" meta="SORTED BY ML RISK">
             <div className="ops-padded">
               {state.zones
                 .filter(
@@ -173,7 +183,7 @@ export default function Crowd() {
                     !z.fire &&
                     z.occupancy < state.rules.warning,
                 )
-                .sort((a, b) => a.queue / a.rate - b.queue / b.rate)
+                .sort((a, b) => (a.ml?.surgeRisk ?? 50) - (b.ml?.surgeRisk ?? 50))
                 .map((z) => (
                   <button
                     className="ops-list-button"
@@ -182,14 +192,14 @@ export default function Crowd() {
                   >
                     <span>
                       {z.name}
-                      <small>{z.occupancy}% occupancy</small>
+                      <small>{z.occupancy}% · {z.ml ? `${z.ml.surgeRisk}% risk` : `${waitMinutes(z.queue, z.rate)} min wait`}</small>
                     </span>
                     <strong>{waitMinutes(z.queue, z.rate)} min ↗</strong>
                   </button>
                 ))}
               <p className="ops-muted">
-                Staff must verify ticket access and route conditions before
-                redirecting attendees.
+                Gates sorted by ML surge risk, lowest first. Staff must verify
+                ticket access before redirecting attendees.
               </p>
             </div>
           </Panel>

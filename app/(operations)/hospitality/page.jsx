@@ -30,7 +30,14 @@ export default function HospitalityOperations() {
       { label: "Venue facilities", value: state.facilities.length, detail: "Shared simulation" },
       { label: "Hotel zones", value: zones.length, detail: "Reference dataset" },
       { label: "Reference rooms", value: number(rooms - booked), detail: `of ${number(rooms)} listed` },
-      { label: "Requests to command", value: requests.filter((request) => request.status === "open").length, detail: "Awaiting executive acknowledgement" },
+      {
+        label: "Demand forecast",
+        value: state.ml?.hospitality?.alertLevel?.toUpperCase() ?? "LOW",
+        detail: state.ml?.hospitality
+          ? `${state.ml.hospitality.recentRequests} requests · last 10 min`
+          : `${requests.filter((r) => r.status === "open").length} open requests`,
+        tone: state.ml?.hospitality?.alertLevel === "high" ? "critical" : state.ml?.hospitality?.alertLevel === "medium" ? "attention" : "normal",
+      },
     ]} />
     <div className="ops-config-grid">
       <Panel title="Venue facility queues" meta="SHARED SIMULATION">
@@ -44,6 +51,14 @@ export default function HospitalityOperations() {
       </Panel>
       <Panel title="Request executive support" meta="SHARED EVENT STATE">
         <div className="ops-padded">
+          {state.ml?.hospitality && state.ml.hospitality.alertLevel !== "low" && (
+            <div className="ops-ml-demand-banner">
+              <span className="ops-ml-chip">
+                {state.ml.hospitality.alertLevel === "high" ? "⚠ High demand" : "▲ Medium demand"}
+              </span>
+              <p>ML projects ~{state.ml.hospitality.projectedNext5} more requests in the next 5 sim-minutes. Consider pre-positioning staff.</p>
+            </div>
+          )}
           <p className="ops-muted">Describe a verified hospitality issue. Command will see and acknowledge the request.</p>
           <label className="ops-field">Issue or support needed
             <textarea rows={4} maxLength={240} value={message} onChange={(event) => setMessage(event.target.value)} placeholder="For example: East food court needs two more queue stewards." />
