@@ -255,7 +255,7 @@ export default function OrganizerGatesPage() {
             Gate Command &amp; Ingress/Egress Orchestrator
           </h1>
           <p className="mt-0.5 text-xs sm:text-sm text-neutral-400">
-            Real-time turnstile load telemetry, multi-stream crowd deconfliction, and live tactical intervention dispatch.
+            DY Patil gate reference map with scenario-based load and crowd-flow estimates. No live turnstile feed is connected.
           </p>
         </div>
 
@@ -479,7 +479,7 @@ export default function OrganizerGatesPage() {
               {flow.mixingPoints?.length > 0 && lifecycleMode === 'ingress' && (
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/40 bg-rose-500/10 px-2.5 py-1 font-bold text-rose-300">
                   <AlertTriangle className="h-3 w-3" />
-                  {flow.mixingPoints.length} mixing point flagged (Sector 14 North-East)
+                  {flow.mixingPoints.length} scenario mixing point flagged (North-East approach)
                 </span>
               )}
             </div>
@@ -490,10 +490,10 @@ export default function OrganizerGatesPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
             <span className="text-xs font-bold uppercase tracking-wider text-neutral-400 font-mono">
-              Live Turnstile Saturation &amp; Forecast
+              Seeded Turnstile Saturation &amp; Forecast
             </span>
             <span className="text-[11px] font-mono text-emerald-400 font-semibold">
-              {gates.length} Gates Synchronized
+              {gates.length} DY Patil Gates Mapped
             </span>
           </div>
 

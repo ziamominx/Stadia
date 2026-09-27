@@ -50,7 +50,7 @@ export const ROLES = {
     defaultPath: '/fan',
     navItems: [
       { to: '/matches', label: 'Book Match & Pass', iconName: 'Ticket' },
-      { to: '/ticket/FWC-1-A1-8842/confirmation', label: 'My Digital Pass', iconName: 'Activity' },
+      { to: '/ticket', label: 'My Digital Pass', iconName: 'Activity' },
       { to: '/crowd-flow', label: 'Walkway Crowd Radar', iconName: 'Shield' },
       { to: '/hospitality-hub', label: 'Dining & Matchday Perks', iconName: 'Hotel' },
     ],

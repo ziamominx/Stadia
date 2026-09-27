@@ -1,16 +1,22 @@
 import { NextResponse } from 'next/server';
 import { MATCHES_DATA, BLOCKS_DATA, HOTELS_DATA } from '../../../../lib/stadiaData';
 import { stadiaStore } from '../../../../lib/stadiaStore';
+import { DY_PATIL, STADIUM_GATES, STADIUM_HOTELS, STADIUM_PARKING } from '../../../../lib/operations/dy-patil.mjs';
 
 export async function GET(request, { params }) {
   const { ticketId } = await params;
 
   const booking = stadiaStore.getBooking(ticketId);
-  const match = MATCHES_DATA.find((m) => m.id === booking.matchId) || MATCHES_DATA[0];
+  if (!booking) {
+    return NextResponse.json({ error: 'Ticket not found. Check the pass ID or book a match first.' }, { status: 404 });
+  }
+  const match = booking.matchSnapshot || MATCHES_DATA.find((m) => m.id === booking.matchId) || MATCHES_DATA[0];
   const block = BLOCKS_DATA.find((b) => b.id === booking.seatBlockId) || BLOCKS_DATA[0];
 
   const isLocal = booking.visitor_type !== 'outstation';
   const isVehicle = isLocal && booking.travel_mode === 'vehicle';
+  const gateA = STADIUM_GATES[0], gateC = STADIUM_GATES[2], gateD = STADIUM_GATES[3], gateG = STADIUM_GATES[6];
+  const p1 = STADIUM_PARKING[0];
 
   const ticket = {
     unique_ticket_id: booking.ticketId,
@@ -28,16 +34,16 @@ export async function GET(request, { params }) {
         name: 'Gate A · North Concourse',
         side: 'local',
         capacity: 7500,
-        lat: 19.0601,
-        lng: 73.0075,
+        lat: gateA.lat,
+        lng: gateA.lng,
       }
     : {
         id: 3,
-        name: 'Gate C · East Concourse',
+        name: 'Gate C · East',
         side: 'outstation',
         capacity: 9000,
-        lat: 19.0585,
-        lng: 73.0090,
+        lat: gateC.lat,
+        lng: gateC.lng,
       };
 
   const exitGate = isLocal
@@ -46,30 +52,31 @@ export async function GET(request, { params }) {
         name: 'Gate G · West Concourse',
         side: 'local',
         capacity: 8000,
-        lat: 19.0595,
-        lng: 73.0068,
+        lat: gateG.lat,
+        lng: gateG.lng,
       }
     : {
         id: 4,
-        name: 'Gate D · South Concourse',
+        name: 'Gate D · South-East',
         side: 'outstation',
         capacity: 9500,
-        lat: 19.0575,
-        lng: 73.0080,
+        lat: gateD.lat,
+        lng: gateD.lng,
       };
 
   const parkingZone = isVehicle
     ? {
         id: 1,
         name: 'P1 · Nerul West Grounds',
-        lat: 19.0611,
-        lng: 73.0063,
+        lat: p1.lat,
+        lng: p1.lng,
       }
     : null;
 
   const hotel = !isLocal
     ? (HOTELS_DATA.find((h) => String(h.id) === String(booking.hotelId)) || HOTELS_DATA[0])
     : null;
+  const hotelPoint = STADIUM_HOTELS.find((point) => point.name === hotel?.name) || STADIUM_HOTELS.find((point) => point.name === 'The Grand Vashi');
 
   const hotelBooking = !isLocal ? (booking.hotelBooking || {
     hotelId: hotel?.id || 1,
@@ -90,49 +97,47 @@ export async function GET(request, { params }) {
     markers: isLocal
       ? [
           {
-            lat: 19.0611,
-            lng: 73.0063,
+            lat: p1.lat,
+            lng: p1.lng,
             label: isVehicle ? 'Parking P1 · Nerul West Grounds' : 'Nerul Station West Spine',
             color: 'amber',
           },
-          { lat: 19.0601, lng: 73.0075, label: 'Gate A · Entry Turnstiles', color: 'emerald' },
-          { lat: 19.0595, lng: 73.0068, label: 'Gate G · Post-Match Exit', color: 'rose' },
-          { lat: 19.0605, lng: 73.0078, label: `Seat ${ticket.seat_number} · Block ${block.block_name}`, color: 'sky' },
+          { lat: gateA.lat, lng: gateA.lng, label: 'Gate A · Entry Turnstiles', color: 'emerald' },
+          { lat: gateG.lat, lng: gateG.lng, label: 'Gate G · Post-Match Exit', color: 'rose' },
+          { lat: DY_PATIL.lat, lng: DY_PATIL.lng, label: `Stadium bowl · Block ${block.block_name}, Seat ${ticket.seat_number}`, color: 'sky' },
         ]
       : [
           {
-            lat: 19.0757,
-            lng: 72.9984,
+            lat: hotelPoint.lat,
+            lng: hotelPoint.lng,
             label: `${hotel?.name || 'Partner Hotel'} · Shuttle Departure Point`,
             color: 'amber',
           },
-          { lat: 19.0585, lng: 73.0090, label: 'Gate C · Outstation Entry Turnstiles', color: 'emerald' },
-          { lat: 19.0575, lng: 73.0080, label: 'Gate D · Post-Match Exit', color: 'rose' },
-          { lat: 19.0605, lng: 73.0078, label: `Seat ${ticket.seat_number} · Block ${block.block_name}`, color: 'sky' },
+          { lat: gateC.lat, lng: gateC.lng, label: 'Gate C · Outstation Entry Turnstiles', color: 'emerald' },
+          { lat: gateD.lat, lng: gateD.lng, label: 'Gate D · Post-Match Exit', color: 'rose' },
+          { lat: DY_PATIL.lat, lng: DY_PATIL.lng, label: `Stadium bowl · Block ${block.block_name}, Seat ${ticket.seat_number}`, color: 'sky' },
         ],
     entry: isLocal
       ? [
-          [19.0611, 73.0063],
-          [19.0606, 73.0070],
-          [19.0601, 73.0075],
-          [19.0605, 73.0078],
+          [p1.lat, p1.lng],
+          [gateA.lat, gateA.lng],
+          [DY_PATIL.lat, DY_PATIL.lng],
         ]
       : [
-          [19.0757, 72.9984],
-          [19.0650, 73.0020],
-          [19.0585, 73.0090],
-          [19.0605, 73.0078],
+          [hotelPoint.lat, hotelPoint.lng],
+          [gateC.lat, gateC.lng],
+          [DY_PATIL.lat, DY_PATIL.lng],
         ],
     exit: isLocal
       ? [
-          [19.0605, 73.0078],
-          [19.0595, 73.0068],
-          [19.0611, 73.0063],
+          [DY_PATIL.lat, DY_PATIL.lng],
+          [gateG.lat, gateG.lng],
+          [p1.lat, p1.lng],
         ]
       : [
-          [19.0605, 73.0078],
-          [19.0575, 73.0080],
-          [19.0757, 72.9984],
+          [DY_PATIL.lat, DY_PATIL.lng],
+          [gateD.lat, gateD.lng],
+          [hotelPoint.lat, hotelPoint.lng],
         ],
   };
 
@@ -156,7 +161,7 @@ export async function GET(request, { params }) {
     block: {
       id: block.id,
       block_name: block.block_name,
-      price: block.price,
+      price: booking.price ?? block.price,
       capacity: block.capacity,
       side: block.side,
     },

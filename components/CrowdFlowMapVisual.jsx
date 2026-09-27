@@ -23,20 +23,18 @@ export default function CrowdFlowMapVisual({
 
       if (!mapInstanceRef.current) {
         // DY Patil Stadium coordinates
-        const center = [19.0583, 73.0075];
+        const center = [19.04194, 73.02667];
         const map = L.map(mapContainerRef.current, {
           center,
           zoom: 15,
           zoomControl: false,
-          attributionControl: false,
         });
 
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        // CartoDB Dark Matter tiles
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
-          subdomains: 'abcd',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
         }).addTo(map);
 
         layerGroupRef.current = L.layerGroup().addTo(map);
@@ -144,14 +142,14 @@ export default function CrowdFlowMapVisual({
         iconAnchor: [60, 12],
       });
 
-      L.marker([19.0583, 73.0075], { icon: stadiumIcon }).addTo(layerGroup);
+      L.marker([19.04194, 73.02667], { icon: stadiumIcon }).addTo(layerGroup);
     });
   }, [segments, mixingPoints, selectedPoint, onSelectPoint]);
 
   return (
     <div 
       ref={mapContainerRef} 
-      className="w-full h-full min-h-[540px] rounded-2xl border border-zinc-800/80 overflow-hidden shadow-2xl relative" 
+      className="map-dark-tiles w-full h-full min-h-[540px] rounded-2xl border border-zinc-800/80 overflow-hidden shadow-2xl relative"
     />
   );
 }

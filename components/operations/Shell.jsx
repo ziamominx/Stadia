@@ -2,13 +2,16 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { OperationsProvider, useOperations } from "./OperationsProvider";
 import { Badge, Button, clock, Modal } from "./UI";
 import { canAccess } from "@/lib/operations/auth.mjs";
 const links = [
   ["/command-center", "Command Center"],
+  ["/stadium", "Stadium"],
+  ["/street-map", "Street Map"],
   ["/crowd", "Crowd"],
+  ["/hazard-drill", "Hazard Drill"],
   ["/ground", "Ground"],
   ["/transport", "Transport"],
   ["/hospitality", "Hospitality"],
@@ -18,7 +21,7 @@ const links = [
   ["/analytics", "Analytics"],
   ["/ml", "ML Intelligence"],
 ];
-function Frame({ children }) {
+function Frame({ children, theme, onToggleTheme }) {
   const { state, send, busy, role } = useOperations();
   const path = usePathname(),
     router = useRouter();
@@ -32,9 +35,13 @@ function Frame({ children }) {
         Skip to content
       </a>
       <header className="ops-header">
-        <Link href="/command-center" className="ops-brand">
+        <Link href="/" className="ops-brand" aria-label="STADIA — landing page">
           STADIA<span>●</span>
         </Link>
+        <button className="ops-theme-toggle" type="button" onClick={onToggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} aria-pressed={theme === "light"}>
+          <span aria-hidden="true">{theme === "dark" ? "☀" : "☾"}</span>
+          <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+        </button>
         <div className="ops-event">
           <strong>{state?.event.name || "Event command"}</strong>
           <span>{state?.event.date ? `${state.event.date} · ` : ""}{state?.event.venue || "Connecting to venue"}</span>
@@ -149,10 +156,22 @@ function Frame({ children }) {
   );
 }
 export default function Shell({ children }) {
+  const [theme, setTheme] = useState("dark");
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("stadia_ops_theme_v2");
+      if (saved === "light" || saved === "dark") setTheme(saved);
+    } catch {}
+  }, []);
+  const toggleTheme = () => setTheme((current) => {
+    const next = current === "dark" ? "light" : "dark";
+    try { window.localStorage.setItem("stadia_ops_theme_v2", next); } catch {}
+    return next;
+  });
   return (
-    <div className="ops">
+    <div className="ops" data-theme={theme}>
       <OperationsProvider>
-        <Frame>{children}</Frame>
+        <Frame theme={theme} onToggleTheme={toggleTheme}>{children}</Frame>
       </OperationsProvider>
     </div>
   );

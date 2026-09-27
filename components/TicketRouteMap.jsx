@@ -20,20 +20,18 @@ export default function TicketRouteMap({ route, height = '340px' }) {
       }
 
       // Default center around DY Patil Stadium
-      const defaultCenter = [19.0565, 73.0075];
+      const defaultCenter = [19.04194, 73.02667];
       const map = L.map(mapContainerRef.current, {
         center: defaultCenter,
         zoom: 14,
         zoomControl: false,
-        attributionControl: false,
       });
 
       L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-      // Premium CartoDB Dark Matter tiles
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        subdomains: 'abcd',
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
       }).addTo(map);
 
       mapInstanceRef.current = map;
@@ -119,7 +117,7 @@ export default function TicketRouteMap({ route, height = '340px' }) {
     <div 
       ref={mapContainerRef} 
       style={{ height }} 
-      className="w-full rounded-2xl border border-zinc-800/80 overflow-hidden shadow-xl" 
+      className="map-dark-tiles w-full rounded-2xl border border-zinc-800/80 overflow-hidden shadow-xl"
     />
   );
 }

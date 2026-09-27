@@ -1076,3 +1076,155 @@
   .lp-hud-stage-tracker, .lp-hero-telemetry-hud, .lp-hero-timeline-scrubber { display: none; }
   .lp-skip-journey { display: none; }
 }
+
+/* Motion and depth for the editorial chapters, informed by Lusion's
+   large typography and restrained interaction rather than copied assets. */
+.lp-nav-link { position: relative; padding-bottom: 5px; }
+.lp-nav-link::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .45s cubic-bezier(.16,1,.3,1);
+}
+.lp-nav-link:hover::after,
+.lp-nav-link:focus-visible::after { transform: scaleX(1); }
+.lp-section-heading {
+  max-width: 900px;
+  font-size: clamp(42px, 5.6vw, 82px);
+  line-height: 1.02;
+  letter-spacing: -.055em;
+  font-weight: 300;
+}
+.lp-section-heading strong { display: block; }
+.lp-section { margin-bottom: clamp(110px, 15vw, 210px); }
+.lp-network-track { position: relative; gap: 0; scroll-snap-type: x proximity; }
+.lp-network-track::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #eee 32%, #666 72%, transparent);
+  opacity: .38;
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+.lp-network-node {
+  position: relative;
+  overflow: hidden;
+  flex: 1 0 auto;
+  min-width: 140px;
+  margin-right: 12px;
+  scroll-snap-align: start;
+  backdrop-filter: blur(8px);
+}
+.lp-stages-grid { grid-template-columns: repeat(6, minmax(0,1fr)); }
+.lp-stage-card:first-child { grid-column: span 2; }
+.lp-stage-card,
+.lp-platform-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  background: linear-gradient(145deg, rgba(255,255,255,.045), rgba(255,255,255,.008) 52%, rgba(255,255,255,.025));
+}
+.lp-stage-card::before,
+.lp-platform-card::before,
+.lp-network-node::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(280px circle at var(--spot-x,50%) var(--spot-y,50%), rgba(255,255,255,.18), transparent 68%);
+  opacity: 0;
+  transition: opacity .35s ease;
+  pointer-events: none;
+}
+.lp-stage-card:hover::before,
+.lp-stage-card:focus-visible::before,
+.lp-platform-card:hover::before,
+.lp-platform-card:focus-visible::before,
+.lp-network-node:hover::before,
+.lp-network-node:focus-visible::before { opacity: 1; }
+.lp-stage-card > *, .lp-platform-card > *, .lp-network-node > * { position: relative; z-index: 1; }
+.lp-stage-card::after,
+.lp-platform-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: #f5f5f5;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .55s cubic-bezier(.16,1,.3,1);
+}
+.lp-stage-card:hover::after,
+.lp-stage-card:focus-visible::after,
+.lp-platform-card:hover::after,
+.lp-platform-card:focus-visible::after { transform: scaleX(1); }
+.lp-stage-card:hover, .lp-platform-card:hover { transform: translateY(-8px); }
+.lp-stage-title { letter-spacing: -.025em; font-size: clamp(15px, 1.3vw, 19px); }
+.lp-stage-open { transition: transform .35s cubic-bezier(.16,1,.3,1), color .35s ease; }
+.lp-stage-card:hover .lp-stage-open { transform: translateX(7px); color: #fff; }
+.lp-platform-grid { grid-auto-rows: minmax(145px, auto); gap: 14px; }
+.lp-platform-card:first-child {
+  grid-column: span 2;
+  grid-row: span 2;
+  min-height: 310px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(30px,4vw,54px);
+  background: radial-gradient(circle at 78% 20%, rgba(255,255,255,.17), transparent 32%), repeating-linear-gradient(0deg, transparent 0 29px, rgba(255,255,255,.035) 30px), repeating-linear-gradient(90deg, transparent 0 29px, rgba(255,255,255,.035) 30px), #111;
+}
+.lp-platform-card:first-child .lp-stage-title { font-size: clamp(26px,3vw,42px); }
+.lp-platform-card:first-child .lp-platform-summary { max-width: 32ch; font-size: 14px; }
+.lp-final-cta::after {
+  bottom: -72%;
+  width: min(77vw, 880px);
+  background: conic-gradient(from 90deg, transparent 0 39%, rgba(255,255,255,.65) 50%, transparent 61%);
+  border: 0;
+  box-shadow: 0 0 0 70px rgba(255,255,255,.018), 0 0 0 140px rgba(255,255,255,.014);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px));
+}
+.lp-detail-dialog[open] { animation: lp-dialog-enter .45s cubic-bezier(.16,1,.3,1) both; }
+@keyframes lp-dialog-enter { from { opacity: 0; transform: translateY(25px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes lp-hero-enter { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes lp-orbit { to { transform: translateX(-50%) rotate(360deg); } }
+@keyframes lp-network-draw { to { transform: scaleX(1); } }
+@media (prefers-reduced-motion: no-preference) {
+  .lp-hero-content > * { animation: lp-hero-enter .8s cubic-bezier(.16,1,.3,1) both; }
+  .lp-hero-content > :nth-child(2) { animation-delay: .1s; }
+  .lp-hero-content > :nth-child(3) { animation-delay: .2s; }
+  .lp-hero-content > :nth-child(4) { animation-delay: .3s; }
+  .lp-hero-content > :nth-child(5) { animation-delay: .4s; }
+  .lp-network-track.is-visible::before { animation: lp-network-draw 1.3s cubic-bezier(.16,1,.3,1) .15s both; }
+  .lp-final-cta::after { animation: lp-orbit 26s linear infinite; }
+}
+@media (max-width: 900px) {
+  .lp-stages-grid, .lp-platform-grid { grid-template-columns: 1fr; }
+  .lp-stage-card:first-child, .lp-platform-card:first-child { grid-column: auto; grid-row: auto; }
+  .lp-platform-card:first-child { min-height: 230px; }
+  .lp-section-heading strong { display: inline; }
+}
+@media (max-width: 600px) {
+  .lp-section-heading { font-size: clamp(36px, 9vw, 56px); }
+  .lp-section { margin-bottom: 110px; }
+  .lp-editorial { padding-top: 90px; }
+  .lp-network-node { min-width: 152px; }
+  .lp-platform-card:first-child { min-height: 200px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lp-detail-dialog[open] { animation: none; }
+  .lp-network-track::before { transform: scaleX(1); }
+}

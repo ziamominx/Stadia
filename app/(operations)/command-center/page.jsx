@@ -12,7 +12,6 @@ import {
   clock,
   number,
 } from "@/components/operations/UI";
-import VenueMap from "@/components/operations/VenueMap";
 import {
   ReportDialog,
   Response,
@@ -85,19 +84,11 @@ export default function CommandCenter() {
         </div>)}</div>
       </Panel>}
 
-      {/* MAP HERO — full width, situation card floats inside */}
-      <div className="ops-map-hero">
-        <VenueMap state={state} selected={selected} onSelect={setSelected} />
-        {incident && (
-          <div className="ops-situation-overlay">
-            <div className="ops-situation-overlay-header">
-              <span>Priority situation</span>
-              <span className="ops-mono">{incident.id}</span>
-            </div>
-            <Response incident={incident} />
-          </div>
-        )}
+      <div className="ops-destination-grid" aria-label="Venue map destinations">
+        <Link href="/stadium" className="ops-destination ops-destination-stadium"><span className="ops-kicker">01 / STADIUM</span><h2>See the venue.</h2><p>Explore every gate, tier and corridor in the stadium schematic. Switch between density, flow and exits.</p><span className="ops-destination-action">Open Stadium Intelligence ↗</span></Link>
+        <Link href="/street-map" className="ops-destination ops-destination-street"><span className="ops-kicker">02 / STREET MAP</span><h2>See the city.</h2><p>Inspect gates, nearby sites and approach routes on an interactive OpenStreetMap street map.</p><span className="ops-destination-action">Open Street Map ↗</span></Link>
       </div>
+      {incident && <Panel title="Priority situation" meta={incident.id}><Response incident={incident} /></Panel>}
 
       {/* Zone inspector + sector strip below the map */}
       <div className="ops-workspace">

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useApi, api } from '../../lib/api.js';
+import { DY_PATIL, STADIUM_GATES } from '../../lib/operations/dy-patil.mjs';
 import {
   DoorClosed,
   Navigation,
@@ -16,86 +17,42 @@ import {
   MapPin,
 } from '../../components/Icons';
 
-const DEFAULT_GATES = [
-  {
-    id: 1,
-    name: 'Gate A · North Concourse',
-    side: 'Local & VIP Transit',
-    baseWait: 4,
-    status: 'OPTIMAL',
-    turnstilesOpen: 12,
-    lat: 19.0601,
-    lng: 73.0075,
-    note: 'Fast-track express lanes active. Optimal for Blocks A & H.',
-  },
-  {
-    id: 2,
-    name: 'Gate B · West Concourse',
-    side: 'Local Vehicle & Rail Spine',
-    baseWait: 18,
-    status: 'CONGESTED',
-    turnstilesOpen: 10,
-    lat: 19.0592,
-    lng: 73.0065,
-    note: 'Heavy queue. Divert 150m North to Gate A for 4-min entry.',
-  },
-  {
-    id: 3,
-    name: 'Gate C · East Concourse',
-    side: 'Hotel Shuttle Drop Hub',
-    baseWait: 5,
-    status: 'OPTIMAL',
-    turnstilesOpen: 14,
-    lat: 19.0585,
-    lng: 73.0090,
-    note: 'Dedicated outstation high-throughput turnstiles. Smooth flow.',
-  },
-  {
-    id: 4,
-    name: 'Gate D · South Concourse',
-    side: 'Highway Express Corridor',
-    baseWait: 9,
-    status: 'MODERATE',
-    turnstilesOpen: 8,
-    lat: 19.0575,
-    lng: 73.0080,
-    note: 'Moderate pacing. Best for Blocks D & E.',
-  },
-];
+const SAMPLE_WAITS = [4, 18, 5, 9, 7, 6, 12, 4];
 
 const FAN_WAYPOINTS = [
-  { name: 'Water Refill Point 1', type: 'water', lat: 19.0605, lng: 73.0072, desc: 'Free chilled RO water' },
-  { name: 'Medical Station North', type: 'medical', lat: 19.0608, lng: 73.0069, desc: 'First-aid & paramedic' },
-  { name: 'Official Fan Store', type: 'merch', lat: 19.0598, lng: 73.0085, desc: 'Team jerseys & caps' },
-  { name: 'Food Court & Lounge', type: 'food', lat: 19.0580, lng: 73.0088, desc: 'Food trucks & beverages' },
+  { name: 'Water refill area', type: 'water', lat: 19.0437, lng: 73.0262, desc: 'Indicative north concourse location' },
+  { name: 'Medical support area', type: 'medical', lat: 19.0436, lng: 73.0269, desc: 'Indicative first-aid location' },
+  { name: 'Fan merchandise area', type: 'merch', lat: 19.0419, lng: 73.0285, desc: 'Indicative east concourse location' },
+  { name: 'Food and lounge area', type: 'food', lat: 19.0403, lng: 73.0269, desc: 'Indicative south concourse location' },
 ];
 
 export default function FanCrowdFlowPage() {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef([]);
-  const [selectedGate, setSelectedGate] = useState(1);
+  const amenitiesRef = useRef(null);
+  const [mapReady, setMapReady] = useState(false);
+  const [selectedGate, setSelectedGate] = useState('A');
   const [filterAmenities, setFilterAmenities] = useState(true);
   const [timeHorizon, setTimeHorizon] = useState('now'); // 'now', '30m', 'kickoff'
   const { data: ecosystem } = useApi(api.ecosystem);
   const { data: gatesApi } = useApi(api.gates);
 
-  // Compute live ML wait times based on time horizon
-  const gateData = DEFAULT_GATES.map((g) => {
-    const liveApiGate = gatesApi?.find((apiG) => apiG.id === g.id);
-    const loadMult = liveApiGate ? liveApiGate.load : 0.7;
+  // Compute live ML wait times based on STADIUM_GATES & selected time horizon
+  const gateData = STADIUM_GATES.map((gate, index) => {
+    const rawWait = SAMPLE_WAITS[index] || 6;
+    const apiGate = gatesApi?.find((g) => g.id === index + 1 || g.name?.includes(gate.id));
+    const loadMult = apiGate ? apiGate.load : 0.72;
     
-    let waitMins = Math.round(g.baseWait * (loadMult / 0.7));
-    let mlPredict = waitMins;
-
+    let baseWait = Math.max(2, Math.round(rawWait * (loadMult / 0.72)));
+    let currentWait = baseWait;
     if (timeHorizon === '30m') {
-      mlPredict = Math.round(waitMins * 1.45);
+      currentWait = Math.round(baseWait * 1.45);
     } else if (timeHorizon === 'kickoff') {
-      mlPredict = Math.round(waitMins * 2.1);
+      currentWait = Math.round(baseWait * 2.1);
     }
 
-    const currentWait = timeHorizon === 'now' ? waitMins : mlPredict;
-    const status = currentWait > 15 ? 'CONGESTED' : currentWait >= 7 ? 'MODERATE' : 'OPTIMAL';
+    const status = currentWait > 15 ? 'CONGESTED' : currentWait >= 8 ? 'MODERATE' : 'OPTIMAL';
     const statusColor =
       status === 'CONGESTED'
         ? 'text-rose-400 bg-rose-500/15 border-rose-500/30'
@@ -104,15 +61,20 @@ export default function FanCrowdFlowPage() {
         : 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30';
 
     return {
-      ...g,
+      id: gate.id,
+      name: `Gate ${gate.id} · ${gate.name}`,
+      side: `${gate.corridor === 'local' ? 'Local' : 'Outstation'} approach`,
       waitMins: currentWait,
       status,
       statusColor,
-      surgeProb: Math.min(96, Math.round(loadMult * 100)),
+      lat: gate.lat,
+      lng: gate.lng,
+      note: gate.note || 'Dynamic ML queue projection based on ingress sensor flow.',
+      capacityPct: Math.min(98, Math.round(loadMult * 100)),
     };
   });
 
-  // Initialize Leaflet Map
+  // Initialize Leaflet Map with DY_PATIL focus
   useEffect(() => {
     let isMounted = true;
     if (!containerRef.current || mapRef.current) return;
@@ -121,7 +83,7 @@ export default function FanCrowdFlowPage() {
       if (!isMounted || !containerRef.current || mapRef.current) return;
       const L = leafletModule.default || leafletModule;
 
-      const map = L.map(containerRef.current, { zoomControl: true }).setView([19.0588, 73.0075], 16);
+      const map = L.map(containerRef.current, { zoomControl: true }).setView([DY_PATIL.lat, DY_PATIL.lng], 17);
       mapRef.current = map;
 
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -129,16 +91,20 @@ export default function FanCrowdFlowPage() {
         attribution: '&copy; OpenStreetMap',
       }).addTo(map);
 
-      // Render markers
-      renderMarkers(L, map);
+      amenitiesRef.current = L.layerGroup().addTo(map);
+      setMapReady(true);
+      renderGateMarkers(L, map);
     });
 
     return () => {
       isMounted = false;
+      mapRef.current?.remove();
+      mapRef.current = null;
+      amenitiesRef.current = null;
     };
   }, []);
 
-  const renderMarkers = (L, map) => {
+  const renderGateMarkers = (L, map) => {
     if (!map) return;
     markersRef.current.forEach((m) => map.removeLayer(m));
     markersRef.current = [];
@@ -150,7 +116,7 @@ export default function FanCrowdFlowPage() {
         html: `<div style="transform:translate(-50%,-100%);text-align:center;cursor:pointer">
           <div style="width:20px;height:20px;border-radius:9999px;background:${color};border:2px solid #fff;box-shadow:0 0 10px ${color};margin:0 auto"></div>
           <div style="background:rgba(10,14,24,0.92);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:9999px;margin-top:3px;border:1px solid rgba(255,255,255,0.2);white-space:nowrap">
-            ${gate.name.split('·')[0]} · ${gate.waitMins}m
+            Gate ${gate.id} · ${gate.waitMins}m
           </div>
         </div>`,
         iconSize: [0, 0],
@@ -161,32 +127,45 @@ export default function FanCrowdFlowPage() {
       marker.on('click', () => setSelectedGate(gate.id));
       markersRef.current.push(marker);
     });
-
-    if (filterAmenities) {
-      FAN_WAYPOINTS.forEach((pt) => {
-        const icon = L.divIcon({
-          className: '',
-          html: `<div style="transform:translate(-50%,-50%);text-align:center;cursor:pointer">
-            <div style="width:12px;height:12px;border-radius:9999px;background:#38bdf8;border:2px solid #fff;"></div>
-            <div style="background:rgba(0,0,0,0.8);color:#93c5fd;font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;margin-top:2px;white-space:nowrap">${pt.name}</div>
-          </div>`,
-          iconSize: [0, 0],
-        });
-        const m = L.marker([pt.lat, pt.lng], { icon }).addTo(map);
-        m.bindPopup(`<b>${pt.name}</b><br/>${pt.desc}`);
-        markersRef.current.push(m);
-      });
-    }
   };
 
   useEffect(() => {
-    if (mapRef.current) {
-      import('leaflet').then((leafletModule) => {
-        const L = leafletModule.default || leafletModule;
-        renderMarkers(L, mapRef.current);
-      });
-    }
-  }, [filterAmenities, timeHorizon, gatesApi]);
+    if (!mapReady || !mapRef.current) return;
+    import('leaflet').then((leafletModule) => {
+      const L = leafletModule.default || leafletModule;
+      renderGateMarkers(L, mapRef.current);
+    });
+  }, [mapReady, timeHorizon, gatesApi]);
+
+  useEffect(() => {
+    if (!mapReady || !amenitiesRef.current) return;
+    let active = true;
+    import('leaflet').then((leafletModule) => {
+      if (!active || !amenitiesRef.current) return;
+      const L = leafletModule.default || leafletModule;
+      amenitiesRef.current.clearLayers();
+      if (filterAmenities) {
+        FAN_WAYPOINTS.forEach((pt) => {
+          const icon = L.divIcon({
+            className: '',
+            html: `<div style="transform:translate(-50%,-50%);text-align:center;cursor:pointer">
+              <div style="width:12px;height:12px;border-radius:9999px;background:#38bdf8;border:2px solid #fff;"></div>
+              <div style="background:rgba(0,0,0,0.8);color:#93c5fd;font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;margin-top:2px;white-space:nowrap">${pt.name}</div>
+            </div>`,
+            iconSize: [0, 0],
+          });
+          L.marker([pt.lat, pt.lng], { icon }).addTo(amenitiesRef.current).bindTooltip(`${pt.name} · indicative location`);
+        });
+      }
+    });
+
+    return () => { active = false; };
+  }, [mapReady, filterAmenities]);
+
+  useEffect(() => {
+    const gate = gateData.find((item) => item.id === selectedGate);
+    if (mapReady && gate) mapRef.current?.panTo([gate.lat, gate.lng], { animate: true });
+  }, [mapReady, selectedGate]);
 
   const panToWaypoint = (w) => {
     if (mapRef.current) {
@@ -202,14 +181,14 @@ export default function FanCrowdFlowPage() {
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-emerald-400" />
             <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-emerald-400">
-              Live Stadium Radar · ML Ingress Telemetry
+              Stadium Gate Reference · ML Telemetry
             </span>
           </div>
           <h1 className="mt-1 text-2xl font-black text-white sm:text-3xl">
             Walkway Crowd Radar &amp; Gate Wait Times
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-neutral-400">
-            Real-time turnstile queue tracker, predictive arrival forecasts, and fan waypoint amenities around DY Patil Stadium.
+            DY Patil Stadium gate locations with predictive ML wait projections, approach paths, and fan concourse waypoints.
           </p>
         </div>
 
@@ -238,8 +217,7 @@ export default function FanCrowdFlowPage() {
               </span>
             </div>
             <p className="mt-1 text-xs text-neutral-200">
-              Gate B West Concourse is experiencing heavy lines. All ticket holders can use{' '}
-              <strong className="text-white">Gate A North Concourse</strong> with verified QR fast-track access.
+              A demo diversion is active. Check your digital ticket for recommended gate fast-track options.
             </p>
           </div>
         </div>
@@ -286,7 +264,7 @@ export default function FanCrowdFlowPage() {
           <div className="flex items-center justify-between border-b border-neutral-800 bg-[#121217] p-3.5 px-4">
             <div className="flex items-center gap-2 text-xs font-bold text-white">
               <Navigation className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Perimeter Corridor Radar</span>
+              <span>Perimeter Corridor Radar · DY Patil Stadium</span>
             </div>
             <label className="flex items-center gap-1.5 text-xs text-neutral-300 cursor-pointer">
               <input
@@ -295,7 +273,7 @@ export default function FanCrowdFlowPage() {
                 onChange={(e) => setFilterAmenities(e.target.checked)}
                 className="h-3.5 w-3.5 rounded border-neutral-700 bg-neutral-800 text-emerald-500 focus:ring-0"
               />
-              <span>Show Water &amp; First-Aid</span>
+              <span>Show sample amenities</span>
             </label>
           </div>
 
@@ -304,36 +282,33 @@ export default function FanCrowdFlowPage() {
           <div className="p-3.5 border-t border-neutral-800 bg-[#121217] flex flex-wrap items-center justify-between gap-2 text-[11px] text-neutral-400">
             <div className="flex items-center gap-3">
               <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 inline-block" /> &lt;7 min wait
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 inline-block" /> &lt;8 min wait
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-amber-400 inline-block" /> 7–15 min wait
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-400 inline-block" /> 8–15 min wait
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-rose-400 inline-block" /> &gt;15 min wait
               </span>
             </div>
-            <span className="font-mono text-neutral-500">ML updated live</span>
+            <span className="font-mono text-neutral-500">Live ML telemetry active</span>
           </div>
         </div>
 
         {/* Live Gate Cards */}
         <div className="space-y-3">
           <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-400 font-mono">
-            Turnstile Ingress Queue Status
+            Gate Wait Estimates
           </h2>
 
           <div className="space-y-3">
             {gateData.map((g) => (
-              <div
+              <button
+                type="button"
                 key={g.id}
-                onClick={() => {
-                  setSelectedGate(g.id);
-                  if (mapRef.current) {
-                    mapRef.current.setView([g.lat, g.lng], 17, { animate: true });
-                  }
-                }}
-                className={`cursor-pointer rounded-2xl border p-4 transition shadow-lg ${
+                onClick={() => setSelectedGate(g.id)}
+                aria-pressed={selectedGate === g.id}
+                className={`block w-full text-left cursor-pointer rounded-2xl border p-4 transition shadow-lg ${
                   selectedGate === g.id
                     ? 'border-emerald-500/80 bg-neutral-900/90 ring-1 ring-emerald-500/50'
                     : 'border-neutral-800 bg-[#0e0e12] hover:border-neutral-700'
@@ -350,15 +325,16 @@ export default function FanCrowdFlowPage() {
                     <p className="text-[11px] text-neutral-400 mt-0.5">{g.side}</p>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono text-xs font-bold text-neutral-300">{g.turnstilesOpen} Lanes</div>
-                    <div className="text-[10px] text-emerald-400 uppercase font-mono">{g.surgeProb}% capacity</div>
+                    <span className="text-[10px] font-mono font-bold text-emerald-400">
+                      {g.capacityPct}% load
+                    </span>
                   </div>
                 </div>
 
                 <p className="mt-2 text-xs text-neutral-300 leading-relaxed border-t border-neutral-800/80 pt-2">
                   {g.note}
                 </p>
-              </div>
+              </button>
             ))}
           </div>
         </div>

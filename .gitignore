@@ -11,6 +11,7 @@ build/
 .env
 .env.local
 .env.*.local
+.stadia-data/
 .DS_Store
 .freebuff/
 .agent/skills/

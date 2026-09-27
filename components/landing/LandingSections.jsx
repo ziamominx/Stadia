@@ -40,6 +40,11 @@ const consoles = [
 export default function LandingSections() {
   const [selected, setSelected] = useState(null);
   const dialog = useRef(null);
+  const spotlight = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
+  };
   useEffect(() => {
     const targets = document.querySelectorAll(".lp-reveal");
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.IntersectionObserver) {
@@ -75,6 +80,7 @@ export default function LandingSections() {
       href={href} 
       className="lp-stage-card lp-reveal" 
       key={title} 
+      onPointerMove={spotlight}
       aria-label={`Open ${title}`}
       style={{ textDecoration: 'none', color: 'inherit' }}
     >
@@ -103,12 +109,13 @@ export default function LandingSections() {
         <div className="lp-section-kicker">01 // ONE JOURNEY</div>
         <h2 className="lp-section-heading">CROWDS MOVE <strong>BETWEEN SYSTEMS.</strong></h2>
         <p className="lp-section-body">Select a moment to see how it connects to the next.</p>
-        <div className="lp-network-track">
+        <div className="lp-network-track lp-reveal">
           {journey.map(([title, detail, href, routeName], index) => (
             <button 
               key={title} 
               type="button" 
               className="lp-network-node" 
+              onPointerMove={spotlight}
               onClick={() => setSelected({ title, detail, href, routeName })}
             >
               {String(index + 1).padStart(2, "0")} {title} <span aria-hidden="true">↗</span>
@@ -129,7 +136,14 @@ export default function LandingSections() {
       <div id="platform" className="lp-section">
         <div className="lp-section-kicker lp-reveal">04 // PLATFORM</div>
         <h2 className="lp-section-heading lp-reveal">OPEN THE <strong>RIGHT CONSOLE.</strong></h2>
-        <div className="lp-platform-grid">{consoles.map(([title, href, detail]) => <Link key={href} href={href} className="lp-platform-card lp-reveal"><span className="lp-stage-title">{title} ↗</span><span className="lp-platform-summary">{detail}</span></Link>)}</div>
+        <div className="lp-platform-grid">
+          {consoles.map(([title, href, detail]) => (
+            <Link key={href} href={href} className="lp-platform-card lp-reveal" onPointerMove={spotlight}>
+              <span className="lp-stage-title">{title} ↗</span>
+              <span className="lp-platform-summary">{detail}</span>
+            </Link>
+          ))}
+        </div>
       </div>
       <div className="lp-final-cta lp-reveal">
         <div className="lp-section-kicker">THE COMPLETE PLATFORM</div>

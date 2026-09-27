@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useApi, api } from '../../../../../lib/api.js';
+import { getEventById } from '../../../../../lib/eventsData.js';
+import { BLOCKS_DATA } from '../../../../../lib/stadiaData.js';
+import { rememberWalletTicket } from '../../../../../lib/passWallet.js';
 import { kickoffLong, inr } from '../../../../../lib/format.js';
 import {
   AlertTriangle,
@@ -26,12 +29,33 @@ export default function CheckoutPage() {
   const seat = params?.seat;
   const router = useRouter();
 
-  const { data, loading, error } = useApi(() => api.matchSeats(matchId), [matchId]);
+  const { data: apiData, loading, error } = useApi(() => api.matchSeats(matchId), [matchId]);
   const { data: hotels } = useApi(api.hotels);
+  const [localEvent, setLocalEvent] = useState(null);
+
+  useEffect(() => {
+    setLocalEvent(getEventById(matchId));
+  }, [matchId]);
+
+  const data = apiData || (localEvent ? {
+    match: {
+      id: localEvent.id,
+      home_team: localEvent.title,
+      away_team: localEvent.subtitle || 'Live Event',
+      kickoff_time: `${localEvent.date}T14:00:00.000Z`,
+      venue: `${localEvent.venue}, ${localEvent.city}`,
+      status: localEvent.status,
+    },
+    blocks: BLOCKS_DATA.map((block) => ({
+      ...block,
+      price: block.block_name.startsWith('E') || block.block_name.startsWith('F') ? (localEvent.vipPrice || 8500) : (localEvent.basePrice || 1500),
+      available: Math.max(0, block.capacity - block.sold),
+      soldSeats: ['A1', 'A2', 'A3', 'B1', 'B2', 'C4', 'D10', 'D11'],
+    })),
+  } : null);
 
   // User details
   const [form, setForm] = useState({ name: '', phone: '', email: '', homeLocation: '' });
-  const [card, setCard] = useState({ number: '', expiry: '', cvv: '' });
 
   // Unified Logistics selections
   const [travelMode, setTravelMode] = useState('vehicle'); // 'vehicle', 'transit', 'outstation'
@@ -43,14 +67,14 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState(null);
 
-  if (loading) {
+  if (loading && !data) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
         <div className="h-72 animate-pulse rounded-3xl bg-[#0e0e12] border border-neutral-800" />
       </div>
     );
   }
-  if (error || !data) {
+  if (!data) {
     return (
       <div className="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6">
         <p className="text-lg text-slate-300">{error?.message || 'Match details not found'}</p>
@@ -74,6 +98,10 @@ export default function CheckoutPage() {
   const submit = async (e) => {
     e.preventDefault();
     setErr(null);
+    if (seatTaken) {
+      setErr('That seat is no longer available. Please select another seat.');
+      return;
+    }
     if (!form.name.trim() || !form.phone.trim()) {
       setErr('Full name and WhatsApp phone number are required');
       return;
@@ -82,9 +110,11 @@ export default function CheckoutPage() {
     try {
       // 1. Create the booking
       const res = await api.createBooking({
-        matchId: Number(matchId),
+        matchId: apiData ? Number(matchId) : String(matchId),
         seatBlockId: Number(blockId),
         seatNumber: seat,
+        matchSnapshot: apiData ? null : data.match,
+        price: block.price,
         user: {
           name: form.name.trim(),
           phone: form.phone.trim(),
@@ -94,6 +124,7 @@ export default function CheckoutPage() {
       });
 
       const ticketId = res.ticketId;
+      rememberWalletTicket(ticketId);
 
       // 2. Synchronize Travel Logistics directly
       if (travelMode === 'outstation') {
@@ -415,41 +446,13 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* STEP 3: Payment (Mock) */}
+          {/* STEP 3: Demo reservation */}
           <div className="rounded-3xl border border-neutral-800 bg-[#0e0e12] p-5 sm:p-6 shadow-xl space-y-4">
             <div className="flex items-center justify-between border-b border-neutral-800/60 pb-3">
-              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-300">3. Instant Payment</h2>
-              <span className="text-[11px] font-mono text-emerald-400 font-semibold">Demo Sandbox · Instant</span>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-neutral-300">3. Generate Demo Pass</h2>
+              <span className="text-[11px] font-mono text-emerald-400 font-semibold">No charge</span>
             </div>
-            <div>
-              <label className="mb-1 block text-xs font-semibold text-neutral-300">Card Number</label>
-              <input
-                value={card.number}
-                onChange={(e) => setCard({ ...card, number: e.target.value })}
-                placeholder="4242 •••• •••• 4242"
-                className="w-full rounded-xl border border-neutral-800 bg-[#141418] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 outline-none focus:border-emerald-500 transition"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-neutral-300">Expiry</label>
-                <input
-                  value={card.expiry}
-                  onChange={(e) => setCard({ ...card, expiry: e.target.value })}
-                  placeholder="12/28"
-                  className="w-full rounded-xl border border-neutral-800 bg-[#141418] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 outline-none focus:border-emerald-500 transition"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-semibold text-neutral-300">CVV</label>
-                <input
-                  value={card.cvv}
-                  onChange={(e) => setCard({ ...card, cvv: e.target.value })}
-                  placeholder="•••"
-                  className="w-full rounded-xl border border-neutral-800 bg-[#141418] px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 outline-none focus:border-emerald-500 transition"
-                />
-              </div>
-            </div>
+            <p className="text-sm leading-relaxed text-neutral-400">This demo confirms a seat and creates a digital pass for the local preview. No payment is taken and the pass is not valid for real venue entry.</p>
           </div>
 
           {err && (
@@ -460,14 +463,14 @@ export default function CheckoutPage() {
 
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || seatTaken}
             className="w-full rounded-2xl bg-emerald-500 hover:bg-emerald-400 py-4 text-base font-black text-black shadow-xl shadow-emerald-500/20 transition flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {submitting ? (
               <span>Orchestrating Master Pass & Logistics…</span>
             ) : (
               <>
-                <span>Confirm & Generate Digital Matchday Pass ({inr(block.price)})</span>
+                <span>Confirm Demo Reservation & Generate Pass</span>
                 <ArrowRight className="h-4 w-4" />
               </>
             )}
@@ -559,7 +562,7 @@ export default function CheckoutPage() {
                 <span className="text-emerald-400 font-bold">FREE</span>
               </div>
               <div className="flex justify-between text-base font-black text-white pt-2 border-t border-neutral-800">
-                <span>Total Amount:</span>
+                <span>Indicative Ticket Price:</span>
                 <span className="text-emerald-400">{inr(block.price)}</span>
               </div>
             </div>

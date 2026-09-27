@@ -86,6 +86,27 @@ test("fire requires completed field task, staff clearance, then explicit exit re
   assert.equal(s.exits.find((e) => e.zone === "east").status, "available");
   assert.equal(s.personnel.find((p) => p.id === "security").deployed, 84);
 });
+test("one-click fire drill holds the risky gate and records manual coordination", () => {
+  const initial = createState();
+  let s = command(initial, { type: "hazard_drill", zoneId: "east" });
+  const east = s.zones.find((zone) => zone.id === "east");
+  assert.equal(initial.zones.find((zone) => zone.id === "east").fire, false);
+  assert.equal(east.fire, true);
+  assert.equal(east.open, false);
+  assert.ok(east.occupancy >= s.rules.critical);
+  assert.equal(s.exits.find((exit) => exit.zone === "east").status, "blocked");
+  assert.equal(s.emergency, true);
+  assert.equal(s.incidents[0].type, "fire");
+  const beforeDuplicate = JSON.stringify(s);
+  assert.throws(() => command(s, { type: "hazard_drill", zoneId: "west" }), /already active/);
+  assert.equal(JSON.stringify(s), beforeDuplicate);
+  s = command(s, { type: "radio_ack", channel: "security" });
+  assert.equal(s.hazardDrill.radioAcks.security, true);
+  assert.throws(() => command(s, { type: "radio_ack", channel: "security" }), /already recorded/);
+  s = command(s, { type: "broadcast", message: "Drill: follow staff to a verified alternate exit." });
+  assert.equal(s.hazardDrill.radioAcks.pa, true);
+  assert.throws(() => command(s, { type: "exit", id: "EX-E", status: "available" }), /Resolve/);
+});
 test("medical response reserves a team and returns it only after clearance", () => {
   let s = command(createState(), {
     type: "report",

@@ -1,0 +1,47 @@
+.fan-matches { min-height: 100vh; background: #050505; color: #f1f1f1; }
+.fan-matches :is(a, button):focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.fm-hero { position: relative; overflow: hidden; border-bottom: 1px solid #444; background: radial-gradient(ellipse at 82% 48%, #292929, #101010 45%, #050505 80%); }
+.fm-hero::before { content: ''; position: absolute; inset: 0 -6% 0 34%; background: url('/cinematic/stadium_master.webp') center / contain no-repeat; opacity: .48; -webkit-mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent); mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent); pointer-events: none; }
+.fm-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #050505 0%, transparent 70%), linear-gradient(0deg, #050505, transparent 28%); pointer-events: none; }
+.fm-hero-inner { position: relative; z-index: 1; max-width: 1440px; margin: auto; padding: clamp(5rem, 8vw, 9rem) clamp(1.25rem, 5vw, 5rem) 2rem; }
+.fm-eyebrow { margin: 0; color: #aaa; font-size: .68rem; font-weight: 700; letter-spacing: .24em; }
+.fm-hero h1 { margin: 1.4rem 0 2.8rem; font-size: clamp(4rem, 9vw, 9rem); font-weight: 300; letter-spacing: -.085em; line-height: .88; }
+.fm-hero h1 strong { font-weight: 720; }
+.fm-hero-bottom { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 1.5rem; border-top: 1px solid #555; padding-top: 1.2rem; }
+.fm-hero-bottom p { max-width: 420px; color: #c6c6c6; font-size: .9rem; line-height: 1.65; }
+.fm-outline-link { display: inline-flex; align-items: center; gap: .8rem; min-height: 42px; padding: .6rem .9rem; border: 1px solid #ddd; color: #fff; font-size: .78rem; font-weight: 700; transition: background .25s, color .25s; }
+.fm-outline-link:hover { background: #eee; color: #080808; }
+.fm-body { max-width: 1440px; margin: auto; padding: 0 clamp(1.25rem, 5vw, 5rem) 7rem; }
+.fm-section { padding-top: clamp(5rem, 8vw, 8rem); }
+.fm-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; padding-bottom: 2rem; }
+.fm-heading h2 { margin: .9rem 0 0; font-size: clamp(2.5rem, 5vw, 5rem); font-weight: 400; line-height: .98; letter-spacing: -.07em; }
+.fm-heading > p { max-width: 300px; color: #aaa; font-size: .85rem; line-height: 1.6; }
+.fm-list { border-top: 1px solid #606060; }
+.fm-row { min-height: 118px; display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; align-items: center; gap: 1rem; border-bottom: 1px solid #323232; padding: 1.25rem .3rem; transition: background .25s, padding .3s; }
+.fm-row:hover { background: #131313; padding-left: 1rem; padding-right: 1rem; }
+.fm-index { align-self: start; color: #777; font-size: .72rem; letter-spacing: .18em; }
+.fm-row-main { display: flex; flex-direction: column; gap: .45rem; }
+.fm-row-main strong { font-size: clamp(1.3rem, 2.2vw, 2.25rem); font-weight: 500; letter-spacing: -.055em; line-height: 1.1; }
+.fm-row-main em { color: #888; font-size: .7em; font-style: normal; font-weight: 400; }
+.fm-row-main small { color: #999; font-size: .75rem; line-height: 1.5; }
+.fm-row-action { display: inline-flex; align-items: center; gap: .5rem; font-size: .76rem; font-weight: 700; white-space: nowrap; }
+.fm-note { display: flex; gap: 1rem; align-items: start; max-width: 650px; margin-top: 5rem; padding: 1.25rem 0; border-top: 1px solid #555; color: #999; font-size: .74rem; line-height: 1.7; }
+.fm-note svg { flex: none; color: #bbb; }
+.fm-loading { display: grid; gap: 1rem; }
+.fm-loading span { height: 95px; background: #171717; animation: fm-pulse 1.4s ease-in-out infinite alternate; }
+.fm-loading span:nth-child(2) { animation-delay: .2s; }
+.fm-loading span:nth-child(3) { animation-delay: .4s; }
+.fm-state { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid #666; padding: 2rem 0; color: #ccc; }
+.fm-state button { display: inline-flex; align-items: center; gap: .5rem; border-bottom: 1px solid #ddd; color: #fff; font-size: .8rem; }
+@keyframes fm-pulse { to { background: #292929; } }
+@media (max-width: 680px) {
+  .fm-hero::before { inset: 15% -40% 0 10%; opacity: .25; }
+  .fm-hero::after { background: linear-gradient(90deg, rgba(5,5,5,.9), rgba(5,5,5,.4)), linear-gradient(0deg, #050505, transparent 30%); }
+  .fm-hero-inner { padding-top: 5.5rem; }
+  .fm-hero h1 { font-size: clamp(3.5rem, 12vw, 6rem); }
+  .fm-heading { display: block; }
+  .fm-heading > p { margin-top: 1.2rem; }
+  .fm-row { grid-template-columns: 30px 1fr; min-height: 118px; }
+  .fm-row-action { grid-column: 2; }
+}
+@media (prefers-reduced-motion: reduce) { .fm-row, .fm-outline-link, .fm-loading span { animation: none; transition: none; } }
