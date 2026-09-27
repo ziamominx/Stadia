@@ -1,5 +1,7 @@
 "use client";
+import { useState } from "react";
 import { useOperations } from "@/components/operations/OperationsProvider";
+import VenueMap from "@/components/operations/VenueMap";
 import {
   Badge,
   Empty,
@@ -12,7 +14,9 @@ import {
 } from "@/components/operations/UI";
 export default function Analytics() {
   const { state } = useOperations();
+  const [selected, setSelected] = useState("west");
   if (!state) return <Loading />;
+  const selectedZone = state.zones.find((zone) => zone.id === selected) || state.zones[0];
   const closed = state.incidents.filter((i) => i.status === "resolved");
   const avg = closed.length
     ? (
@@ -54,6 +58,20 @@ export default function Analytics() {
           },
         ]}
       />
+      <section className="ops-analytics-map" aria-label="Venue map and zone snapshot">
+        <div className="ops-analytics-map-heading">
+          <div>
+            <span className="ops-kicker">VENUE GEOGRAPHY / CURRENT SNAPSHOT</span>
+            <h2>Explore the venue</h2>
+          </div>
+          <p>Select a gate to inspect its current simulated occupancy. Switch between street and schematic views in the map toolbar.</p>
+        </div>
+        <VenueMap state={state} selected={selected} onSelect={setSelected} initialView="street" />
+        <div className="ops-analytics-map-selection" aria-live="polite">
+          <strong>{selectedZone.name}</strong>
+          <span>{selectedZone.occupancy}% occupancy · {selectedZone.queue.toLocaleString()} waiting · {selectedZone.open ? "Gate open" : "Gate held"}</span>
+        </div>
+      </section>
       <Panel title="Incident outcomes" meta="CURRENT SESSION">
         {closed.length ? (
           <div className="ops-table-wrap">

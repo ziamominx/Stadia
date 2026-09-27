@@ -14,9 +14,10 @@ export default function VenueMap({
   selected = "west",
   onSelect,
   mode = "crowd",
+  initialView = "schematic",
 }) {
   const [layer, setLayer] = useState("density");
-  const [view, setView] = useState("schematic");
+  const [view, setView] = useState(initialView);
   const west = state.zones[0],
     active = west.occupancy >= state.rules.warning;
   const color = (id) => {
