@@ -8,6 +8,8 @@ import { Badge, Button, clock, Modal } from "./UI";
 import { canAccess } from "@/lib/operations/auth.mjs";
 const links = [
   ["/command-center", "Command Center"],
+  ["/stadium", "Stadium"],
+  ["/street-map", "Street Map"],
   ["/crowd", "Crowd"],
   ["/ground", "Ground"],
   ["/transport", "Transport"],
@@ -31,7 +33,7 @@ function Frame({ children, theme, onToggleTheme }) {
         Skip to content
       </a>
       <header className="ops-header">
-        <Link href="/command-center" className="ops-brand">
+        <Link href="/" className="ops-brand" aria-label="STADIA — landing page">
           STADIA<span>●</span>
         </Link>
         <button className="ops-theme-toggle" type="button" onClick={onToggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} aria-pressed={theme === "light"}>
@@ -155,13 +157,13 @@ export default function Shell({ children }) {
   const [theme, setTheme] = useState("dark");
   useEffect(() => {
     try {
-      const saved = window.localStorage.getItem("stadia_ops_theme");
+      const saved = window.localStorage.getItem("stadia_ops_theme_v2");
       if (saved === "light" || saved === "dark") setTheme(saved);
     } catch {}
   }, []);
   const toggleTheme = () => setTheme((current) => {
     const next = current === "dark" ? "light" : "dark";
-    try { window.localStorage.setItem("stadia_ops_theme", next); } catch {}
+    try { window.localStorage.setItem("stadia_ops_theme_v2", next); } catch {}
     return next;
   });
   return (

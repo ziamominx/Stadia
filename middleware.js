@@ -22,4 +22,4 @@ export async function middleware(request) {
   }
   return NextResponse.next();
 }
-export const config = { matcher: ["/login", "/command-center/:path*", "/crowd/:path*", "/ground/:path*", "/transport/:path*", "/hospitality/:path*", "/incidents/:path*", "/event-control/:path*", "/setup/:path*", "/analytics/:path*", "/organizer/:path*", "/admin/:path*", "/simulator/:path*", "/api/operations", "/api/orchestration/:path*", "/api/dashboard/:path*", "/api/hospitality/:path*", "/api/referrals/summary"] };
+export const config = { matcher: ["/login", "/command-center/:path*", "/stadium/:path*", "/street-map/:path*", "/crowd/:path*", "/ground/:path*", "/transport/:path*", "/hospitality/:path*", "/incidents/:path*", "/event-control/:path*", "/setup/:path*", "/analytics/:path*", "/organizer/:path*", "/admin/:path*", "/simulator/:path*", "/api/operations", "/api/orchestration/:path*", "/api/dashboard/:path*", "/api/hospitality/:path*", "/api/referrals/summary"] };

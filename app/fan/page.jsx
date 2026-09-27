@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { api, useApi } from '../../lib/api.js';
 import { useRole, ROLES } from '../../components/RoleContext';
@@ -8,6 +8,7 @@ import { Activity, Sliders, Navigation, Hotel, Shield, ArrowRight, Zap, CheckCir
 import ExplainableRecommendation from '../../components/ExplainableRecommendation';
 import LiveGeospatialLayersHome from '../../components/LiveGeospatialLayersHome';
 import QRCodeCard from '../../components/QRCode';
+import './fan.css';
 
 const ICON_MAP = {
   Activity,
@@ -22,6 +23,28 @@ export default function Landing() {
   const { data: eventData } = useApi(api.itineraryEvents);
   const { data: ecosystem, reload: reloadEcosystem } = useApi(api.ecosystem);
   const [selectedEventType, setSelectedEventType] = useState('all');
+
+  useEffect(() => {
+    // The route opens in the fan perspective; the persona controls remain usable.
+    const frame = requestAnimationFrame(() => setRole('fan'));
+    return () => cancelAnimationFrame(frame);
+    // Only set the route's initial perspective on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const sections = document.querySelectorAll('.fan-experience > section:not(.fan-hero)');
+    if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('fan-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: .08, rootMargin: '0px 0px -35px 0px' });
+    sections.forEach((section) => { section.classList.add('fan-reveal-ready'); observer.observe(section); });
+    return () => { observer.disconnect(); sections.forEach((section) => section.classList.remove('fan-reveal-ready')); };
+  }, [role]);
 
   const handleApproveIntervention = async () => {
     await api.applyIntervention();
@@ -81,19 +104,19 @@ export default function Landing() {
     : megaEvents.filter(e => (e.event_type || e.category) === selectedEventType);
 
   return (
-    <div className="space-y-24 pb-20 fade-up">
+    <div className="fan-experience space-y-24 pb-20">
       {/* Hero Section */}
-      <section className="relative pt-16 sm:pt-24 px-4 sm:px-6 text-center overflow-hidden">
+      <section className="fan-hero relative pt-16 sm:pt-24 px-4 sm:px-6 text-center overflow-hidden">
         {/* Subtle Nexus Glow Background */}
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-emerald-500/10 blur-[120px] pointer-events-none rounded-full" />
 
-        <div className="relative mx-auto max-w-4xl space-y-6">
+        <div className="fan-hero-copy relative mx-auto max-w-4xl space-y-6">
           {/* Status Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-neutral-800 bg-[#111114]/90 px-4 py-1.5 text-xs font-semibold text-neutral-300 shadow-2xl backdrop-blur-md">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>{hero.badge}</span>
             <span className="text-neutral-500">|</span>
-            <span className="text-emerald-400 font-mono text-[11px]">Event State: LIVE</span>
+            <span className="text-emerald-400 font-mono text-[11px]">Event State: DEMO</span>
           </div>
 
           {/* Dual-Tone Headline */}
@@ -140,7 +163,7 @@ export default function Landing() {
         </div>
 
         {/* Stakeholder Perspective Showcase (Section 24 of Brief) */}
-        <div className="mx-auto max-w-5xl mt-12 pt-8 border-t border-neutral-800/80">
+        <div className="fan-role-switcher mx-auto max-w-5xl mt-12 pt-8 border-t border-neutral-800/80">
           <p className="text-[10px] uppercase font-bold tracking-widest text-neutral-500 mb-3 text-center">
             One Shared Event Engine · 4 Role-Specific Control Surfaces (Click to Transform)
           </p>

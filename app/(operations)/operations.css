@@ -2259,3 +2259,91 @@
 @media (max-width: 700px) { .ops-theme-toggle { padding-inline: 9px; } }
 @media (max-width: 600px) { .ops-physical-gate { width: 32px; min-height: 32px; } .ops-physical-gate strong { font-size: 10px; } .ops-physical-gate span { font-size: 7px; } .ops-map-subtitle { font-size: 8px; } }
 @media (max-width: 650px) { .ops-geo-wrap > p { position: static; margin: 0; width: auto; } .ops-map-toolbar-actions { width: 100%; } }
+
+/* Destination cards keep the command center concise while the two maps
+   receive their own full-width workspaces. */
+.ops-destination-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; margin: 0 0 24px; }
+.ops-destination { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: flex-start; min-height: 248px; padding: clamp(22px,3vw,42px); border: 1px solid var(--line); background: var(--surface); transition: border-color .35s ease, transform .55s cubic-bezier(.16,1,.3,1), box-shadow .35s ease; }
+.ops-destination::before { content: ""; position: absolute; z-index: -1; inset: 0; opacity: .23; pointer-events: none; }
+.ops-destination-stadium::before { background: linear-gradient(90deg, var(--surface) 25%, transparent), url('/cinematic/stadium_master.webp') center right / auto 130% no-repeat; }
+.ops-destination-street::before { background: radial-gradient(circle at 82% 38%, rgba(255,255,255,.3), transparent 42%), repeating-linear-gradient(0deg, transparent 0 26px, rgba(255,255,255,.12) 27px), repeating-linear-gradient(90deg, transparent 0 26px, rgba(255,255,255,.12) 27px); }
+.ops-destination h2 { font-size: clamp(27px,3vw,46px); line-height: 1.04; letter-spacing: -.055em; font-weight: 400; margin: auto 0 12px; }
+.ops-destination p { max-width: 42ch; font-size: 12px; color: var(--muted); line-height: 1.6; }
+.ops-destination-action { margin-top: 28px; font: 600 10px "JetBrains Mono", monospace; letter-spacing: .05em; text-transform: uppercase; border-bottom: 1px solid currentColor; padding-bottom: 5px; }
+.ops-destination:hover { transform: translateY(-5px); border-color: var(--ink); box-shadow: 0 24px 45px rgba(0,0,0,.18); }
+.ops-destination:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+
+.ops-map-page-summary { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border: 1px solid var(--line); background: var(--surface); margin: 0 0 18px; }
+.ops-map-page-summary > div { padding: 16px 24px; border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 2px; }
+.ops-map-page-summary > div:last-child { border-right: 0; }
+.ops-map-page-summary strong { font-size: clamp(24px,2.8vw,40px); font-weight: 300; letter-spacing: -.06em; font-variant-numeric: tabular-nums; }
+.ops-map-page-summary small { color: var(--muted); font-size: 10px; }
+.ops-dedicated-map { max-width: 1500px; margin: 0 auto 22px; }
+.ops-dedicated-street .ops-geo-map { height: min(65vw, 700px); min-height: 430px; }
+.ops-map-page-insights { max-width: 1500px; margin: 0 auto 28px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.ops-map-page-sector p { margin: 14px 0; }
+.ops-map-page-sector .ops-text-link { display: inline-block; margin-top: 4px; text-decoration: underline; text-underline-offset: 4px; }
+.ops-map-page-sectors { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+.ops-map-page-sectors button { background: var(--surface); color: var(--ink); border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 16px; display: flex; justify-content: space-between; gap: 12px; text-align: left; transition: background .25s ease; }
+.ops-map-page-sectors button:nth-child(2n) { border-right: 0; }
+.ops-map-page-sectors button:nth-last-child(-n+2) { border-bottom: 0; }
+.ops-map-page-sectors button:hover, .ops-map-page-sectors button[aria-pressed="true"] { background: var(--surface-soft); }
+.ops-map-page-sectors strong { font-variant-numeric: tabular-nums; }
+.ops-map-page-links { display: flex; flex-direction: column; }
+.ops-map-page-links a { padding: 14px 18px; border-bottom: 1px solid var(--line); transition: background .25s ease, padding-left .3s cubic-bezier(.16,1,.3,1); }
+.ops-map-page-links a:last-child { border-bottom: 0; }
+.ops-map-page-links a:hover { background: var(--surface-soft); padding-left: 24px; }
+
+.ops-hospitality-map { border: 1px solid var(--line); background: var(--surface); margin: 24px 0; }
+.ops-hospitality-map-heading { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; padding: 22px 24px; }
+.ops-hospitality-map-heading h2 { font-size: clamp(23px,2.4vw,36px); font-weight: 400; letter-spacing: -.045em; margin: 4px 0 6px; }
+.ops-hospitality-map-heading p { color: var(--muted); font-size: 12px; }
+.ops-hospitality-map-heading > .ops-mono { color: var(--muted); white-space: nowrap; }
+.ops-hospitality-map-controls { display: flex; flex-wrap: wrap; gap: 0; border-block: 1px solid var(--line); }
+.ops-hospitality-map-controls button { padding: 10px 17px; color: var(--muted); background: var(--surface); border: 0; border-right: 1px solid var(--line); font-size: 10px; text-transform: uppercase; letter-spacing: .04em; transition: background .25s ease, color .25s ease; }
+.ops-hospitality-map-controls button:hover { background: var(--surface-soft); color: var(--ink); }
+.ops-hospitality-map-controls button[aria-pressed="true"] { background: var(--ink); color: var(--canvas); }
+.ops-hospitality-map .ops-geo-map { height: min(58vw, 620px); min-height: 410px; }
+.ops-hospitality-map-detail { display: flex; justify-content: space-between; align-items: center; gap: 16px; border-top: 1px solid var(--line); padding: 14px 18px; }
+.ops-hospitality-map-detail > div { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+.ops-hospitality-map-detail strong { font-size: 12px; }
+.ops-hospitality-map-detail span, .ops-hospitality-map-detail p { color: var(--muted); font-size: 10px; line-height: 1.5; }
+.ops-hospitality-map-detail p { max-width: 45ch; text-align: right; }
+.ops-hospitality-partner { padding: 14px; border-bottom: 1px solid var(--line); }
+.ops-hospitality-partner:last-child { border-bottom: 0; }
+.ops-hospitality-partner > p { margin: 10px 0; }
+.ops-hospitality-copy-status { min-height: 18px; padding: 0 14px 10px; color: var(--muted); font-size: 10px; }
+
+/* Page entrances and feedback move only transforms and opacity, keeping
+   charts, map tiles and changing telemetry steady during updates. */
+.ops-nav > a { transition: background .25s ease, color .25s ease, border-color .3s ease; }
+.ops-theme-toggle { transition: background .25s ease, color .25s ease, transform .3s cubic-bezier(.16,1,.3,1); }
+.ops-theme-toggle:hover { transform: translateY(-2px); }
+.ops-button:hover:not(:disabled) { transform: translateY(-2px); }
+@keyframes ops-page-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes ops-page-fade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: no-preference) {
+  .ops-main > * { animation: ops-page-enter .7s cubic-bezier(.16,1,.3,1) both; }
+  .ops-main > :nth-child(2) { animation-delay: .06s; }
+  .ops-main > :nth-child(3) { animation-delay: .12s; }
+  .ops-main > :nth-child(4) { animation-delay: .18s; }
+  .ops-main > :nth-child(5) { animation-delay: .24s; }
+  .ops-main > :is(.ops-dedicated-map,.ops-hospitality-map) { animation-name: ops-page-fade; }
+}
+@media (max-width: 800px) {
+  .ops-destination-grid, .ops-map-page-insights { grid-template-columns: 1fr; }
+  .ops-map-page-summary { grid-template-columns: 1fr; }
+  .ops-map-page-summary > div { border-right: 0; border-bottom: 1px solid var(--line); }
+  .ops-map-page-summary > div:last-child { border-bottom: 0; }
+  .ops-hospitality-map-heading, .ops-hospitality-map-detail { align-items: flex-start; flex-direction: column; }
+  .ops-hospitality-map-detail p { text-align: left; }
+}
+@media (max-width: 600px) {
+  .ops-destination { min-height: 210px; }
+  .ops-hospitality-map-controls button { flex: 1 1 45%; border-bottom: 1px solid var(--line); }
+  .ops-hospitality-map .ops-geo-map, .ops-dedicated-street .ops-geo-map { min-height: 360px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ops-main > * { animation: none; }
+  .ops-destination, .ops-hospitality-map-controls button, .ops-theme-toggle { transition: none; }
+}

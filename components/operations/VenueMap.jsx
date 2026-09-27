@@ -106,7 +106,7 @@ function StadiumSchematic({ state, layer, venueName }) {
   </svg>;
 }
 
-export default function VenueMap({ state, selected = "west", onSelect, mode = "crowd", initialView = "schematic" }) {
+export default function VenueMap({ state, selected = "west", onSelect, mode = "crowd", initialView = "schematic", lockedView }) {
   const [layer, setLayer] = useState("density");
   const [streetLayer, setStreetLayer] = useState("gates");
   const [view, setView] = useState(initialView);
@@ -116,16 +116,17 @@ export default function VenueMap({ state, selected = "west", onSelect, mode = "c
     || STADIUM_GATES[0];
   const focusedZone = state.zones.find((zone) => zone.id === focusedGate.zoneId);
   const dyPatil = isDyPatilVenue(state.event.lat, state.event.lng);
-  const layers = view === "street" ? STREET_LAYERS : SCHEMATIC_LAYERS;
+  const activeView = lockedView || view;
+  const layers = activeView === "street" ? STREET_LAYERS : SCHEMATIC_LAYERS;
   return <section className="ops-map" aria-label="Interactive venue map">
     <div className="ops-map-toolbar">
       <div><span className="ops-kicker">{dyPatil ? DY_PATIL.name : state.event.venue}</span><small className="ops-map-subtitle">{mode === "transport" ? "Fleet and approach routes" : mode === "ground" ? "Personnel and gate sectors" : "Eight gates · four shared telemetry sectors"}</small></div>
       <div className="ops-map-toolbar-actions">
-        <div className="ops-segment" aria-label="Map view">{VIEW_OPTIONS.map((option) => <button key={option} type="button" aria-pressed={view === option} onClick={() => setView(option)}>{option === "street" ? "Street map" : "Stadium"}</button>)}</div>
-        <div className="ops-segment" aria-label="Map layer">{layers.map((option) => <button key={option} type="button" aria-pressed={view === "street" ? streetLayer === option : layer === option} onClick={() => view === "street" ? setStreetLayer(option) : setLayer(option)}>{option}</button>)}</div>
+        {!lockedView && <div className="ops-segment" aria-label="Map view">{VIEW_OPTIONS.map((option) => <button key={option} type="button" aria-pressed={activeView === option} onClick={() => setView(option)}>{option === "street" ? "Street map" : "Stadium"}</button>)}</div>}
+        <div className="ops-segment" aria-label="Map layer">{layers.map((option) => <button key={option} type="button" aria-pressed={activeView === "street" ? streetLayer === option : layer === option} onClick={() => activeView === "street" ? setStreetLayer(option) : setLayer(option)}>{option}</button>)}</div>
       </div>
     </div>
-    {view === "street" ? <GeoVenueMap state={state} selected={selected} onSelect={onSelect} layer={streetLayer} onGateFocus={setFocusedGateId} /> : <div className="ops-map-canvas">
+    {activeView === "street" ? <GeoVenueMap state={state} selected={selected} onSelect={onSelect} layer={streetLayer} onGateFocus={setFocusedGateId} /> : <div className="ops-map-canvas">
       <div className="ops-map-coordinate">{dyPatil ? "DY PATIL STADIUM / REFERENCE SCHEMATIC" : "VENUE SCHEMATIC / NOT TO SCALE"}<br /><span>SIMULATED {mode === "transport" ? "VEHICLE" : mode === "ground" ? "PERSONNEL" : "CROWD"} TELEMETRY</span></div>
       <StadiumSchematic state={state} layer={layer} venueName={dyPatil ? "DY PATIL STADIUM · NERUL" : state.event.venue.toUpperCase()} />
       {STADIUM_GATES.map((gate) => {

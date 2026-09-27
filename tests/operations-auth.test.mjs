@@ -20,6 +20,8 @@ test("sessions expire and cannot be changed to another role", async () => {
 });
 test("roles cannot open executive pages or mutate another team", () => {
   assert.equal(canAccess("ground", "/analytics"), false);
+  assert.equal(canAccess("ground", "/stadium"), false);
+  assert.equal(canAccess("hospitality", "/street-map"), false);
   assert.equal(canAccess("transport", "/ground"), false);
   assert.equal(canAccess("hospitality", "/hospitality"), true);
   assert.equal(canAccess("executive", "/ground"), true);

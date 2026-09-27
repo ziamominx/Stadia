@@ -1,0 +1,189 @@
+.fan-site-frame {
+  background: #000;
+  color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+.fan-site-frame > header > div {
+  max-width: none;
+  border-radius: 0;
+  background: rgba(4, 4, 4, .92);
+  border-color: #303030;
+  box-shadow: none;
+}
+
+.fan-site-frame > header > div > a > div:first-child {
+  border-radius: 3px;
+}
+
+.fan-site-frame [class*="text-emerald"],
+.fan-site-frame [class*="text-violet"],
+.fan-site-frame [class*="text-cyan"] { color: #ebebeb; }
+.fan-site-frame [class*="border-emerald"],
+.fan-site-frame [class*="border-violet"] { border-color: rgba(255,255,255,.28); }
+.fan-site-frame [class*="bg-emerald-950"],
+.fan-site-frame [class*="bg-emerald-500/"],
+.fan-site-frame [class*="bg-violet-500/"] { background-color: rgba(255,255,255,.08); }
+.fan-site-frame [class~="bg-emerald-500"] { background-color: #f1f1f1; color: #080808; }
+.fan-site-frame [class*="shadow-emerald"] { box-shadow: none; }
+
+.fan-experience {
+  background: #000;
+  color: #f4f4f4;
+  overflow: hidden;
+}
+.fan-experience > section { position: relative; }
+.fan-experience > section:not(.fan-hero) { max-width: 1520px; }
+.fan-experience [class*="rounded-3xl"] { border-radius: 5px; }
+.fan-experience [class*="rounded-2xl"] { border-radius: 4px; }
+.fan-experience [class*="rounded-xl"] { border-radius: 3px; }
+.fan-experience [class*="shadow-2xl"],
+.fan-experience [class*="shadow-xl"] { box-shadow: 0 24px 60px rgba(0,0,0,.22); }
+.fan-experience div[class*="bg-gradient-to"] {
+  background: linear-gradient(142deg, #101010, #060606 72%);
+}
+.fan-experience a,
+.fan-experience button { transition: color .3s ease, background-color .3s ease, border-color .3s ease, transform .45s cubic-bezier(.16,1,.3,1), box-shadow .3s ease; }
+.fan-experience button:hover:not(:disabled),
+.fan-experience a:hover { border-color: rgba(255,255,255,.55); }
+.fan-experience button:focus-visible,
+.fan-experience a:focus-visible,
+.fan-site-frame > header a:focus-visible,
+.fan-site-frame > header button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+.fan-experience section h2 {
+  font-weight: 500;
+  letter-spacing: -.045em;
+  line-height: 1.08;
+}
+.fan-experience section h3 { letter-spacing: -.025em; }
+
+.fan-hero {
+  min-height: min(850px, 96svh);
+  padding-bottom: 76px;
+  isolation: isolate;
+  background: radial-gradient(ellipse 60% 80% at 82% 55%, #242424, transparent 68%), #000;
+}
+.fan-hero::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 -3vw 12% 30%;
+  background: url('/cinematic/stadium_master.webp') center right / contain no-repeat;
+  opacity: .66;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 28%, #000 83%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 28%, #000 83%, transparent);
+  pointer-events: none;
+}
+.fan-hero::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 30%, #000 93%), linear-gradient(90deg, #000 8%, transparent 63%);
+  pointer-events: none;
+}
+.fan-hero > div:first-child { display: none; }
+.fan-hero-copy {
+  margin-left: max(3vw, calc((100vw - 1360px) / 2));
+  margin-right: 0;
+  max-width: min(760px, 58vw);
+  text-align: left;
+  padding-top: clamp(58px, 8vh, 110px);
+}
+.fan-hero-copy h1 {
+  font-size: clamp(54px, 6vw, 100px);
+  line-height: .95;
+  letter-spacing: -.072em;
+  font-weight: 300;
+  text-transform: uppercase;
+  max-width: 840px;
+  text-wrap: balance;
+}
+.fan-hero-copy h1 span {
+  font-weight: 700;
+  background-image: linear-gradient(110deg, #fff, #a5a5a5 78%);
+}
+.fan-hero-copy > p { margin-left: 0; max-width: 500px; color: #c3c3c3; }
+.fan-hero-copy > div:nth-of-type(2),
+.fan-hero-copy > div:nth-of-type(3) { justify-content: flex-start; }
+.fan-hero-copy > div:first-child {
+  border-radius: 2px;
+  background: rgba(8,8,8,.82);
+  border-color: #444;
+  box-shadow: none;
+}
+.fan-hero-copy a.rounded-full { border-radius: 3px; }
+.fan-hero-copy a.rounded-full:hover { transform: translateY(-4px); }
+.fan-role-switcher {
+  position: relative;
+  margin-top: clamp(68px, 9vw, 140px);
+  border-color: rgba(255,255,255,.28);
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(14px);
+  padding: 20px;
+}
+.fan-role-switcher > p { text-align: left; }
+.fan-role-switcher button {
+  border-radius: 3px;
+  background: rgba(255,255,255,.025);
+}
+.fan-role-switcher button:hover { transform: translateY(-5px); background: rgba(255,255,255,.08); }
+.fan-role-switcher button[class*="border-emerald"] {
+  border-color: #fff;
+  background: rgba(255,255,255,.1);
+}
+
+.fan-experience > section:not(.fan-hero)::before {
+  content: "";
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: -48px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,.42), rgba(255,255,255,.03) 70%);
+  pointer-events: none;
+}
+.fan-experience > section:not(.fan-hero) :is(a, button):active { transform: scale(.985); }
+.fan-experience > section:not(.fan-hero) [class*="rounded-3xl"]:hover {
+  border-color: rgba(255,255,255,.36);
+}
+.fan-experience .fan-reveal-ready {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .85s cubic-bezier(.16,1,.3,1), transform .85s cubic-bezier(.16,1,.3,1);
+}
+.fan-experience .fan-reveal-ready.fan-visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 900px) {
+  .fan-hero { min-height: 0; }
+  .fan-hero::before { inset: 6% -22% 27% 10%; opacity: .35; }
+  .fan-hero-copy { max-width: 760px; margin: 0 auto; text-align: left; padding-top: 58px; }
+  .fan-hero-copy h1 { font-size: clamp(45px, 9vw, 76px); }
+  .fan-role-switcher { margin-top: 80px; }
+}
+@media (max-width: 600px) {
+  .fan-hero { padding-top: 85px; padding-bottom: 35px; }
+  .fan-hero::before { inset: 8% -34% 32% 2%; background-position: 60% 20%; opacity: .25; }
+  .fan-hero-copy { padding-top: 0; }
+  .fan-hero-copy h1 { font-size: clamp(40px, 11vw, 64px); }
+  .fan-hero-copy > div:first-child { flex-wrap: wrap; border: 0; background: transparent; padding-left: 0; }
+  .fan-role-switcher { margin-top: 55px; padding: 14px 0; }
+  .fan-experience > section:not(.fan-hero)::before { top: -32px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .fan-hero-copy > * { animation: fan-enter .85s cubic-bezier(.16,1,.3,1) both; }
+  .fan-hero-copy > :nth-child(2) { animation-delay: .1s; }
+  .fan-hero-copy > :nth-child(3) { animation-delay: .2s; }
+  .fan-hero-copy > :nth-child(4) { animation-delay: .3s; }
+  .fan-hero-copy > :nth-child(5) { animation-delay: .4s; }
+  .fan-hero::before { animation: fan-art-arrive 1.5s cubic-bezier(.16,1,.3,1) both; }
+}
+@keyframes fan-enter { from { opacity: 0; transform: translateY(25px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fan-art-arrive { from { opacity: 0; transform: scale(1.06); } to { opacity: .66; transform: scale(1); } }
+@media (max-width: 900px) and (prefers-reduced-motion: no-preference) {
+  @keyframes fan-art-arrive { from { opacity: 0; transform: scale(1.06); } to { opacity: .35; transform: scale(1); } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fan-experience .fan-reveal-ready { opacity: 1; transform: none; transition: none; }
+  .fan-hero-copy > *, .fan-hero::before { animation: none; }
+}
