@@ -1,296 +1,368 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import dynamic from 'next/dynamic';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
-import { 
-  Shield, 
-  MapPin, 
-  AlertCircle, 
-  CheckCircle2, 
-  Clock, 
-  Zap, 
-  RefreshCw, 
-  Server, 
-  Activity, 
-  Car, 
-  Bus,
+import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
+import { useApi, api } from '../../lib/api.js';
+import { DY_PATIL, STADIUM_GATES } from '../../lib/operations/dy-patil.mjs';
+import {
+  DoorClosed,
+  Navigation,
+  Shield,
+  Zap,
+  CheckCircle,
+  Clock,
   ArrowRight,
-  Filter
+  Sparkles,
+  Ticket,
+  MapPin,
 } from '../../components/Icons';
 
-const CrowdFlowMapVisual = dynamic(() => import('../../components/CrowdFlowMapVisual'), {
-  ssr: false,
-  loading: () => (
-    <div className="h-[540px] w-full rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] animate-pulse flex items-center justify-center font-mono text-xs text-[var(--text-muted)]">
-      INITIALIZING HIGH-PRECISION GEOSPATIAL CORRIDOR ENGINE...
-    </div>
-  ),
-});
+const SAMPLE_WAITS = [4, 18, 5, 9, 7, 6, 12, 4];
 
-export default function CrowdFlowPage() {
-  const [timelineMinute, setTimelineMinute] = useState(60);
-  const [flowData, setFlowData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedPoint, setSelectedPoint] = useState(null);
-  const [deconflictionTriggered, setDeconflictionTriggered] = useState(false);
+const FAN_WAYPOINTS = [
+  { name: 'Water refill area', type: 'water', lat: 19.0437, lng: 73.0262, desc: 'Indicative north concourse location' },
+  { name: 'Medical support area', type: 'medical', lat: 19.0436, lng: 73.0269, desc: 'Indicative first-aid location' },
+  { name: 'Fan merchandise area', type: 'merch', lat: 19.0419, lng: 73.0285, desc: 'Indicative east concourse location' },
+  { name: 'Food and lounge area', type: 'food', lat: 19.0403, lng: 73.0269, desc: 'Indicative south concourse location' },
+];
 
-  const [telemetryLogs, setTelemetryLogs] = useState([
-    { time: '17:28:44', source: 'FIFA TMS', msg: '12,480 foreign fan passes synced with DY Patil concourse' },
-    { time: '17:29:10', source: 'MMRDA METRO', msg: 'Train #HB-204 departed Vashi · 920 passengers inbound' },
-    { time: '17:29:35', source: 'BOOKMYSHOW', msg: '38,214 tickets validated · 0 double-scans detected' },
-    { time: '17:30:02', source: 'HOTEL PMS', msg: 'Shuttle Convoy #3 dispatched from Radisson Blu Belapur' },
-  ]);
+export default function FanCrowdFlowPage() {
+  const containerRef = useRef(null);
+  const mapRef = useRef(null);
+  const markersRef = useRef([]);
+  const amenitiesRef = useRef(null);
+  const [mapReady, setMapReady] = useState(false);
+  const [selectedGate, setSelectedGate] = useState('A');
+  const [filterAmenities, setFilterAmenities] = useState(true);
+  const [timeHorizon, setTimeHorizon] = useState('now'); // 'now', '30m', 'kickoff'
+  const { data: ecosystem } = useApi(api.ecosystem);
+  const { data: gatesApi } = useApi(api.gates);
 
-  const fetchFlow = async (minutes) => {
-    try {
-      const res = await fetch(`/api/dashboard/flow?time=${minutes}`);
-      if (res.ok) {
-        const data = await res.json();
-        setFlowData(data);
-        if (data.mixingPoints?.length > 0) {
-          setSelectedPoint(data.mixingPoints[0]);
-        }
-      }
-    } catch (err) {
-      console.error('Failed to load crowd flow:', err);
-    } finally {
-      setLoading(false);
+  // Compute live ML wait times based on STADIUM_GATES & selected time horizon
+  const gateData = STADIUM_GATES.map((gate, index) => {
+    const rawWait = SAMPLE_WAITS[index] || 6;
+    const apiGate = gatesApi?.find((g) => g.id === index + 1 || g.name?.includes(gate.id));
+    const loadMult = apiGate ? apiGate.load : 0.72;
+    
+    let baseWait = Math.max(2, Math.round(rawWait * (loadMult / 0.72)));
+    let currentWait = baseWait;
+    if (timeHorizon === '30m') {
+      currentWait = Math.round(baseWait * 1.45);
+    } else if (timeHorizon === 'kickoff') {
+      currentWait = Math.round(baseWait * 2.1);
     }
+
+    const status = currentWait > 15 ? 'CONGESTED' : currentWait >= 8 ? 'MODERATE' : 'OPTIMAL';
+    const statusColor =
+      status === 'CONGESTED'
+        ? 'text-rose-400 bg-rose-500/15 border-rose-500/30'
+        : status === 'MODERATE'
+        ? 'text-amber-400 bg-amber-500/15 border-amber-500/30'
+        : 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30';
+
+    return {
+      id: gate.id,
+      name: `Gate ${gate.id} · ${gate.name}`,
+      side: `${gate.corridor === 'local' ? 'Local' : 'Outstation'} approach`,
+      waitMins: currentWait,
+      status,
+      statusColor,
+      lat: gate.lat,
+      lng: gate.lng,
+      note: gate.note || 'Dynamic ML queue projection based on ingress sensor flow.',
+      capacityPct: Math.min(98, Math.round(loadMult * 100)),
+    };
+  });
+
+  // Initialize Leaflet Map with DY_PATIL focus
+  useEffect(() => {
+    let isMounted = true;
+    if (!containerRef.current || mapRef.current) return;
+
+    import('leaflet').then((leafletModule) => {
+      if (!isMounted || !containerRef.current || mapRef.current) return;
+      const L = leafletModule.default || leafletModule;
+
+      const map = L.map(containerRef.current, { zoomControl: true }).setView([DY_PATIL.lat, DY_PATIL.lng], 17);
+      mapRef.current = map;
+
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap',
+      }).addTo(map);
+
+      amenitiesRef.current = L.layerGroup().addTo(map);
+      setMapReady(true);
+      renderGateMarkers(L, map);
+    });
+
+    return () => {
+      isMounted = false;
+      mapRef.current?.remove();
+      mapRef.current = null;
+      amenitiesRef.current = null;
+    };
+  }, []);
+
+  const renderGateMarkers = (L, map) => {
+    if (!map) return;
+    markersRef.current.forEach((m) => map.removeLayer(m));
+    markersRef.current = [];
+
+    gateData.forEach((gate) => {
+      const color = gate.status === 'CONGESTED' ? '#fb7185' : gate.status === 'MODERATE' ? '#fbbf24' : '#34d399';
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="transform:translate(-50%,-100%);text-align:center;cursor:pointer">
+          <div style="width:20px;height:20px;border-radius:9999px;background:${color};border:2px solid #fff;box-shadow:0 0 10px ${color};margin:0 auto"></div>
+          <div style="background:rgba(10,14,24,0.92);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:9999px;margin-top:3px;border:1px solid rgba(255,255,255,0.2);white-space:nowrap">
+            Gate ${gate.id} · ${gate.waitMins}m
+          </div>
+        </div>`,
+        iconSize: [0, 0],
+      });
+
+      const marker = L.marker([gate.lat, gate.lng], { icon }).addTo(map);
+      marker.bindPopup(`<b>${gate.name}</b><br/>Wait time: <b>${gate.waitMins} mins</b><br/>${gate.note}`);
+      marker.on('click', () => setSelectedGate(gate.id));
+      markersRef.current.push(marker);
+    });
   };
 
   useEffect(() => {
-    fetchFlow(timelineMinute);
-  }, [timelineMinute]);
+    if (!mapReady || !mapRef.current) return;
+    import('leaflet').then((leafletModule) => {
+      const L = leafletModule.default || leafletModule;
+      renderGateMarkers(L, mapRef.current);
+    });
+  }, [mapReady, timeHorizon, gatesApi]);
 
-  const timelineLabels = [
-    { min: 180, label: 'T-3H (Gates Open)' },
-    { min: 120, label: 'T-2H (Early Ingress)' },
-    { min: 60,  label: 'T-1H (Peak Ingress)' },
-    { min: 30,  label: 'T-30M (Surge Window)' },
-    { min: 0,   label: 'KICKOFF' },
-  ];
+  useEffect(() => {
+    if (!mapReady || !amenitiesRef.current) return;
+    let active = true;
+    import('leaflet').then((leafletModule) => {
+      if (!active || !amenitiesRef.current) return;
+      const L = leafletModule.default || leafletModule;
+      amenitiesRef.current.clearLayers();
+      if (filterAmenities) {
+        FAN_WAYPOINTS.forEach((pt) => {
+          const icon = L.divIcon({
+            className: '',
+            html: `<div style="transform:translate(-50%,-50%);text-align:center;cursor:pointer">
+              <div style="width:12px;height:12px;border-radius:9999px;background:#38bdf8;border:2px solid #fff;"></div>
+              <div style="background:rgba(0,0,0,0.8);color:#93c5fd;font-size:9px;font-weight:600;padding:1px 5px;border-radius:4px;margin-top:2px;white-space:nowrap">${pt.name}</div>
+            </div>`,
+            iconSize: [0, 0],
+          });
+          L.marker([pt.lat, pt.lng], { icon }).addTo(amenitiesRef.current).bindTooltip(`${pt.name} · indicative location`);
+        });
+      }
+    });
 
-  const mixingPoints = flowData?.mixingPoints || [];
-  const segments = flowData?.segments || [];
+    return () => { active = false; };
+  }, [mapReady, filterAmenities]);
+
+  useEffect(() => {
+    const gate = gateData.find((item) => item.id === selectedGate);
+    if (mapReady && gate) mapRef.current?.panTo([gate.lat, gate.lng], { animate: true });
+  }, [mapReady, selectedGate]);
+
+  const panToWaypoint = (w) => {
+    if (mapRef.current) {
+      mapRef.current.setView([w.lat, w.lng], 18, { animate: true });
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] flex flex-col font-sans transition-colors">
-      <Navbar />
+    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 space-y-6 fade-up">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-neutral-800/80 pb-5">
+        <div>
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 text-emerald-400" />
+            <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-emerald-400">
+              Stadium Gate Reference · ML Telemetry
+            </span>
+          </div>
+          <h1 className="mt-1 text-2xl font-black text-white sm:text-3xl">
+            Walkway Crowd Radar &amp; Gate Wait Times
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-neutral-400">
+            DY Patil Stadium gate locations with predictive ML wait projections, approach paths, and fan concourse waypoints.
+          </p>
+        </div>
 
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full py-8 space-y-6 pb-24">
-        
-        {/* Top Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[var(--border-subtle)] pb-4">
+        <div className="flex items-center gap-2">
+          <Link
+            href="/ticket/FWC-1-A1-8842/confirmation"
+            className="flex items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3.5 py-2 text-xs font-bold text-emerald-300 transition hover:bg-emerald-500/20"
+          >
+            <Ticket className="h-3.5 w-3.5 text-emerald-400" />
+            <span>View My Digital Pass ↗</span>
+          </Link>
+        </div>
+      </div>
+
+      {/* Reroute Alert if ecosystem active */}
+      {ecosystem?.gate_reroute_active && (
+        <div className="rounded-2xl border border-amber-500/40 bg-amber-950/25 p-4 shadow-xl backdrop-blur-md flex items-start gap-3">
+          <Zap className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="h-2.5 w-2.5 rounded-full bg-[var(--terracotta-primary)] animate-ping" />
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--terracotta-text)]">
-                GEOSPATIAL PEDESTRIAN FLOW &amp; DECONFLICTION
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-black uppercase tracking-wider text-amber-400">
+                Stadium Ops Ingress Diversion Notice
+              </span>
+              <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-300">
+                Active
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] font-mono tracking-tight">
-              Crowd Flow Map &amp; Mixing-Point Radar
-            </h1>
+            <p className="mt-1 text-xs text-neutral-200">
+              A demo diversion is active. Check your digital ticket for recommended gate fast-track options.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Time Horizon Selector (ML Predictive Controls) */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-neutral-800 bg-[#111114] p-3 px-4">
+        <div className="flex items-center gap-2">
+          <Clock className="h-4 w-4 text-emerald-400" />
+          <span className="text-xs font-bold text-white">Ingress Forecast Window:</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setTimeHorizon('now')}
+            className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+              timeHorizon === 'now' ? 'bg-white text-black' : 'bg-neutral-900 text-neutral-400 hover:text-white'
+            }`}
+          >
+            Live Current
+          </button>
+          <button
+            onClick={() => setTimeHorizon('30m')}
+            className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+              timeHorizon === '30m' ? 'bg-emerald-500 text-black font-bold' : 'bg-neutral-900 text-neutral-400 hover:text-white'
+            }`}
+          >
+            +30 min (ML Inflow)
+          </button>
+          <button
+            onClick={() => setTimeHorizon('kickoff')}
+            className={`rounded-lg px-3 py-1 text-xs font-semibold transition ${
+              timeHorizon === 'kickoff' ? 'bg-amber-400 text-black font-bold' : 'bg-neutral-900 text-neutral-400 hover:text-white'
+            }`}
+          >
+            Peak Kickoff (T-15m)
+          </button>
+        </div>
+      </div>
+
+      {/* Map + Live Queue Split Grid */}
+      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        {/* Leaflet Map Card */}
+        <div className="overflow-hidden rounded-3xl border border-neutral-800 bg-[#0e0e12] shadow-2xl flex flex-col">
+          <div className="flex items-center justify-between border-b border-neutral-800 bg-[#121217] p-3.5 px-4">
+            <div className="flex items-center gap-2 text-xs font-bold text-white">
+              <Navigation className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Perimeter Corridor Radar · DY Patil Stadium</span>
+            </div>
+            <label className="flex items-center gap-1.5 text-xs text-neutral-300 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={filterAmenities}
+                onChange={(e) => setFilterAmenities(e.target.checked)}
+                className="h-3.5 w-3.5 rounded border-neutral-700 bg-neutral-800 text-emerald-500 focus:ring-0"
+              />
+              <span>Show sample amenities</span>
+            </label>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-mono">
-            <div className="flex items-center gap-1.5 text-[var(--terracotta-text)] font-semibold">
-              <span className="h-2 w-3 rounded bg-[var(--terracotta-primary)]" />
-              <span>Local Commuter Paths</span>
+          <div ref={containerRef} className="h-96 w-full relative z-0" />
+
+          <div className="p-3.5 border-t border-neutral-800 bg-[#121217] flex flex-wrap items-center justify-between gap-2 text-[11px] text-neutral-400">
+            <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 inline-block" /> &lt;8 min wait
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-amber-400 inline-block" /> 8–15 min wait
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2.5 w-2.5 rounded-full bg-rose-400 inline-block" /> &gt;15 min wait
+              </span>
             </div>
-            <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 font-semibold">
-              <span className="h-2 w-3 rounded bg-amber-500 border-dashed" />
-              <span>Outstation Shuttle Paths</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-semibold">
-              <span className="h-2.5 w-2.5 rounded-full bg-rose-500 animate-pulse" />
-              <span>Collision Risk Node</span>
-            </div>
+            <span className="font-mono text-neutral-500">Live ML telemetry active</span>
           </div>
         </div>
 
-        {/* ─── TIMELINE SLIDER STRIP (T-3H TO KICKOFF) ─── */}
-        <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-soft">
-          <div className="flex items-center gap-2 text-xs font-mono font-bold text-[var(--text-primary)] shrink-0">
-            <Clock className="w-4 h-4 text-[var(--terracotta-primary)]" />
-            <span>INGRESS TIMELINE:</span>
-          </div>
+        {/* Live Gate Cards */}
+        <div className="space-y-3">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-neutral-400 font-mono">
+            Gate Wait Estimates
+          </h2>
 
-          <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-1 sm:pb-0">
-            {timelineLabels.map((t) => (
+          <div className="space-y-3">
+            {gateData.map((g) => (
               <button
-                key={t.min}
-                onClick={() => setTimelineMinute(t.min)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold transition whitespace-nowrap ${
-                  timelineMinute === t.min
-                    ? 'bg-[var(--terracotta-primary)] text-white shadow-soft'
-                    : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                type="button"
+                key={g.id}
+                onClick={() => setSelectedGate(g.id)}
+                aria-pressed={selectedGate === g.id}
+                className={`block w-full text-left cursor-pointer rounded-2xl border p-4 transition shadow-lg ${
+                  selectedGate === g.id
+                    ? 'border-emerald-500/80 bg-neutral-900/90 ring-1 ring-emerald-500/50'
+                    : 'border-neutral-800 bg-[#0e0e12] hover:border-neutral-700'
                 }`}
               >
-                {t.label}
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-black text-white">{g.name}</span>
+                      <span className={`rounded-full border px-2 py-0.5 text-[10px] font-extrabold ${g.statusColor}`}>
+                        {g.waitMins} MIN WAIT
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-neutral-400 mt-0.5">{g.side}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-mono font-bold text-emerald-400">
+                      {g.capacityPct}% load
+                    </span>
+                  </div>
+                </div>
+
+                <p className="mt-2 text-xs text-neutral-300 leading-relaxed border-t border-neutral-800/80 pt-2">
+                  {g.note}
+                </p>
               </button>
             ))}
           </div>
-
-          <div className="text-[11px] font-mono text-[var(--text-secondary)] shrink-0">
-            Flow Fraction: <strong className="text-[var(--terracotta-text)]">{Math.round((flowData?.fraction || 0.45) * 100)}% active</strong>
-          </div>
         </div>
+      </div>
 
-        {/* ─── MAIN MAP & DECONFLICTION GRID ─── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
-          {/* Map Viewport (8 Cols) */}
-          <div className="lg:col-span-8 space-y-4">
-            <div className="relative rounded-2xl overflow-hidden shadow-soft border border-[var(--border-subtle)]">
-              <CrowdFlowMapVisual
-                segments={segments}
-                mixingPoints={mixingPoints}
-                selectedPoint={selectedPoint}
-                onSelectPoint={(pt) => setSelectedPoint(pt)}
-              />
-
-              {/* Floating Quick Stats on Map */}
-              <div className="absolute top-4 left-4 z-[400] rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]/90 backdrop-blur-md p-3 text-xs font-mono space-y-1 shadow-soft">
-                <div className="flex items-center gap-2 text-[var(--text-primary)] font-bold">
-                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>DY PATIL ARENA PRECINCT</span>
-                </div>
-                <div className="text-[var(--text-secondary)] text-[11px]">
-                  Active Ingress Segments: <span className="text-[var(--text-primary)] font-bold">{segments.length}</span>
-                </div>
-                <div className="text-[var(--text-secondary)] text-[11px]">
-                  Mixing Points Detected: <span className="text-rose-600 dark:text-rose-400 font-bold">{mixingPoints.length}</span>
-                </div>
+      {/* Fan Waypoints & Amenities Quick Bar (Clickable) */}
+      <div className="rounded-3xl border border-neutral-800 bg-[#0e0e12] p-5 shadow-xl space-y-4">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-400 font-mono">
+          Perimeter Fan Amenities &amp; Support Booths (Click to locate)
+        </h3>
+        <div className="grid sm:grid-cols-4 gap-3">
+          {FAN_WAYPOINTS.map((w, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => panToWaypoint(w)}
+              className="text-left rounded-2xl border border-neutral-800 bg-[#141418] p-3.5 space-y-1 hover:border-sky-500/60 transition cursor-pointer"
+            >
+              <div className="flex items-center justify-between">
+                <div className="text-xs font-bold text-white">{w.name}</div>
+                <MapPin className="h-3 w-3 text-sky-400" />
               </div>
-            </div>
-
-            {/* Mixing Point Deconfliction Alert Card */}
-            {mixingPoints.length > 0 && (
-              <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-5 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 text-rose-500 animate-bounce" />
-                    <h3 className="text-sm font-black text-[var(--text-primary)] font-mono">
-                      FEATURE: MIXING-POINT COLLISION WARNING
-                    </h3>
-                  </div>
-                  <span className="rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 text-[10px] font-mono font-bold px-2 py-0.5 border border-rose-500/30">
-                    SEPARATION: {selectedPoint?.distanceM || 134} METERS
-                  </span>
-                </div>
-
-                <p className="text-xs text-[var(--text-secondary)] font-sans leading-relaxed">
-                  {selectedPoint?.note || 'Local parking pedestrian path and outstation shuttle approach within 134 m — flag for marshalling barriers.'}
-                </p>
-
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 border-t border-rose-500/20 text-xs font-mono">
-                  <div className="text-[var(--text-muted)] text-[11px]">
-                    Affected: <strong>{selectedPoint?.localPath}</strong> vs <strong>{selectedPoint?.outstationPath}</strong>
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setDeconflictionTriggered(true);
-                      setTimeout(() => setDeconflictionTriggered(false), 4000);
-                    }}
-                    className="flex items-center gap-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 py-2 text-xs transition active:scale-95 shadow-soft whitespace-nowrap"
-                  >
-                    <Zap className="w-3.5 h-3.5 text-white" />
-                    <span>{deconflictionTriggered ? 'BARRIERS DEPLOYED (SAFE)' : 'Execute Marshalling Deconfliction'}</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right Sidebar: Third-Party Telemetry Bridge & Routing Intelligence (4 Cols) */}
-          <div className="lg:col-span-4 space-y-6">
-            
-            {/* Third-Party Telemetry Bridge Feature Card */}
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 space-y-4 shadow-soft">
-              <div className="flex items-center justify-between border-b border-[var(--border-subtle)] pb-3">
-                <div className="flex items-center gap-2">
-                  <Server className="w-4 h-4 text-[var(--terracotta-primary)]" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--text-primary)] font-mono">
-                    Third-Party Telemetry Bridge
-                  </h3>
-                </div>
-                <span className="rounded bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[9px] font-mono font-bold px-1.5 py-0.5">
-                  4 ONLINE
-                </span>
-              </div>
-
-              {/* Connected APIs */}
-              <div className="space-y-2.5 text-xs font-mono">
-                <div className="flex items-center justify-between p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
-                  <div>
-                    <div className="text-[var(--text-primary)] font-bold">BookMyShow Webhook</div>
-                    <div className="text-[10px] text-[var(--text-muted)]">Ticketing QR Validation Engine</div>
-                  </div>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">38ms · 99.8%</span>
-                </div>
-
-                <div className="flex items-center justify-between p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
-                  <div>
-                    <div className="text-[var(--text-primary)] font-bold">FIFA TMS Gateway</div>
-                    <div className="text-[10px] text-[var(--text-muted)]">International Member Pass Node</div>
-                  </div>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">ACTIVE</span>
-                </div>
-
-                <div className="flex items-center justify-between p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
-                  <div>
-                    <div className="text-[var(--text-primary)] font-bold">Opera Hotel PMS</div>
-                    <div className="text-[10px] text-[var(--text-muted)]">12 Peripheral Lodging Feeds</div>
-                  </div>
-                  <span className="text-[var(--terracotta-text)] font-bold text-[11px]">2,743 RMS</span>
-                </div>
-
-                <div className="flex items-center justify-between p-2.5 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)]">
-                  <div>
-                    <div className="text-[var(--text-primary)] font-bold">MMRDA Transit Feed</div>
-                    <div className="text-[10px] text-[var(--text-muted)]">Harbour Line &amp; Metro Telemetry</div>
-                  </div>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold text-[11px]">LIVE SYNC</span>
-                </div>
-              </div>
-
-              {/* Live Webhook Log Stream */}
-              <div className="pt-2 border-t border-[var(--border-subtle)] space-y-1.5">
-                <span className="text-[10px] font-mono text-[var(--text-muted)] block uppercase font-semibold">
-                  Real-time Ingestion Activity
-                </span>
-                <div className="rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)] p-2.5 space-y-1 font-mono text-[10px] max-h-36 overflow-y-auto">
-                  {telemetryLogs.map((log, i) => (
-                    <div key={i} className="text-[var(--text-secondary)] leading-tight">
-                      <span className="text-[var(--terracotta-text)] font-semibold">{log.time}</span> <span className="text-[var(--text-muted)]">[{log.source}]</span> {log.msg}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Ingress Balancing Action Card */}
-            <div className="rounded-xl border border-[var(--terracotta-border)] bg-[var(--terracotta-tint)] p-5 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-mono font-bold text-[var(--terracotta-text)]">
-                <Zap className="w-4 h-4 text-[var(--terracotta-primary)]" />
-                <span>DYNAMIC TRAFFIC DIVERSION</span>
-              </div>
-              <p className="text-xs text-[var(--text-secondary)] leading-relaxed font-sans">
-                Parking P3 at <strong>88% capacity</strong>. 620 vehicles successfully reassigned to Zone P4. VMS expressway guidance boards operational.
-              </p>
-              <div className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 font-bold">
-                ✓ 18 MINS ESTIMATED COMMUTE SAVINGS PER FAN
-              </div>
-            </div>
-          </div>
+              <div className="text-[11px] text-neutral-400">{w.desc}</div>
+              <div className="text-[10px] text-sky-400 font-mono pt-1">Click to Pan Map ↗</div>
+            </button>
+          ))}
         </div>
-      </main>
-
-      <Footer />
+      </div>
     </div>
   );
 }

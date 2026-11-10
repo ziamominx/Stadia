@@ -1,3 +1,26 @@
+# STADIA — Landing and Event Command Platform (`landing-page`)
+
+## Landing branch operations access
+
+The landing branch uses a dark operations theme and role-checked access. Create `.env.local` from [`.env.example`](.env.example) and set a random 32+ character session secret and distinct passwords for the executive, ground, transport, and hospitality accounts. Then run `npm run dev` or `npm run build && npm start`. Open `/login`; accounts have eight-hour HTTP-only signed sessions. Executive can open every operations console. Team accounts are restricted to their own page and permitted commands, including direct API calls.
+
+`/setup` commits event name, venue coordinates, capacity, expected attendance, staffing, gate processing capacity, fleet size, and warning thresholds into the shared operations state. The new map toggle uses live OpenStreetMap/CARTO tiles. Gate pins are approximate and occupancy remains simulated. Hotel inventory is a seeded reference dataset. There is no connected turnstile, GPS, hotel, payment, or public-address provider, so those functions must not be presented as live field data. The operations state remains in server memory and does not persist across restarts or reliably synchronize across multiple server instances.
+
+The six landing consoles are accessible from the post-flight platform section. A user can expand the journey and system cards with mouse, touch, or keyboard. Motion respects reduced-motion preferences.
+
+The public 3D landing journey opens at `/`. The operations experience opens at `/command-center` after role sign-in. It implements the six supplied UI references in Next.js, with a connected crowd-response simulation, fire/medical tasks, parking controls, and outcome analytics.
+
+```sh
+npm ci
+npm test
+npm run build
+npm start
+```
+
+Read [hc002 implementation and demo guide](MD/HC002_IMPLEMENTATION.md) for the original operations walkthrough and simulation boundaries. The fan experience is available at `/fan`; the earlier project documentation follows below.
+
+---
+
 # ⚽ FIFA Women's World Cup India 2026 — Hospitality & Crowd Orchestration Platform
 
 Built to serve as the single official ticketing channel for the FIFA Women's World Cup India
@@ -27,32 +50,30 @@ exists.
 
 | Layer    | Tech |
 | -------- | ---- |
-| Frontend | React 19 + Vite 6, Tailwind CSS 4, Leaflet (OSM, no API key), `qrcode` |
-| Backend  | Node 20 + Express 4 (REST) |
-| Database | SQLite via `better-sqlite3` (same schema ports to Postgres) |
-| Notifications | WhatsApp Cloud API (mock fallback logs to the server console) |
-| Auth     | Mock OTP + JWT endpoints (demo-grade only) |
+| Fullstack Platform | Next.js 15 (App Router), React 19, Tailwind CSS 4, Leaflet (OSM), `qrcode` |
+| Backend & APIs | Native Next.js Route Handlers (`app/api/*`) |
+| State & Domain Mesh | In-Memory Master Domain Registry (`lib/eventsData.js` & `lib/stadiaStore.js`) |
+| Geospatial / Routing | Leaflet OpenStreetMap layers, Haversine route assignment, perimeter buffers |
+| Notifications | Local WhatsApp message preview; no provider connected |
 
-Payments, hotel inventory and the Airtel partnership are **mocked stubs** returning realistic data.
+Payments, hotel inventory and partner referrals are mock stubs returning realistic mega-event data.
 
 ## Quick start
 
 ```bash
-npm install        # installs server + client workspaces
-npm run dev        # starts API (:4000) + Vite dev server (:5173) together
+npm install        # installs platform dependencies
+npm run dev        # starts Next.js App Router dev server on :3000
 ```
 
-Then open **http://localhost:5173**.
+Then open **http://localhost:3000**.
 
-The database auto-seeds the first time the server starts (9 matches, 8 gates, 5 parking zones,
-12 hotels, 4 shuttle zones × 3 slots per match, ~38k sample tickets, ~13k referral events).
-To re-seed from scratch: `npm run seed`.
+All venue presets (DY Patil Stadium, Wankhede Stadium, MCA Pune), entry gates, shuttle corridors, and simulation scenarios initialize automatically in memory with zero database setup required.
 
 ### Production build
 
 ```bash
-npm run build      # builds client into client/dist
-npm start          # Express serves API + built client on :4000
+npm run build      # compiles Next.js App Router production bundle
+npm start          # starts Next.js production server on :3000
 ```
 
 ## Demo script (5 minutes)
@@ -80,38 +101,31 @@ npm start          # Express serves API + built client on :4000
 6. **Routing decision proof** — book a west-side seat as a local driver and the ticket shows
    the load-aware assignment in action, e.g. *"P3 was 88% full — reassigned to P4 (60%)"*,
    also logged to the server console.
-7. **WhatsApp** — every booking/completion triggers the WhatsApp sender; without env vars it
-   prints a formatted message to the server console (also resendable from the ticket page).
+7. **WhatsApp preview** — the ticket page generates a message preview. It does not send a message.
 
-## WhatsApp Cloud API (optional)
+## WhatsApp delivery
 
-Set these env vars to send real messages via Meta's sandbox instead of the mock log:
-
-```
-WHATSAPP_TOKEN=...
-WHATSAPP_PHONE_ID=...
-WHATSAPP_TO=<verified recipient number>
-```
+The current routes are preview-only. Connecting a verified WhatsApp Business account and delivery API is future integration work.
 
 ## Project layout
 
 ```
-server/
-  src/
-    index.js            Express app (routes + static client serving)
-    db.js               SQLite connection + schema (matches, gates, tickets, …)
-    seed.js             Idempotent seed: demo data + ~38k sample tickets
-    routes/             matches, hotels, bookings, notifications, dashboard,
-                        tourism, referrals, auth
-    lib/                assignment (gate/parking/shuttle logic), forecast
-                        (arrival-curve prediction), whatsapp, ticket detail +
-                        route geometry, load model, referrals
-client/
-  src/
-    pages/              Landing, MatchDetail, Checkout, TravelInfo, Confirmation,
-                        Tourism, Organizer, OrganizerGates, OrganizerShuttles
-    components/         SeatMap (SVG), SeatPicker, RouteMap (Leaflet), QRCode, LoadBar
-    api.js              fetch wrapper + useApi hook
+app/                    Next.js 15 App Router pages & route handlers
+  page.jsx              Landing, hero, ingress safety telemetry, corridor visualizer
+  matches/              Match fixtures catalog with filter chips
+  match/[id]/           Interactive SVG stadium seat map & block selector
+  checkout/             Reservation & checkout funnel
+  ticket/[ticketId]/    Travel questionnaire & digital matchday pass confirmation
+  journey-planner/      Trip companion wizard & early arrival incentives
+  hospitality-hub/      Hospitality & dining zone saturation & overflow dispersal
+  simulator/            Stress scenario simulator & AI mitigation actions
+  command-center/       Leaflet tactical command map with multi-layer overlays
+  organizer/            Organizer console (gates, shuttles, KPIs)
+  tourism/              Host city fan discovery & partner experiences
+  api/                  Next.js backend API routes (routes, tickets, events, hotels)
+components/             Shared UI components (Navbar, Footer, SeatMap, RouteMap, etc.)
+lib/                    Master domain mesh (eventsData.js), store (stadiaStore.js), formatters
+docs/                   Interactive architecture diagrams & platform briefs
 ```
 
 ## Key model decisions

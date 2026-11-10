@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_standard" name="shell-type"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+    @keyframes dash {
+      to { stroke-dashoffset: -40; }
+    }
+    .flow-dash-red {
+      stroke-dasharray: 6 4;
+      animation: dash 1.2s linear infinite;
+    }
+    .flow-dash-amber {
+      stroke-dasharray: 5 4;
+      animation: dash 1.8s linear infinite;
+    }
+    .flow-dash-green {
+      stroke-dasharray: 6 5;
+      animation: dash 2.4s linear infinite;
+    }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-container-highest": "#e2e2e2",
+            "on-tertiary-container": "#b87500",
+            "on-error-container": "#93000a",
+            "surface-variant": "#e2e2e2",
+            "secondary-fixed-dim": "#4edea3",
+            "background": "#f9f9f8",
+            "on-surface": "#1a1c1c",
+            "on-tertiary": "#ffffff",
+            "on-surface-variant": "#444748",
+            "primary-fixed-dim": "#c8c6c5",
+            "inverse-surface": "#2f3130",
+            "surface-bright": "#f9f9f8",
+            "outline-variant": "#c4c7c7",
+            "surface-tint": "#5f5e5e",
+            "outline": "#747878",
+            "on-secondary-container": "#00714d",
+            "inverse-primary": "#c8c6c5",
+            "on-primary-fixed-variant": "#474646",
+            "on-tertiary-fixed": "#2a1700",
+            "on-primary": "#ffffff",
+            "tertiary-fixed-dim": "#ffb95f",
+            "tertiary-container": "#2a1700",
+            "secondary-container": "#6cf8bb",
+            "surface-dim": "#dadad9",
+            "surface-container-low": "#f3f4f3",
+            "on-secondary": "#ffffff",
+            "on-primary-fixed": "#1c1b1b",
+            "primary-fixed": "#e5e2e1",
+            "tertiary": "#000000",
+            "on-primary-container": "#858383",
+            "on-secondary-fixed-variant": "#005236",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-background": "#1a1c1c",
+            "primary": "#000000",
+            "secondary": "#006c49",
+            "surface": "#f9f9f8",
+            "surface-container-high": "#e8e8e7",
+            "on-tertiary-fixed-variant": "#653e00",
+            "surface-container": "#eeeeed",
+            "primary-container": "#1c1b1b",
+            "tertiary-fixed": "#ffddb8",
+            "inverse-on-surface": "#f1f1f0",
+            "on-secondary-fixed": "#002113",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#6ffbbe",
+            "error": "#ba1a1a"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "margin": "2rem",
+            "space-xl": "2.5rem",
+            "space-md": "1rem",
+            "space-lg": "1.5rem"
+          },
+          fontFamily: {
+            "mono-data": ["JetBrains Mono"],
+            "body-sm": ["Hanken Grotesk"],
+            "metric-stat": ["Hanken Grotesk"],
+            "display-xl": ["Hanken Grotesk"],
+            "display-lg": ["Hanken Grotesk"],
+            "body-lg": ["Hanken Grotesk"],
+            "headline-lg-mobile": ["Hanken Grotesk"],
+            "headline-sm": ["Hanken Grotesk"],
+            "label-micro": ["Hanken Grotesk"],
+            "headline-lg": ["Hanken Grotesk"]
+          },
+          fontSize: {
+            "mono-data": ["12px", { lineHeight: "16px", letterSpacing: "-0.01em", fontWeight: "400" }],
+            "body-sm": ["13px", { lineHeight: "18px", letterSpacing: "0em", fontWeight: "400" }],
+            "metric-stat": ["38px", { lineHeight: "42px", letterSpacing: "-0.04em", fontWeight: "300" }],
+            "display-xl": ["56px", { lineHeight: "60px", letterSpacing: "-0.035em", fontWeight: "400" }],
+            "display-lg": ["40px", { lineHeight: "44px", letterSpacing: "-0.03em", fontWeight: "400" }],
+            "body-lg": ["15px", { lineHeight: "22px", letterSpacing: "-0.005em", fontWeight: "400" }],
+            "headline-lg-mobile": ["24px", { lineHeight: "30px", letterSpacing: "-0.015em", fontWeight: "500" }],
+            "headline-sm": ["18px", { lineHeight: "24px", letterSpacing: "-0.01em", fontWeight: "500" }],
+            "label-micro": ["10px", { lineHeight: "12px", letterSpacing: "0.08em", fontWeight: "600" }],
+            "headline-lg": ["26px", { lineHeight: "32px", letterSpacing: "-0.02em", fontWeight: "600" }]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-body-sm text-body-sm text-on-surface antialiased selection:bg-primary selection:text-white">
+<!-- Top Global Header -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#FBFBFA] border-b border-[#EAEAE7]">
+<div class="h-14 w-full px-space-md flex items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md flex-shrink-0">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm uppercase tracking-wider text-primary font-bold">STADIA</span>
+<span class="relative flex h-2 w-2 ml-1">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+</span>
+</div>
+<div class="h-4 w-px bg-outline-variant"></div>
+<div class="flex items-center gap-space-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-body-sm text-body-sm text-on-surface font-medium truncate max-w-xs">India vs Australia</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">— Mumbai Int. Stadium</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="flex h-1.5 w-1.5 rounded-full bg-secondary"></span>
+<span class="font-label-micro text-label-micro uppercase text-secondary font-bold tracking-wider">LIVE OPERATIONS</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">· 26 Sep 2026 · 19:30 IST</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Navigation Bar with CROWD highlighted -->
+<nav class="hidden xl:flex items-center h-full gap-space-xs flex-shrink-0">
+<a class="h-full px-space-md flex items-center font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="command-center" href="#">Command Center</a>
+<a aria-current="page" class="h-full px-space-md flex items-center font-label-micro text-label-micro uppercase tracking-wider transition-colors text-primary font-bold border-b-2 border-primary bg-surface-container-low" data-path="crowd" href="#">Crowd</a>
+<a class="h-full px-space-md flex items-center font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="ground" href="#">Ground</a>
+<a class="h-full px-space-md flex items-center font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="transport" href="#">Transport</a>
+<a class="h-full px-space-md flex items-center font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="incidents" href="#">Incidents</a>
+<a class="h-full px-space-md flex items-center font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="event-control" href="#">Event Control</a>
+<a class="h-full px-space-md flex items-center font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="analytics" href="#">Analytics</a>
+</nav>
+<!-- Status & Dispatch Badges -->
+<div class="flex items-center gap-space-md flex-shrink-0">
+<div class="hidden md:flex items-center gap-space-xs border border-error/50 px-space-sm py-1 bg-surface-container-lowest">
+<span class="h-1.5 w-1.5 rounded-full bg-error animate-pulse"></span>
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-error font-semibold">CROWD: WEST SECTOR SURGE</span>
+</div>
+<div class="hidden lg:flex items-center font-mono-data text-mono-data text-on-surface bg-surface-container-low px-space-sm py-1 border border-outline-variant">
+<span class="text-on-surface-variant mr-1">UTC+5:30</span>
+<span>20:14:08 IST</span>
+</div>
+<button class="flex items-center gap-space-xs h-8 px-space-sm bg-primary text-on-primary hover:bg-neutral-800 transition-colors uppercase font-label-micro text-label-micro" type="button">
+<span class="material-symbols-outlined text-[16px]">campaign</span>
+<span class="hidden sm:inline">PA Broadcast</span>
+</button>
+<div class="flex items-center gap-space-xs pl-space-xs border-l border-outline-variant">
+<div class="hidden sm:flex flex-col text-right">
+<span class="font-body-sm text-body-sm text-on-surface font-medium leading-none">E. Vance</span>
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant leading-none mt-1">Crowd Ops Lead</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[17px]">person</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Workstation Layout -->
+<main class="w-full pt-14 bg-[#F7F7F5] min-h-[calc(100vh-3.5rem)] flex flex-col">
+<!-- Specialized CROWD Intelligence Sub-Header & Mode Bar -->
+<section class="w-full bg-surface-bright px-space-md py-space-sm border-b border-outline-variant flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<div class="flex flex-col lg:flex-row lg:items-center gap-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-lg text-headline-lg uppercase text-primary font-bold tracking-tight">CROWD</span>
+<span class="px-2 py-0.5 bg-neutral-900 text-white font-mono-data text-[11px] font-medium tracking-wider">LIVE CROWD INTELLIGENCE &amp; FLOW DYNAMICS</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant ml-2 hidden sm:inline">SECTOR MODEL 04-CRD</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+            Concourse velocity telemetry · Turnstile absorption rates · Real-time dynamic pedestrian physics
+          </p>
+</div>
+</div>
+<!-- Quick Operational Mode Tabs -->
+<div class="flex items-center border border-outline-variant p-0.5 bg-surface-container-low shrink-0 self-start xl:self-auto overflow-x-auto max-w-full">
+<button class="px-space-sm py-1 font-label-micro text-label-micro uppercase tracking-wider text-on-surface font-semibold bg-white border border-outline-variant shadow-sm transition-colors flex items-center gap-1.5" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+          LIVE VECTOR FLOW
+        </button>
+<button class="px-space-sm py-1 font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+          DENSITY HEATMAP
+        </button>
+<button class="px-space-sm py-1 font-label-micro text-label-micro uppercase tracking-wider text-error font-medium transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">crisis_alert</span>
+          QUEUE CHOKEPOINTS
+        </button>
+<button class="px-space-sm py-1 font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors" type="button">
+          PREDICTIVE MODEL (T+15m / T+30m)
+        </button>
+</div>
+</section>
+<!-- Top Metrics Strip (Restrained, Elegant Typography - 6 Key Telemetry Anchors) -->
+<section class="w-full bg-[#FCFCFA] px-space-md py-3 border-b border-outline-variant">
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-y-3 gap-x-6 items-baseline">
+<!-- Metric 1: Inside Venue -->
+<div class="flex flex-col border-l-2 border-primary pl-2.5">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant tracking-wider">Inside Venue</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-metric-stat text-metric-stat font-light text-primary tracking-tight">42,184</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">pax</span>
+</div>
+<span class="font-mono-data text-[11px] text-on-surface-variant mt-0.5">Cap: 54,200</span>
+</div>
+<!-- Metric 2: Occupancy -->
+<div class="flex flex-col border-l-2 border-secondary pl-2.5">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant tracking-wider">Overall Occupancy</span>
+<div class="flex items-baseline gap-1.5 mt-0.5">
+<span class="font-metric-stat text-metric-stat font-light text-primary tracking-tight">78<span class="text-headline-sm font-normal">%</span></span>
+<span class="px-1.5 py-0.2 bg-secondary/15 text-secondary font-mono-data text-[11px] font-semibold uppercase">Optimal</span>
+</div>
+<span class="font-mono-data text-[11px] text-secondary mt-0.5">Headroom: 12,016 seats</span>
+</div>
+<!-- Metric 3: Current Inflow -->
+<div class="flex flex-col border-l-2 border-error pl-2.5">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant tracking-wider">Current Inflow</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-metric-stat text-metric-stat font-light text-primary tracking-tight">4,820</span>
+<span class="font-mono-data text-mono-data text-error font-semibold">/hr</span>
+</div>
+<span class="font-mono-data text-[11px] text-error font-medium mt-0.5">↑ 12% vs matchday hist.</span>
+</div>
+<!-- Metric 4: Current Outflow -->
+<div class="flex flex-col border-l-2 border-outline-variant pl-2.5">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant tracking-wider">Current Outflow</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-metric-stat text-metric-stat font-light text-primary tracking-tight">2,940</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">/hr</span>
+</div>
+<span class="font-mono-data text-[11px] text-on-surface-variant mt-0.5">Dispersal nominal</span>
+</div>
+<!-- Metric 5: Avg Gate Wait Time -->
+<div class="flex flex-col border-l-2 border-[#B87500] pl-2.5">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant tracking-wider">Avg Gate Wait</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-metric-stat text-metric-stat font-light text-primary tracking-tight">11</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">mins</span>
+</div>
+<span class="font-mono-data text-[11px] text-[#B87500] font-medium mt-0.5">West Gate spike: 18m</span>
+</div>
+<!-- Metric 6: Ingress Corridors -->
+<div class="flex flex-col border-l-2 border-primary pl-2.5">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant tracking-wider">Ingress Corridors</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-metric-stat text-metric-stat font-light text-primary tracking-tight">8</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">Active</span>
+</div>
+<span class="font-mono-data text-[11px] text-secondary mt-0.5">8 of 8 telemetry feeds synced</span>
+</div>
+</div>
+</section>
+<!-- Main Viewport Canvas (Split ~72% Vector Flow Map & Bottom Matrix / ~28% Situation & Flow Control Drawer) -->
+<div class="w-full grid grid-cols-1 xl:grid-cols-12 flex-1 bg-surface">
+<!-- Left & Center Workspace (Col 1-8) -->
+<section class="xl:col-span-8 flex flex-col border-r border-outline-variant bg-[#F9F9F8]">
+<!-- Visual Map Workspace Header & Controls -->
+<div class="w-full h-10 px-space-md border-b border-outline-variant flex items-center justify-between bg-surface-bright">
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-1.5 font-mono-data text-mono-data text-on-surface font-medium">
+<span class="material-symbols-outlined text-[16px] text-primary">route</span>
+<span>CONCOURSE &amp; PERIMETER FLOW VECTOR VISUALIZATION</span>
+</div>
+<span class="text-outline-variant">|</span>
+<div class="hidden sm:flex items-center gap-space-xs font-mono-data text-mono-data text-on-surface-variant">
+<span>SCALE 1:250</span>
+<span>·</span>
+<span>OPTICAL TRACKERS: 412/412</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1 font-mono-data text-[11px] text-on-surface-variant bg-surface-container-low px-2 py-0.5 border border-outline-variant">
+<span>FLOW VECTOR VELOCITY:</span>
+<strong class="text-primary font-semibold">1.1 m/s AVG</strong>
+</div>
+<button class="p-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low transition-colors" title="Toggle Fullscreen" type="button">
+<span class="material-symbols-outlined text-[18px]">open_in_full</span>
+</button>
+</div>
+</div>
+<!-- High Fidelity Architectural Stadium Concourse & Dynamic Particle Flow Map -->
+<div class="relative w-full min-h-[460px] flex-1 p- space-md flex flex-col justify-between overflow-hidden select-none bg-[#F6F6F4]">
+<!-- Precision Dot Grid Background -->
+<div class="absolute inset-0 pointer-events-none opacity-35" style="background-size: 32px 32px; background-image: radial-gradient(#A0A4A4 0.75px, transparent 0.75px);"></div>
+<!-- Top Vector Telemetry Callout Overlay Bars -->
+<div class="relative z-10 flex flex-wrap items-start justify-between gap-2 p-2">
+<!-- Sector Density Inspector Mini Bar -->
+<div class="bg-surface-bright/95 border border-outline-variant p-2 backdrop-blur-sm shadow-xs flex items-center gap-4">
+<div class="flex flex-col">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant">Interactive Sector Density</span>
+<div class="flex items-center gap-3 font-mono-data text-mono-data pt-0.5">
+<span class="hover:text-primary cursor-pointer"><strong class="text-on-surface">NORTH:</strong> 62%</span>
+<span class="text-outline-variant">·</span>
+<span class="hover:text-primary cursor-pointer"><strong class="text-on-surface">EAST:</strong> 68%</span>
+<span class="text-outline-variant">·</span>
+<span class="hover:text-primary cursor-pointer"><strong class="text-on-surface">SOUTH:</strong> 44%</span>
+<span class="text-outline-variant">·</span>
+<span class="bg-error/10 text-error px-1.5 py-0.5 font-semibold cursor-pointer">WEST: 92% SEVERE</span>
+</div>
+</div>
+</div>
+<!-- Ingress Throughput Live Telemetry Summary -->
+<div class="bg-surface-bright/95 border border-outline-variant p-2 backdrop-blur-sm shadow-xs flex items-center gap-3">
+<div class="flex flex-col">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant">Gate Throughput Velocity</span>
+<div class="flex items-center gap-3 font-mono-data text-mono-data pt-0.5">
+<span>W-Gates: <strong class="text-error font-semibold">420 pax/m</strong></span>
+<span class="text-outline-variant">|</span>
+<span>E-Gates: <strong class="text-secondary font-semibold">190 pax/m</strong></span>
+<span class="text-outline-variant">|</span>
+<span>N-Gates: <strong class="text-on-surface font-semibold">210 pax/m</strong></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Vector Canvas SVG -->
+<div class="relative w-full h-[370px] my-auto flex items-center justify-center">
+<svg class="w-full h-full max-w-[880px]" fill="none" viewbox="0 0 900 440" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<!-- Surge Heat Glow for West Sector Apron -->
+<radialgradient cx="22%" cy="50%" id="westSevereGlow" r="24%">
+<stop offset="0%" stop-color="#BA1A1A" stop-opacity="0.38"></stop>
+<stop offset="65%" stop-color="#FFDAD6" stop-opacity="0.18"></stop>
+<stop offset="100%" stop-color="#BA1A1A" stop-opacity="0"></stop>
+</radialgradient>
+<!-- Inner Ring Mild Buildup Gradient -->
+<radialgradient cx="38%" cy="50%" id="innerBuildupGlow" r="18%">
+<stop offset="0%" stop-color="#B87500" stop-opacity="0.22"></stop>
+<stop offset="100%" stop-color="#B87500" stop-opacity="0"></stop>
+</radialgradient>
+<!-- East Stand Steady Flow Glow -->
+<radialgradient cx="75%" cy="50%" id="eastSteadyGlow" r="25%">
+<stop offset="0%" stop-color="#006C49" stop-opacity="0.14"></stop>
+<stop offset="100%" stop-color="#006C49" stop-opacity="0"></stop>
+</radialgradient>
+<!-- Markers -->
+<marker id="arrowRed" markerheight="6" markerwidth="6" orient="auto" refx="4" refy="3">
+<path d="M 0 0 L 6 3 L 0 6 z" fill="#BA1A1A"></path>
+</marker>
+<marker id="arrowAmber" markerheight="6" markerwidth="6" orient="auto" refx="4" refy="3">
+<path d="M 0 0 L 6 3 L 0 6 z" fill="#B87500"></path>
+</marker>
+<marker id="arrowGreen" markerheight="6" markerwidth="6" orient="auto" refx="4" refy="3">
+<path d="M 0 0 L 6 3 L 0 6 z" fill="#006C49"></path>
+</marker>
+<marker id="arrowMuted" markerheight="6" markerwidth="6" orient="auto" refx="4" refy="3">
+<path d="M 0 0 L 6 3 L 0 6 z" fill="#747878"></path>
+</marker>
+</defs>
+<!-- Heatmap Footprints -->
+<circle cx="210" cy="220" fill="url(#westSevereGlow)" r="115"></circle>
+<circle cx="340" cy="220" fill="url(#innerBuildupGlow)" r="75"></circle>
+<circle cx="680" cy="220" fill="url(#eastSteadyGlow)" r="95"></circle>
+<!-- Arterial Outer Perimeter & Transit Access Connectors -->
+<path d="M 50,220 C 50,90 180,35 450,35 C 720,35 850,90 850,220 C 850,350 720,405 450,405 C 180,405 50,350 50,220 Z" stroke="#D8D8D5" stroke-dasharray="5 5" stroke-width="1.5"></path>
+<!-- Outer Concourse Promenade Ring -->
+<ellipse cx="450" cy="220" fill="#FFFFFF" fill-opacity="0.65" rx="330" ry="155" stroke="#C4C7C7" stroke-width="2"></ellipse>
+<!-- Mid-Level Concourse Ring -->
+<ellipse cx="450" cy="220" fill="#FAF9F7" rx="255" ry="118" stroke="#D5D5D2" stroke-width="1.5"></ellipse>
+<!-- Inner Grandstand / Bowl Tier -->
+<ellipse cx="450" cy="220" fill="#F0F0EE" rx="180" ry="85" stroke="#BFBFBC" stroke-width="1.5"></ellipse>
+<!-- Central Pitch / Playing Surface -->
+<rect fill="#E8F4EE" height="70" rx="4" stroke="#006C49" stroke-width="1.2" width="140" x="380" y="185"></rect>
+<circle cx="450" cy="220" fill="none" r="18" stroke="#006C49" stroke-width="1"></circle>
+<line stroke="#006C49" stroke-dasharray="2 2" stroke-width="1" x1="450" x2="450" y1="185" y2="255"></line>
+<!-- Turnstile Banks (North, South, East, West) -->
+<!-- WEST TURNSTILES 1-18 (SURGE CHOKE) -->
+<rect fill="#BA1A1A" height="50" stroke="#FFFFFF" stroke-width="1.5" width="16" x="120" y="195"></rect>
+<text fill="#BA1A1A" font-family="JetBrains Mono" font-size="9" font-weight="600" text-anchor="middle" x="128" y="185">WEST BANK (1-18)</text>
+<!-- EAST TURNSTILES 1-12 -->
+<rect fill="#006C49" height="50" stroke="#FFFFFF" stroke-width="1.5" width="14" x="765" y="195"></rect>
+<text fill="#006C49" font-family="JetBrains Mono" font-size="9" font-weight="600" text-anchor="middle" x="772" y="185">EAST BANK (1-12)</text>
+<!-- NORTH TURNSTILES 1-14 -->
+<rect fill="#444748" height="12" stroke="#FFFFFF" stroke-width="1.5" width="50" x="425" y="65"></rect>
+<text fill="#444748" font-family="JetBrains Mono" font-size="9" font-weight="600" text-anchor="middle" x="450" y="55">NORTH BANK (1-14)</text>
+<!-- SOUTH TURNSTILES 1-14 -->
+<rect fill="#006C49" height="12" stroke="#FFFFFF" stroke-width="1.5" width="50" x="425" y="365"></rect>
+<text fill="#006C49" font-family="JetBrains Mono" font-size="9" font-weight="600" text-anchor="middle" x="450" y="393">SOUTH BANK (1-14)</text>
+<!-- Dynamic Flow Streams / Directional Particles (Animated Dashes) -->
+<!-- Severe West Gate Apron Choke Vector -->
+<path class="flow-dash-red" d="M 55,220 L 118,220" stroke="#BA1A1A" stroke-width="4"></path>
+<path class="flow-dash-red" d="M 136,220 L 220,220" marker-end="url(#arrowRed)" stroke="#BA1A1A" stroke-width="3.5"></path>
+<path class="flow-dash-red" d="M 80,170 Q 130,195 210,210" marker-end="url(#arrowRed)" stroke="#BA1A1A" stroke-width="2.5"></path>
+<path class="flow-dash-red" d="M 80,270 Q 130,245 210,230" marker-end="url(#arrowRed)" stroke="#BA1A1A" stroke-width="2.5"></path>
+<!-- Inner Ring Amber Buildup Vectors (West Stand Spillover) -->
+<path class="flow-dash-amber" d="M 225,200 Q 280,160 360,150" marker-end="url(#arrowAmber)" stroke="#B87500" stroke-width="2"></path>
+<path class="flow-dash-amber" d="M 225,240 Q 280,280 360,290" marker-end="url(#arrowAmber)" stroke="#B87500" stroke-width="2"></path>
+<!-- East Stand Steady Flow Vectors (Green) -->
+<path class="flow-dash-green" d="M 760,220 L 680,220" marker-end="url(#arrowGreen)" stroke="#006C49" stroke-width="2"></path>
+<path class="flow-dash-green" d="M 760,205 Q 690,190 620,195" marker-end="url(#arrowGreen)" stroke="#006C49" stroke-width="1.8"></path>
+<path class="flow-dash-green" d="M 760,235 Q 690,250 620,245" marker-end="url(#arrowGreen)" stroke="#006C49" stroke-width="1.8"></path>
+<!-- North Gate Steady Vector -->
+<path class="flow-dash-green" d="M 450,78 L 450,140" marker-end="url(#arrowMuted)" stroke="#747878" stroke-width="2"></path>
+<path d="M 430,95 Q 400,120 380,140" stroke="#747878" stroke-dasharray="3 3" stroke-width="1.2"></path>
+<!-- South Gate Clear Vector -->
+<path class="flow-dash-green" d="M 450,363 L 450,305" marker-end="url(#arrowGreen)" stroke="#006C49" stroke-width="2"></path>
+<!-- Stadium Sector Labels -->
+<text fill="#444748" font-family="Hanken Grotesk" font-size="11" font-weight="600" letter-spacing="0.08em" text-anchor="middle" x="450" y="165">NORTH STAND · 62%</text>
+<text fill="#444748" font-family="Hanken Grotesk" font-size="11" font-weight="600" letter-spacing="0.08em" text-anchor="middle" x="450" y="280">SOUTH STAND · 44%</text>
+<text fill="#006C49" font-family="Hanken Grotesk" font-size="11" font-weight="600" letter-spacing="0.08em" text-anchor="middle" x="690" y="224">EAST STAND · 68%</text>
+<text fill="#BA1A1A" font-family="Hanken Grotesk" font-size="11" font-weight="700" letter-spacing="0.08em" text-anchor="middle" x="230" y="224">WEST STAND · 92% SEVERE</text>
+<!-- Transit Connectors & P3 Shuttles Node -->
+<rect fill="#FFFFFF" height="28" stroke="#BA1A1A" stroke-width="1.5" width="36" x="15" y="206"></rect>
+<text fill="#BA1A1A" font-family="JetBrains Mono" font-size="9" font-weight="700" text-anchor="middle" x="33" y="224">P3</text>
+<text fill="#747878" font-family="JetBrains Mono" font-size="8" text-anchor="middle" x="33" y="246">SHUTTLES</text>
+<!-- Active Sensor Pulsers -->
+<circle cx="120" cy="220" fill="#BA1A1A" fill-opacity="0.2" r="16">
+<animate attributename="r" dur="1.8s" repeatcount="indefinite" values="8;20;8"></animate>
+<animate attributename="opacity" dur="1.8s" repeatcount="indefinite" values="0.8;0;0.8"></animate>
+</circle>
+<circle cx="120" cy="220" fill="#BA1A1A" r="4"></circle>
+</svg>
+<!-- Dynamic On-Map Sector Alert Callout Card (West Gate Apron) -->
+<div class="absolute left-8 bottom-8 w-72 bg-surface-bright/95 border-2 border-error p-3 shadow-md backdrop-blur-xs">
+<div class="flex items-center justify-between border-b border-error/30 pb-1.5 mb-1.5">
+<span class="font-label-micro text-label-micro uppercase font-bold text-error flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+                  CHOKEPOINT CRITICAL // GATE W-04
+                </span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">SECTOR W</span>
+</div>
+<div class="text-[12px] leading-snug text-on-surface">
+<strong>Throughput:</strong> 420 pax/min · <strong>Queue Tail:</strong> 480m roadway spillover.
+              </div>
+<div class="mt-2 flex items-center justify-between font-mono-data text-[11px] bg-error-container/40 p-1.5 border border-error/30">
+<span class="text-error font-medium">Time-to-Gridlock:</span>
+<strong class="text-error font-bold font-mono">08m 42s</strong>
+</div>
+</div>
+<!-- Throughput Callout Badges -->
+<div class="absolute top-14 right-10 hidden md:flex flex-col gap-1.5 bg-surface-bright/90 border border-outline-variant p-2 font-mono-data text-[11px]">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant font-semibold">TURNSTILE ABSORPTION VELOCITY</span>
+<div class="flex items-center justify-between gap-4">
+<span>West Turnstiles (1-18):</span>
+<span class="text-error font-bold">420 pax/min</span>
+</div>
+<div class="flex items-center justify-between gap-4">
+<span>East Turnstiles (1-12):</span>
+<span class="text-secondary font-medium">190 pax/min</span>
+</div>
+<div class="flex items-center justify-between gap-4">
+<span>North Turnstiles (1-14):</span>
+<span class="text-on-surface font-medium">210 pax/min</span>
+</div>
+</div>
+</div>
+<!-- Bottom Legend & Vector Dynamics Key -->
+<div class="relative z-10 flex flex-wrap items-center justify-between gap-space-sm border-t border-outline-variant pt-2 bg-surface-bright/90 backdrop-blur-xs px-space-md">
+<div class="flex items-center gap-space-md">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant font-semibold">CROWD DENSITY:</span>
+<div class="flex items-center gap-1.5">
+<span class="font-mono-data text-[11px] text-on-surface-variant">0%</span>
+<div class="w-32 h-2.5 bg-gradient-to-r from-secondary via-[#FFB95F] to-error"></div>
+<span class="font-mono-data text-[11px] text-on-surface-variant">100%</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md font-mono-data text-mono-data text-on-surface-variant">
+<span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-secondary inline-block"></span> Normal Flow (&lt;70%)</span>
+<span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-[#B87500] inline-block"></span> Inner Buildup (&gt;75%)</span>
+<span class="flex items-center gap-1.5"><span class="w-2.5 h-1 bg-error inline-block"></span> Severe Choke (&gt;85%)</span>
+</div>
+</div>
+</div>
+<!-- Dedicated 3-Column Actionable Crowd Prediction & Choke Matrix Panel -->
+<div class="w-full border-t border-outline-variant bg-surface-bright flex flex-col">
+<div class="h-9 px-space-md bg-surface-container-low border-b border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-error">crisis_alert</span>
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-primary font-bold">
+                ACTIONABLE CROWD PREDICTION &amp; CHOKE MATRIX // PREDICTIVE T+15M &amp; T+30M
+              </span>
+</div>
+<span class="font-mono-data text-mono-data text-on-surface-variant">AI ENGINE CONFIDENCE: 94.6%</span>
+</div>
+<!-- 3-Column Matrix Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-outline-variant">
+<!-- Column 1: West Gate Turnstiles (Critical) -->
+<div class="p-space-md flex flex-col justify-between gap-3 bg-surface-container-lowest/50 hover:bg-surface-container-low transition-colors">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 border border-error bg-error/10 text-error font-label-micro text-label-micro uppercase font-bold tracking-wider">
+                    CRITICAL · 92%
+                  </span>
+<span class="font-mono-data text-[11px] text-error font-bold">Breach in 08:42</span>
+</div>
+<h4 class="font-body-sm text-body-sm font-bold text-primary mt-1">WEST GATE TURNSTILES</h4>
+<p class="font-body-sm text-[12px] text-on-surface-variant leading-relaxed">
+<strong class="text-on-surface">Why:</strong> Cadence of P3 arterial shuttles (+21% drop-off rate) is exceeding turnstile clearance throughput. Buffer area saturated.
+                </p>
+</div>
+<div class="flex flex-col gap-1.5 pt-2 border-t border-outline-variant">
+<span class="font-label-micro text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">RECOMMENDED ACTIONS:</span>
+<div class="flex items-center gap-1.5">
+<button class="flex-1 h-7 bg-primary text-on-primary hover:bg-neutral-800 text-[11px] font-label-micro uppercase tracking-wider transition-colors font-medium" type="button">
+                    Expand Turnstiles 19-24
+                  </button>
+<button class="flex-1 h-7 border border-outline-variant bg-surface hover:bg-surface-container-low text-[11px] font-label-micro uppercase tracking-wider text-primary transition-colors font-medium" type="button">
+                    Reroute to Gate 4
+                  </button>
+</div>
+</div>
+</div>
+<!-- Column 2: Transit Hub P3 Staging (Warning) -->
+<div class="p-space-md flex flex-col justify-between gap-3 bg-surface-container-lowest/50 hover:bg-surface-container-low transition-colors">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 border border-[#B87500] bg-[#FFB95F]/15 text-[#B87500] font-label-micro text-label-micro uppercase font-bold tracking-wider">
+                    ATTENTION · 73%
+                  </span>
+<span class="font-mono-data text-[11px] text-[#B87500] font-bold">Cap. Breach in ~14m</span>
+</div>
+<h4 class="font-body-sm text-body-sm font-bold text-primary mt-1">TRANSIT HUB P3 STAGING</h4>
+<p class="font-body-sm text-[12px] text-on-surface-variant leading-relaxed">
+<strong class="text-on-surface">Why:</strong> Inbound queue buffer filled to 88%. 1,240 passengers pooled on staging apron. Arterial buses arriving every 45s.
+                </p>
+</div>
+<div class="flex flex-col gap-1.5 pt-2 border-t border-outline-variant">
+<span class="font-label-micro text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">RECOMMENDED ACTIONS:</span>
+<div class="flex items-center gap-1.5">
+<button class="w-full h-7 bg-primary text-on-primary hover:bg-neutral-800 text-[11px] font-label-micro uppercase tracking-wider transition-colors font-medium" type="button">
+                    Divert Fleet to P4
+                  </button>
+<button class="w-full h-7 border border-outline-variant bg-surface hover:bg-surface-container-low text-[11px] font-label-micro uppercase tracking-wider text-primary transition-colors font-medium" type="button">
+                    Deploy Stewards
+                  </button>
+</div>
+</div>
+</div>
+<!-- Column 3: North Concourse VIP Junction (Advisory) -->
+<div class="p-space-md flex flex-col justify-between gap-3 bg-surface-container-lowest/50 hover:bg-surface-container-low transition-colors">
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<span class="px-2 py-0.5 border border-outline text-on-surface-variant font-label-micro text-label-micro uppercase font-bold tracking-wider">
+                    ADVISORY · 68%
+                  </span>
+<span class="font-mono-data text-[11px] text-on-surface-variant font-medium">Bottleneck in 21m</span>
+</div>
+<h4 class="font-body-sm text-body-sm font-bold text-primary mt-1">NORTH CONCOURSE VIP JUNCTION</h4>
+<p class="font-body-sm text-[12px] text-on-surface-variant leading-relaxed">
+<strong class="text-on-surface">Why:</strong> VIP motorcade clearance hold will temporarily freeze Escalator Bank 2 for 4 minutes, creating secondary walkway pooling.
+                </p>
+</div>
+<div class="flex flex-col gap-1.5 pt-2 border-t border-outline-variant">
+<span class="font-label-micro text-[10px] uppercase tracking-wider text-on-surface-variant font-semibold">RECOMMENDED ACTIONS:</span>
+<div class="flex items-center gap-1.5">
+<button class="w-full h-7 border border-outline-variant bg-surface hover:bg-surface-container-low text-[11px] font-label-micro uppercase tracking-wider text-primary transition-colors font-medium" type="button">
+                    Set Buffer Perimeter
+                  </button>
+<button class="w-full h-7 border border-outline-variant bg-surface hover:bg-surface-container-low text-[11px] font-label-micro uppercase tracking-wider text-primary transition-colors font-medium" type="button">
+                    Acknowledge
+                  </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Side: Dedicated CROWD SITUATIONS & FLOW CONTROL Drawer (Col 9-12) -->
+<aside class="xl:col-span-4 flex flex-col bg-surface-bright border-t xl:border-t-0">
+<!-- Panel Title Header -->
+<div class="h-10 px-space-md border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-primary font-bold">CROWD SITUATIONS &amp; FLOW CONTROL</span>
+<span class="px-1.5 py-0.2 bg-error text-on-error font-mono-data text-[10px] font-bold">1 SEVERE</span>
+</div>
+<span class="font-mono-data text-mono-data text-on-surface-variant">REAL-TIME TELEMETRY</span>
+</div>
+<!-- Wait Time Breakdown by Gate -->
+<div class="p-space-md border-b border-outline-variant bg-white">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant font-semibold">GATE WAIT TIME BREAKDOWN</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">TARGET &lt; 8 MIN</span>
+</div>
+<div class="grid grid-cols-4 gap-2 text-center">
+<!-- West Gate -->
+<div class="p-2 border border-error bg-error/5 flex flex-col">
+<span class="font-label-micro text-[10px] uppercase text-error font-bold">West Gate</span>
+<span class="font-headline-sm text-headline-sm font-bold text-error mt-0.5">18m</span>
+<span class="font-mono-data text-[10px] text-error font-semibold mt-0.5">420 pax/m</span>
+</div>
+<!-- East Gate -->
+<div class="p-2 border border-outline-variant bg-surface-container-low flex flex-col">
+<span class="font-label-micro text-[10px] uppercase text-on-surface-variant font-medium">East Gate</span>
+<span class="font-headline-sm text-headline-sm font-medium text-primary mt-0.5">4m</span>
+<span class="font-mono-data text-[10px] text-secondary font-semibold mt-0.5">190 pax/m</span>
+</div>
+<!-- North Gate -->
+<div class="p-2 border border-outline-variant bg-surface-container-low flex flex-col">
+<span class="font-label-micro text-[10px] uppercase text-on-surface-variant font-medium">North Gate</span>
+<span class="font-headline-sm text-headline-sm font-medium text-primary mt-0.5">6m</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant font-semibold mt-0.5">210 pax/m</span>
+</div>
+<!-- South Gate -->
+<div class="p-2 border border-outline-variant bg-surface-container-low flex flex-col">
+<span class="font-label-micro text-[10px] uppercase text-on-surface-variant font-medium">South Gate</span>
+<span class="font-headline-sm text-headline-sm font-medium text-primary mt-0.5">3m</span>
+<span class="font-mono-data text-[10px] text-secondary font-semibold mt-0.5">140 pax/m</span>
+</div>
+</div>
+</div>
+<!-- Live Inflow vs Clearance Curve Graph / Trendline -->
+<div class="p-space-md border-b border-outline-variant bg-surface-bright">
+<div class="flex items-center justify-between mb-1.5">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant font-semibold">LIVE INFLOW VS CLEARANCE CURVE</span>
+<span class="font-mono-data text-[11px] text-error font-bold">+18.4% ANOMALY</span>
+</div>
+<div class="flex items-center gap-3 font-mono-data text-[10px] text-on-surface-variant mb-2">
+<span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-error inline-block"></span> Inflow Surge Pace</span>
+<span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-neutral-400 inline-block border-b border-dashed"></span> Turnstile Design Cap</span>
+</div>
+<svg class="w-full h-16" fill="none" viewbox="0 0 340 64">
+<!-- Grid lines -->
+<line stroke="#EAEAE7" stroke-width="1" x1="0" x2="340" y1="16" y2="16"></line>
+<line stroke="#EAEAE7" stroke-width="1" x1="0" x2="340" y1="36" y2="36"></line>
+<line stroke="#EAEAE7" stroke-width="1" x1="0" x2="340" y1="56" y2="56"></line>
+<!-- Baseline Clearance Capacity Curve (Muted Dashed) -->
+<path d="M 0,44 Q 90,42 180,38 T 340,34" fill="none" stroke="#999C9C" stroke-dasharray="3 3" stroke-width="1.5"></path>
+<!-- Actual Dynamic Inflow Surge Curve (Red Spiking upward) -->
+<path d="M 0,48 Q 90,44 170,30 T 340,8" fill="none" stroke="#BA1A1A" stroke-width="2.5"></path>
+<circle cx="340" cy="8" fill="#BA1A1A" r="3.5"></circle>
+</svg>
+<div class="flex items-center justify-between font-mono-data text-[10px] text-on-surface-variant mt-1">
+<span>19:30 IST</span>
+<span>19:45</span>
+<span>20:00</span>
+<span class="text-error font-bold">20:14 (NOW)</span>
+</div>
+</div>
+<!-- Tactical Inflow Throttling Controls -->
+<div class="p-space-md flex-1 flex flex-col justify-between gap-space-md bg-white">
+<div class="flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-1 border-b border-outline-variant">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-primary font-bold">TACTICAL INFLOW THROTTLING CONTROLS</span>
+<span class="font-mono-data text-[10px] text-secondary font-semibold">GATE SYSTEM READY</span>
+</div>
+<!-- Control 1: Rate Limiting Pulse -->
+<label class="flex items-start justify-between p-2.5 border border-outline-variant hover:border-primary cursor-pointer transition-colors bg-surface-container-lowest">
+<div class="flex items-start gap-2.5">
+<input checked="" class="w-4 h-4 mt-0.5 accent-primary cursor-pointer rounded-xs" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-primary">Gate Flow Rate-Limiting Pulse</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Staggers entry pulses (20s cycle) at West Bank 1-18</span>
+</div>
+</div>
+<span class="font-label-micro text-[10px] uppercase text-secondary font-bold shrink-0 ml-2">ACTIVE</span>
+</label>
+<!-- Control 2: Express Bypass -->
+<label class="flex items-start justify-between p-2.5 border border-outline-variant hover:border-primary cursor-pointer transition-colors bg-surface-container-lowest">
+<div class="flex items-start gap-2.5">
+<input checked="" class="w-4 h-4 mt-0.5 accent-primary cursor-pointer rounded-xs" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-primary">Express Bypass Auxiliary Gate 19-24</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Expands throughput +140 pax/min immediately</span>
+</div>
+</div>
+<span class="font-label-micro text-[10px] uppercase text-secondary font-bold shrink-0 ml-2">ENGAGED</span>
+</label>
+<!-- Control 3: Dynamic Concourse Re-routing -->
+<label class="flex items-start justify-between p-2.5 border border-error/50 bg-error/5 hover:border-error cursor-pointer transition-colors">
+<div class="flex items-start gap-2.5">
+<input checked="" class="w-4 h-4 mt-0.5 accent-error cursor-pointer rounded-xs" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-semibold text-error">Activate Divert Flap to South Concourse</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Pushes 35% of West Gate crowd to under-utilized South Ring</span>
+</div>
+</div>
+<span class="font-label-micro text-[10px] uppercase text-error font-bold shrink-0 ml-2">QUEUED</span>
+</label>
+<!-- Parameter adjust -->
+<div class="flex items-center justify-between p-1 font-mono-data text-[11px] text-on-surface-variant">
+<span>Automatic Surge Cutoff: <strong>90% Density</strong></span>
+<button class="underline text-primary hover:text-neutral-600 font-medium" type="button">Adjust Limit</button>
+</div>
+</div>
+<!-- Single-Click Primary Action -->
+<div class="pt-2">
+<button class="w-full h-12 bg-primary text-on-primary hover:bg-neutral-800 font-label-micro text-[12px] uppercase tracking-wider font-bold flex items-center justify-center gap-2 transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[19px]">cyclone</span>
+              EXECUTE CROWD BALANCING PROTOCOL
+            </button>
+<div class="text-center font-mono-data text-[10px] text-on-surface-variant mt-1.5">
+              Affects 18 turnstiles · 6 digital signboards · 2 concourse baffles
+            </div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Bottom Real-Time Crowd Telemetry & Event Timeline -->
+<section class="w-full bg-surface-bright border-t border-outline-variant px-space-md py-2 flex flex-col md:flex-row items-center justify-between gap-space-sm font-mono-data text-mono-data">
+<div class="flex items-center gap-space-sm overflow-x-auto w-full md:w-auto">
+<span class="font-label-micro text-label-micro uppercase text-primary font-bold tracking-wider shrink-0 flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-primary">history</span>
+          EVENT LOG:
+        </span>
+<div class="flex items-center gap-space-md text-on-surface-variant shrink-0 text-[11px]">
+<span class="text-on-surface"><strong class="text-error font-semibold">18:42</strong> West Gate turnstile 08 optical sensor flagged red (&gt;90%)</span>
+<span class="text-outline-variant">·</span>
+<span class="text-on-surface"><strong class="text-[#B87500] font-semibold">18:44</strong> P3 passenger queue delta +210 arrivals/min</span>
+<span class="text-outline-variant">·</span>
+<span class="text-on-surface"><strong class="text-error font-semibold">18:46</strong> Concourse B flow speed dropped to 0.4 m/s (choke warning)</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md text-on-surface-variant shrink-0 text-[11px]">
+<span class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>PEDESTRIAN SYNC: OK</span>
+<span>LATENCY: 14ms</span>
+<span>STADIA CROWD ENGINE v4.19</span>
+</div>
+</section>
+</main>
+<!-- Global Footer -->
+<footer class="w-full bg-[#FBFBFA] border-t border-[#EAEAE7] py-2">
+<div class="w-full px-space-md flex flex-col md:flex-row items-center justify-between gap-space-xs font-mono-data text-[11px] text-on-surface-variant">
+<div class="flex items-center gap-space-sm">
+<span class="text-primary font-bold">STADIA CROWD OPS</span>
+<span>· PEDESTRIAN VECTOR DYNAMICS WORKSTATION</span>
+<span>· ALL NODES SYNCHRONIZED</span>
+</div>
+<div class="flex items-center gap-space-md">
+<span>SENSORS: 412 ONLINE</span>
+<span>FRAME RATE: 60 FPS</span>
+<span>© 2026 STADIA PLATFORM</span>
+</div>
+</div>
+</footer>
+</body></html>

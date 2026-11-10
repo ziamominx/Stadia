@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><title>STADIA Operations — Event Control</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..700;1,300..700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-secondary-fixed":"#002113","tertiary":"#000000","surface-variant":"#e2e2e2","primary-fixed":"#e5e2e1","secondary-fixed":"#6ffbbe","inverse-primary":"#c8c6c5","surface-dim":"#dadad9","surface-bright":"#f9f9f8","on-surface":"#1a1c1c","on-secondary-fixed-variant":"#005236","on-error-container":"#93000a","inverse-surface":"#2f3130","surface-container-lowest":"#ffffff","outline-variant":"#c4c7c7","on-secondary-container":"#00714d","on-tertiary-container":"#b87500","inverse-on-surface":"#f1f1f0","background":"#f9f9f8","on-primary":"#ffffff","outline":"#747878","on-tertiary-fixed-variant":"#653e00","primary-fixed-dim":"#c8c6c5","tertiary-fixed-dim":"#ffb95f","primary":"#000000","on-error":"#ffffff","on-tertiary-fixed":"#2a1700","on-tertiary":"#ffffff","on-background":"#1a1c1c","tertiary-fixed":"#ffddb8","surface-container-highest":"#e2e2e2","surface-tint":"#5f5e5e","tertiary-container":"#2a1700","secondary-container":"#6cf8bb","primary-container":"#1c1b1b","surface-container-high":"#e8e8e7","on-surface-variant":"#444748","error":"#ba1a1a","error-container":"#ffdad6","surface":"#f9f9f8","on-secondary":"#ffffff","secondary":"#006c49","surface-container-low":"#f3f4f3","on-primary-container":"#858383","secondary-fixed-dim":"#4edea3","on-primary-fixed-variant":"#474646","on-primary-fixed":"#1c1b1b","surface-container":"#eeeeed"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"gutter":"1.5rem","space-lg":"1.5rem","space-md":"1rem","margin":"2rem","space-sm":"0.5rem","space-xs":"0.25rem","space-xl":"2.5rem"},"fontFamily":{"metric-stat":["Hanken Grotesk"],"mono-data":["JetBrains Mono"],"label-micro":["Hanken Grotesk"],"headline-sm":["Hanken Grotesk"],"headline-lg":["Hanken Grotesk"],"body-lg":["Hanken Grotesk"],"display-lg":["Hanken Grotesk"],"display-xl":["Hanken Grotesk"],"headline-lg-mobile":["Hanken Grotesk"],"body-sm":["Hanken Grotesk"]},"fontSize":{"metric-stat":["44px",{"lineHeight":"48px","letterSpacing":"-0.04em","fontWeight":"300"}],"mono-data":["12px",{"lineHeight":"16px","letterSpacing":"-0.01em","fontWeight":"400"}],"label-micro":["10px",{"lineHeight":"12px","letterSpacing":"0.08em","fontWeight":"600"}],"headline-sm":["18px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"500"}],"headline-lg":["28px",{"lineHeight":"34px","letterSpacing":"-0.02em","fontWeight":"500"}],"body-lg":["15px",{"lineHeight":"22px","letterSpacing":"-0.005em","fontWeight":"400"}],"display-lg":["40px",{"lineHeight":"44px","letterSpacing":"-0.03em","fontWeight":"400"}],"display-xl":["56px",{"lineHeight":"60px","letterSpacing":"-0.035em","fontWeight":"400"}],"headline-lg-mobile":["24px",{"lineHeight":"30px","letterSpacing":"-0.015em","fontWeight":"500"}],"body-sm":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}]}}}}</script></head><body class="bg-surface font-body-sm text-on-surface antialiased"><header class="fixed top-0 left-0 w-full z-50 bg-surface border-b border-surface-container-high"><div class="h-16 w-full px-gutter flex items-center justify-between"><div class="flex items-center gap-space-lg"><div class="flex items-center gap-space-sm"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-headline-sm text-headline-sm uppercase tracking-wider text-primary font-bold">STADIA</span></div><span class="h-4 w-px bg-surface-container-high"></span><div class="flex flex-col"><span class="font-label-micro text-label-micro uppercase text-on-surface-variant font-medium tracking-wide">India vs Australia — Mumbai Int. Stadium · LIVE OPERATIONS · 26 Sep 2026 · 19:30 IST</span></div></div><nav class="hidden xl:flex items-center gap-space-md h-16" data-active-classes="text-primary border-b-2 border-primary font-medium"><a class="h-full flex items-center px-space-xs font-label-micro text-label-micro uppercase text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="command-center" href="#">COMMAND CENTER</a><a class="h-full flex items-center px-space-xs font-label-micro text-label-micro uppercase text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="crowd" href="#">CROWD</a><a class="h-full flex items-center px-space-xs font-label-micro text-label-micro uppercase text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="ground" href="#">GROUND</a><a class="h-full flex items-center px-space-xs font-label-micro text-label-micro uppercase text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="transport" href="#">TRANSPORT</a><a class="h-full flex items-center px-space-xs font-label-micro text-label-micro uppercase text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="incidents" href="#">INCIDENTS</a><a aria-current="page" class="h-full flex items-center px-space-xs uppercase transition-colors text-primary border-b-2 border-primary font-medium" data-path="event-control" href="#">EVENT CONTROL</a><a class="h-full flex items-center px-space-xs font-label-micro text-label-micro uppercase text-on-surface-variant hover:text-on-surface transition-colors border-b-2 border-transparent" data-path="analytics" href="#">ANALYTICS</a></nav></div><div class="flex items-center gap-space-md"><div class="hidden lg:flex items-center gap-space-xs px-space-sm py-space-xs bg-surface-container-low border border-surface-container-high rounded"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span><span class="font-label-micro text-label-micro uppercase text-on-surface font-medium">LIVE CONFIGURATION READY · SYNCED</span></div><div class="hidden md:flex flex-col text-right"><span class="font-mono-data text-mono-data text-on-surface font-medium">UTC+5:30 20:14:08 IST</span></div><button class="px-space-sm py-space-xs bg-error-container border border-error text-error font-label-micro text-label-micro uppercase tracking-wider hover:bg-error hover:text-on-error transition-colors" type="button">[PA BROADCAST]</button><div class="flex items-center gap-space-sm pl-space-sm border-l border-surface-container-high"><div class="flex flex-col text-right"><span class="font-body-sm text-body-sm text-on-surface font-medium leading-none">E. Vance</span><span class="font-label-micro text-label-micro text-on-surface-variant uppercase tracking-wider leading-none mt-1">EXECUTIVE DIR &amp; INCIDENT COMMANDER</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></div></header><main class="w-full pt-16 pb-8 bg-surface"><div class="flex flex-col w-full">
+<!-- TOAST NOTIFICATION CONTAINER (FOR JS ACTIONS) -->
+<div class="fixed top-20 right-6 z-50 transform translate-x-full transition-transform duration-300 ease-out flex items-center gap-space-sm bg-primary text-surface px-space-md py-space-sm shadow-xl border-l-2 border-secondary" id="toastNotification">
+<span class="material-symbols-outlined text-secondary text-[18px]">verified</span>
+<div class="flex flex-col">
+<span class="font-label-micro text-label-micro uppercase tracking-widest text-primary-fixed">TELEMETRY SYNC</span>
+<span class="font-mono-data text-mono-data text-surface" id="toastMessage">Operational parameters verified and broadcast to 124 mesh nodes.</span>
+</div>
+</div>
+<!-- STADIA EVENT CONTROL MASTHEAD -->
+<header class="w-full bg-surface-container-lowest border-b border-surface-container-high px-gutter py-space-lg flex flex-col gap-space-md">
+<div class="flex flex-col xl:flex-row xl:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="px-space-xs py-0.5 bg-surface-container-high text-on-surface font-mono-data text-[10px] tracking-wider uppercase font-semibold">SYS.CONFIG // 06-CTL</span>
+<span class="inline-flex items-center gap-1.5 font-label-micro text-label-micro uppercase text-secondary font-semibold">
+<span class="w-2 h-2 rounded-full bg-secondary animate-ping"></span>
+            LIVE RUNTIME CONFIGURATION SYNCED
+          </span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight font-light uppercase">Event Control</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-3xl">
+          Matchday Master Parameters · Venue Boundary Topology · Dynamic Optical Thresholds · Fleet &amp; Ground Force Quotas
+        </p>
+</div>
+<!-- Action Cluster -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<button class="h-9 px-space-md bg-surface border border-surface-container-high hover:border-primary text-primary font-label-micro text-label-micro uppercase tracking-wider transition-colors flex items-center gap-space-xs" id="exportSchemaBtn" type="button">
+<span class="material-symbols-outlined text-[16px]">file_download</span>
+          [ EXPORT SCHEMA ]
+        </button>
+<button class="h-9 px-space-lg bg-primary hover:bg-surface-tint text-surface font-label-micro text-label-micro uppercase tracking-wider transition-all flex items-center gap-space-xs shadow-sm" id="commitParamsBtn" type="button">
+<span class="material-symbols-outlined text-[16px] text-secondary">sync_saved_locally</span>
+          [ + COMMIT &amp; BROADCAST PARAMETERS ]
+        </button>
+</div>
+</div>
+<!-- GLOBAL TELEMETRY / RUNTIME METRIC STRIP -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-0 border-t border-surface-container-high pt-space-md">
+<div class="flex flex-col pr-space-md py-space-xs border-r border-surface-container-high">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant">EVENT RUNTIME</span>
+<div class="flex items-baseline gap-2 mt-1">
+<span class="font-headline-sm text-headline-sm text-primary font-medium">Q3 IN PROGRESS</span>
+</div>
+<span class="font-mono-data text-[11px] text-secondary mt-0.5">Matchday Live · T+02:44:19</span>
+</div>
+<div class="flex flex-col px-space-md py-space-xs border-r border-surface-container-high">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant">EXPECTED / PEAK ATTENDANCE</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-sm text-headline-sm text-primary font-medium">48,500</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">/ 54,200 PAX</span>
+</div>
+<span class="font-mono-data text-[11px] text-on-surface-variant mt-0.5">89.4% Total Enclosure Cap</span>
+</div>
+<div class="flex flex-col px-space-md py-space-xs border-r border-surface-container-high">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant">ACTIVE SECTORS &amp; ZONES</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-sm text-headline-sm text-primary font-medium">18</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">CONFIGURED</span>
+</div>
+<span class="font-mono-data text-[11px] text-secondary mt-0.5">14 Emergency Outlets Armed</span>
+</div>
+<div class="flex flex-col px-space-md py-space-xs border-r border-surface-container-high">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant">DEPLOYED GROUND QUOTA</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-sm text-headline-sm text-primary font-medium" id="globalStaffAllocated">340</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">/ 355 FORCE</span>
+</div>
+<span class="font-mono-data text-[11px] text-on-surface-variant mt-0.5">95.7% On-Station Ingress/Perimeter</span>
+</div>
+<div class="flex flex-col pl-space-md py-space-xs">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface-variant">TRANSIT FLEET POOL</span>
+<div class="flex items-baseline gap-1 mt-1">
+<span class="font-headline-sm text-headline-sm text-primary font-medium">95</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">ASSETS LINKED</span>
+</div>
+<span class="font-mono-data text-[11px] text-secondary mt-0.5">3.5m Target Arterial Headway</span>
+</div>
+</div>
+</header>
+<!-- SECONDARY TAB NAVIGATION -->
+<nav class="w-full bg-surface-container-low border-b border-surface-container-high px-gutter flex items-center justify-between overflow-x-auto">
+<div class="flex items-center h-11 gap-space-lg text-label-micro uppercase tracking-wider">
+<button class="tab-btn h-full border-b-2 border-primary font-semibold text-primary transition-all flex items-center gap-1.5" data-target="panel-overview" type="button">
+<span>EVENT PARAMETERS &amp; MATRIX</span>
+</button>
+<button class="tab-btn h-full border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all flex items-center gap-1.5" data-target="panel-topology" type="button">
+<span>VENUE &amp; TOPOLOGY</span>
+</button>
+<button class="tab-btn h-full border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all flex items-center gap-1.5" data-target="panel-thresholds" type="button">
+<span>CROWD RULES &amp; THRESHOLDS</span>
+</button>
+<button class="tab-btn h-full border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all flex items-center gap-1.5" data-target="panel-resources" type="button">
+<span>GROUND RESOURCES</span>
+</button>
+<button class="tab-btn h-full border-b-2 border-transparent text-on-surface-variant hover:text-primary transition-all flex items-center gap-1.5" data-target="panel-fleet" type="button">
+<span>TRANSPORT FLEET</span>
+</button>
+<button class="tab-btn h-full border-b-2 border-transparent text-error hover:text-on-error-container transition-all flex items-center gap-1.5" data-target="panel-emergency" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-error animate-ping"></span>
+<span>EMERGENCY PROTOCOLS</span>
+</button>
+</div>
+<div class="hidden lg:flex items-center gap-2 font-mono-data text-[11px] text-on-surface-variant">
+<span>TOPOLOGY INTEGRITY: VALID</span>
+<span class="text-surface-container-high">|</span>
+<span>NODE COMM: 12ms</span>
+</div>
+</nav>
+<!-- MASTER WORKSPACE CONTENT -->
+<div class="w-full px-gutter py-space-lg flex flex-col gap-space-xl">
+<!-- CRITICAL SYSTEM ALERT / SYNC NOTICE -->
+<div class="w-full bg-surface-container-lowest border-l-4 border-primary border-y border-r border-surface-container-high p-space-md flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-8 h-8 bg-surface-container flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-primary font-bold">OPERATIONAL DISCLOSURE &amp; LIVE BROADCAST ADVISORY</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Recalibrating crowd density coefficients and gate capacity thresholds directly re-weights optical AI bounding boxes, gate queue algorithms, and automatic security unit dispatching across all connected Command Center terminals.
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<span class="font-mono-data text-[11px] text-on-surface-variant">AUTOMATIC ROLLOUT: <strong class="text-secondary font-semibold">ENABLED</strong></span>
+</div>
+</div>
+<!-- SECTION 1: EVENT IDENTITY & ENVELOPE SPECIFICATION -->
+<section class="w-full bg-surface-container-lowest border border-surface-container-high">
+<div class="px-space-md py-space-sm bg-surface-container-low border-b border-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-primary font-semibold">SECTION 01 // EVENT IDENTITY &amp; STADIUM ENVELOPE</span>
+</div>
+<span class="font-mono-data text-[11px] text-on-surface-variant">REF: WCP-2026-M04-BOM</span>
+</div>
+<div class="p-space-lg grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-center">
+<!-- Main Event Metadata -->
+<div class="lg:col-span-7 flex flex-col gap-space-md">
+<div class="flex flex-col gap-1">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">MATCHDAY FIXTURE TITLE</span>
+<div class="flex items-center gap-space-sm">
+<input class="w-full bg-surface-container-low border border-surface-container-high px-space-sm py-1.5 font-headline-sm text-headline-sm text-primary font-medium focus:bg-surface-container-lowest focus:border-primary outline-none transition-colors" id="eventNameInput" type="text" value="ICC Men's Cricket World Cup - India vs Australia"/>
+<button class="px-space-xs py-1 border border-surface-container-high hover:border-primary text-primary font-label-micro text-label-micro uppercase tracking-wider" onclick="document.getElementById('eventNameInput').focus()" type="button">EDIT</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-xs">
+<div class="flex flex-col gap-1">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">SCHEDULED TIMEFRAME</span>
+<div class="border border-surface-container-high px-space-sm py-2 bg-surface-container-low font-mono-data text-mono-data text-primary">
+                26 Sep 2026 // 19:30 - 23:45 IST
+              </div>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">VENUE / OPERATIONAL ANCHOR</span>
+<div class="border border-surface-container-high px-space-sm py-2 bg-surface-container-low font-body-sm text-body-sm text-primary flex items-center justify-between">
+<span>Mumbai Int. Stadium (Sec 01-12)</span>
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Envelope Gauges & Limits -->
+<div class="lg:col-span-5 bg-surface-container-low border border-surface-container-high p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface font-semibold">ATTENDANCE ENVELOPE DYNAMICS</span>
+<span class="font-mono-data text-[11px] text-secondary font-medium">89.4% UTILIZATION</span>
+</div>
+<!-- Capacity Bar Meter -->
+<div class="w-full flex flex-col gap-1 pt-1">
+<div class="w-full h-3 bg-surface-container border border-surface-container-high relative overflow-hidden">
+<div class="h-full bg-primary" style="width: 89.4%;"></div>
+<!-- Concourse threshold line -->
+<div class="absolute top-0 bottom-0 w-0.5 bg-error z-10" style="left: 95%;"></div>
+</div>
+<div class="flex justify-between font-mono-data text-[10px] text-on-surface-variant">
+<span>0 PAX</span>
+<span>LIVE: 48,500 PAX</span>
+<span class="text-error font-medium">MAX SAFE: 54,200</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-sm pt-space-xs border-t border-surface-container-high">
+<div>
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">MAX STADIUM ENVELOPE</span>
+<p class="font-mono-data text-body-sm font-medium text-primary mt-0.5">54,200 PAX</p>
+</div>
+<div>
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">CONCOURSE HOLDING CAP</span>
+<p class="font-mono-data text-body-sm font-medium text-primary mt-0.5">12,500 PAX</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2-COLUMN MAIN WORKBENCH: TOPOLOGY MATRIX (LEFT) + CROWD RULES & THRESHOLDS (RIGHT) -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT: SECTION 2 - VENUE TOPOLOGY & ZONE MAPPING -->
+<section class="xl:col-span-7 flex flex-col bg-surface-container-lowest border border-surface-container-high">
+<div class="px-space-md py-space-sm bg-surface-container-low border-b border-surface-container-high flex flex-wrap items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-primary font-semibold">SECTION 02 // VENUE TOPOLOGY &amp; ZONE MAPPING</span>
+</div>
+<span class="font-mono-data text-[11px] text-on-surface-variant">6 SECTOR MATRICES LINKED</span>
+</div>
+<!-- ZONE TOPOLOGY TABLE -->
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-container-high bg-surface-container font-label-micro text-label-micro uppercase text-on-surface-variant">
+<th class="py-2.5 px-space-md font-medium">ZONE IDENTIFIER / BANK</th>
+<th class="py-2.5 px-space-sm font-medium">TOPOLOGY CLASS</th>
+<th class="py-2.5 px-space-sm font-medium text-right">DESIGN CAP</th>
+<th class="py-2.5 px-space-md font-medium text-right">METRIC / STATUS</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-high font-body-sm text-body-sm">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-medium text-primary">West Gate Turnstiles</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Turnstiles 01-24 · Pod W-A</span>
+</div>
+</td>
+<td class="py-3 px-space-sm">
+<span class="inline-block px-1.5 py-0.5 border border-surface-container-high font-label-micro text-label-micro uppercase text-on-surface bg-surface-container-lowest">Ingress / Turnstile Bank</span>
+</td>
+<td class="py-3 px-space-sm text-right font-mono-data">380 pax/min</td>
+<td class="py-3 px-space-md text-right">
+<span class="inline-flex items-center gap-1 px-1.5 py-0.5 border border-tertiary-fixed-dim text-on-tertiary-container font-label-micro text-label-micro font-semibold uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed-dim"></span>
+                    ACTIVE SURGE
+                  </span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-medium text-primary">North VIP Concourse</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Level 2 Corridor &amp; Suites</span>
+</div>
+</td>
+<td class="py-3 px-space-sm">
+<span class="inline-block px-1.5 py-0.5 border border-surface-container-high font-label-micro text-label-micro uppercase text-on-surface bg-surface-container-lowest">VIP / Secure Corridor</span>
+</td>
+<td class="py-3 px-space-sm text-right font-mono-data">1,200 pax</td>
+<td class="py-3 px-space-md text-right">
+<span class="font-label-micro text-label-micro uppercase font-medium text-on-surface-variant">LEVEL 3 RESTRICTED</span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-medium text-primary">Transit Hub P3 Staging Apron</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Arterial Shuttle Bay S1-S6</span>
+</div>
+</td>
+<td class="py-3 px-space-sm">
+<span class="inline-block px-1.5 py-0.5 border border-surface-container-high font-label-micro text-label-micro uppercase text-on-surface bg-surface-container-lowest">Arterial Transport Hub</span>
+</td>
+<td class="py-3 px-space-sm text-right font-mono-data">1,500 pax</td>
+<td class="py-3 px-space-md text-right">
+<span class="font-mono-data text-[11px] text-primary">Feeder: West Gate</span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-medium text-primary">Transit Hub P4 Relief Plaza</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Outer Staging &amp; Volunteer Point</span>
+</div>
+</td>
+<td class="py-3 px-space-sm">
+<span class="inline-block px-1.5 py-0.5 border border-surface-container-high font-label-micro text-label-micro uppercase text-on-surface bg-surface-container-lowest">Arterial Transport Hub</span>
+</td>
+<td class="py-3 px-space-sm text-right font-mono-data">2,000 pax</td>
+<td class="py-3 px-space-md text-right">
+<span class="font-mono-data text-[11px] text-secondary font-medium">Headroom: 450 pax</span>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-medium text-primary">East Turnstile Gate</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Turnstiles 25-40 · Stand B</span>
+</div>
+</td>
+<td class="py-3 px-space-sm">
+<span class="inline-block px-1.5 py-0.5 border border-surface-container-high font-label-micro text-label-micro uppercase text-on-surface bg-surface-container-lowest">Standard Ingress</span>
+</td>
+<td class="py-3 px-space-sm text-right font-mono-data">250 pax/min</td>
+<td class="py-3 px-space-md text-right">
+<span class="inline-flex items-center gap-1 font-label-micro text-label-micro text-secondary font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                    FLOW BALANCED
+                  </span>
+</td>
+</tr>
+<!-- Row 6 -->
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-space-md">
+<div class="flex flex-col">
+<span class="font-medium text-primary">South Concourse &amp; Plaza</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Open Promenade / F&amp;B Node</span>
+</div>
+</td>
+<td class="py-3 px-space-sm">
+<span class="inline-block px-1.5 py-0.5 border border-surface-container-high font-label-micro text-label-micro uppercase text-on-surface bg-surface-container-lowest">Dispersal / Retail</span>
+</td>
+<td class="py-3 px-space-sm text-right font-mono-data">6,000 pax</td>
+<td class="py-3 px-space-md text-right">
+<span class="font-mono-data text-[11px] text-primary">4,210 Live Pax</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Topology Toolbar Actions -->
+<div class="p-space-md bg-surface-container-low border-t border-surface-container-high flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex flex-wrap items-center gap-space-xs">
+<button class="px-space-sm py-1.5 bg-surface-container-lowest border border-surface-container-high hover:border-primary text-primary font-label-micro text-label-micro uppercase tracking-wider transition-colors" type="button">
+              + ADD NEW ZONE
+            </button>
+<button class="px-space-sm py-1.5 bg-surface-container-lowest border border-surface-container-high hover:border-primary text-primary font-label-micro text-label-micro uppercase tracking-wider transition-colors" type="button">
+              CONFIGURE GATES &amp; PERIMETERS
+            </button>
+</div>
+<button class="px-space-sm py-1.5 border border-secondary text-secondary hover:bg-secondary hover:text-on-secondary font-label-micro text-label-micro uppercase tracking-wider transition-colors flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+            EMERGENCY EXITS TOPOLOGY (14 ARMED)
+          </button>
+</div>
+</section>
+<!-- RIGHT: SECTION 3 - LIVE CROWD RULES & ALERT THRESHOLDS -->
+<section class="xl:col-span-5 flex flex-col bg-surface-container-lowest border border-surface-container-high">
+<div class="px-space-md py-space-sm bg-surface-container-low border-b border-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-primary font-semibold">SECTION 03 // LIVE CROWD RULES &amp; THRESHOLDS</span>
+</div>
+<span class="font-mono-data text-[11px] text-secondary">ALGO COEFF: 1.04</span>
+</div>
+<div class="p-space-md flex flex-col gap-space-md">
+<!-- Rule Card 1 -->
+<div class="border border-surface-container-high p-space-sm bg-surface-container-lowest flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm font-medium text-primary">Rule 01: Gate A / West Turnstiles</span>
+<span class="px-1.5 py-0.5 bg-surface-container border border-surface-container-high font-mono-data text-[10px] text-on-surface">AUTOSCALE ARMED</span>
+</div>
+<div class="grid grid-cols-2 gap-space-md pt-1">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-micro text-label-micro uppercase text-on-surface-variant">
+<span>Warning (Amber)</span>
+<span class="font-mono-data text-tertiary font-bold" id="valRule1Warn">75%</span>
+</div>
+<input class="w-full accent-primary h-1 bg-surface-container-high cursor-pointer" max="95" min="50" oninput="document.getElementById('valRule1Warn').innerText = this.value + '%'" type="range" value="75"/>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-micro text-label-micro uppercase text-on-surface-variant">
+<span>Critical (Red)</span>
+<span class="font-mono-data text-error font-bold" id="valRule1Crit">90%</span>
+</div>
+<input class="w-full accent-error h-1 bg-surface-container-high cursor-pointer" max="99" min="60" oninput="document.getElementById('valRule1Crit').innerText = this.value + '%'" type="range" value="90"/>
+</div>
+</div>
+<div class="mt-1 pt-1.5 border-t border-surface-container-high flex items-center justify-between text-on-surface-variant font-mono-data text-[11px]">
+<span>Mitigation Trigger:</span>
+<span class="text-primary font-medium">Open Turnstiles 19-24 at 88%</span>
+</div>
+</div>
+<!-- Rule Card 2 -->
+<div class="border border-surface-container-high p-space-sm bg-surface-container-lowest flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm font-medium text-primary">Rule 02: Gate B / East Concourse</span>
+<span class="px-1.5 py-0.5 bg-surface-container border border-surface-container-high font-mono-data text-[10px] text-on-surface">OPTICAL RADAR</span>
+</div>
+<div class="grid grid-cols-2 gap-space-md pt-1">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-micro text-label-micro uppercase text-on-surface-variant">
+<span>Warning</span>
+<span class="font-mono-data text-tertiary font-bold" id="valRule2Warn">75%</span>
+</div>
+<input class="w-full accent-primary h-1 bg-surface-container-high cursor-pointer" max="95" min="50" oninput="document.getElementById('valRule2Warn').innerText = this.value + '%'" type="range" value="75"/>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-micro text-label-micro uppercase text-on-surface-variant">
+<span>Critical</span>
+<span class="font-mono-data text-error font-bold" id="valRule2Crit">90%</span>
+</div>
+<input class="w-full accent-error h-1 bg-surface-container-high cursor-pointer" max="99" min="60" oninput="document.getElementById('valRule2Crit').innerText = this.value + '%'" type="range" value="90"/>
+</div>
+</div>
+<div class="mt-1 pt-1.5 border-t border-surface-container-high flex items-center justify-between text-on-surface-variant font-mono-data text-[11px]">
+<span>Mitigation Trigger:</span>
+<span class="text-primary font-medium">Route overflow to Promenade C</span>
+</div>
+</div>
+<!-- Rule Card 3 -->
+<div class="border border-surface-container-high p-space-sm bg-surface-container-lowest flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm font-medium text-primary">Rule 03: North VIP Concourse Corridor</span>
+<span class="px-1.5 py-0.5 bg-surface-container border border-surface-container-high font-mono-data text-[10px] text-error">HIGH SENSITIVITY</span>
+</div>
+<div class="grid grid-cols-2 gap-space-md pt-1">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-micro text-label-micro uppercase text-on-surface-variant">
+<span>Warning</span>
+<span class="font-mono-data text-tertiary font-bold" id="valRule3Warn">70%</span>
+</div>
+<input class="w-full accent-primary h-1 bg-surface-container-high cursor-pointer" max="95" min="50" oninput="document.getElementById('valRule3Warn').innerText = this.value + '%'" type="range" value="70"/>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-micro text-label-micro uppercase text-on-surface-variant">
+<span>Critical</span>
+<span class="font-mono-data text-error font-bold" id="valRule3Crit">85%</span>
+</div>
+<input class="w-full accent-error h-1 bg-surface-container-high cursor-pointer" max="99" min="60" oninput="document.getElementById('valRule3Crit').innerText = this.value + '%'" type="range" value="85"/>
+</div>
+</div>
+<div class="mt-1 pt-1.5 border-t border-surface-container-high flex items-center justify-between text-on-surface-variant font-mono-data text-[11px]">
+<span>Mitigation Trigger:</span>
+<span class="text-primary font-medium">Lock Secondary Turnstiles at 85%</span>
+</div>
+</div>
+<!-- Rule Card 4 -->
+<div class="border border-surface-container-high p-space-sm bg-surface-container-lowest flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm font-medium text-primary">Rule 04: Transit Hub P3 Staging Buffer</span>
+<span class="px-1.5 py-0.5 bg-surface-container border border-surface-container-high font-mono-data text-[10px] text-on-surface">ARTERIAL</span>
+</div>
+<div class="grid grid-cols-2 gap-space-md pt-1">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-micro text-label-micro uppercase text-on-surface-variant">
+<span>Warning</span>
+<span class="font-mono-data text-tertiary font-bold" id="valRule4Warn">70%</span>
+</div>
+<input class="w-full accent-primary h-1 bg-surface-container-high cursor-pointer" max="95" min="50" oninput="document.getElementById('valRule4Warn').innerText = this.value + '%'" type="range" value="70"/>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-label-micro text-label-micro uppercase text-on-surface-variant">
+<span>Critical</span>
+<span class="font-mono-data text-error font-bold" id="valRule4Crit">85%</span>
+</div>
+<input class="w-full accent-error h-1 bg-surface-container-high cursor-pointer" max="99" min="60" oninput="document.getElementById('valRule4Crit').innerText = this.value + '%'" type="range" value="85"/>
+</div>
+</div>
+<div class="mt-1 pt-1.5 border-t border-surface-container-high flex items-center justify-between text-on-surface-variant font-mono-data text-[11px]">
+<span>Mitigation Trigger:</span>
+<span class="text-primary font-medium">Dispatch 4 Reserve Transit Shuttles</span>
+</div>
+</div>
+<!-- Threshold Action Bar -->
+<div class="pt-space-xs flex items-center justify-between">
+<button class="w-full py-2 bg-primary hover:bg-surface-tint text-surface font-label-micro text-label-micro uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5" id="updateThresholdsBtn" type="button">
+<span class="material-symbols-outlined text-[15px]">tune</span>
+              [ UPDATE THRESHOLD RULE MATRIX ]
+            </button>
+</div>
+</div>
+</section>
+</div>
+<!-- 2-COLUMN BOTTOM DECK: GROUND RESOURCES ALLOCATION + TRANSPORT FLEET POOL -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-space-lg items-start">
+<!-- SECTION 4: GROUND RESOURCES ALLOCATION -->
+<section class="bg-surface-container-lowest border border-surface-container-high flex flex-col">
+<div class="px-space-md py-space-sm bg-surface-container-low border-b border-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-primary font-semibold">SECTION 04 // GROUND RESOURCES ALLOCATION</span>
+</div>
+<span class="font-mono-data text-[11px] text-on-surface-variant">FORCE TARGET: 355 QUOTA</span>
+</div>
+<div class="p-space-md flex flex-col gap-space-md">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Tactical assignment of on-ground personnel across stadium security pods, civil protection, and medical stations.
+          </p>
+<div class="space-y-space-sm">
+<!-- Row 1: Security -->
+<div class="flex items-center justify-between p-space-sm border border-surface-container-high bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-primary">Private Security Guards</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Deployed: 84 | Staged Standby: 16</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">QUOTA</span>
+<input class="resource-input w-20 bg-surface-container-lowest border border-surface-container-high px-2 py-1 font-mono-data text-mono-data text-right font-medium text-primary focus:border-primary outline-none" max="200" min="50" type="number" value="100"/>
+</div>
+</div>
+<!-- Row 2: Law Enforcement -->
+<div class="flex items-center justify-between p-space-sm border border-surface-container-high bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-primary">Law Enforcement / State Police</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Deployed: 32 | Staged Standby: 8</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">QUOTA</span>
+<input class="resource-input w-20 bg-surface-container-lowest border border-surface-container-high px-2 py-1 font-mono-data text-mono-data text-right font-medium text-primary focus:border-primary outline-none" max="100" min="20" type="number" value="40"/>
+</div>
+</div>
+<!-- Row 3: Venue Staff -->
+<div class="flex items-center justify-between p-space-sm border border-surface-container-high bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-primary">Operational Venue Staff &amp; Turnstile Techs</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Deployed: 46 | Maintenance: 4</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">QUOTA</span>
+<input class="resource-input w-20 bg-surface-container-lowest border border-surface-container-high px-2 py-1 font-mono-data text-mono-data text-right font-medium text-primary focus:border-primary outline-none" max="80" min="20" type="number" value="50"/>
+</div>
+</div>
+<!-- Row 4: Volunteer Marshals -->
+<div class="flex items-center justify-between p-space-sm border border-surface-container-high bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-primary">Volunteer Crowd Marshals</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Deployed: 126 | Staged P4: 24</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">QUOTA</span>
+<input class="resource-input w-20 bg-surface-container-lowest border border-surface-container-high px-2 py-1 font-mono-data text-mono-data text-right font-medium text-primary focus:border-primary outline-none" max="250" min="80" type="number" value="150"/>
+</div>
+</div>
+<!-- Row 5: Medical -->
+<div class="flex items-center justify-between p-space-sm border border-surface-container-high bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-primary">Rapid Medical Response Teams</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Active Mobile: 4 | Aid Station: 11</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">QUOTA</span>
+<input class="resource-input w-20 bg-surface-container-lowest border border-surface-container-high px-2 py-1 font-mono-data text-mono-data text-right font-medium text-primary focus:border-primary outline-none" max="40" min="5" type="number" value="15"/>
+</div>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container border border-surface-container-high flex items-center justify-between">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface font-semibold">TOTAL ALLOCATED FORCE</span>
+<span class="font-mono-data text-body-sm text-primary font-semibold">355 UNITS QUOTA // 302 ACTIVE ON MESH</span>
+</div>
+</div>
+</section>
+<!-- SECTION 5: TRANSPORT & MOBILITY FLEET POOL -->
+<section class="bg-surface-container-lowest border border-surface-container-high flex flex-col">
+<div class="px-space-md py-space-sm bg-surface-container-low border-b border-surface-container-high flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-primary font-semibold">SECTION 05 // TRANSPORT &amp; MOBILITY FLEET POOL</span>
+</div>
+<span class="font-mono-data text-[11px] text-on-surface-variant">95 ASSETS LINKED</span>
+</div>
+<div class="p-space-md flex flex-col gap-space-md">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Fleet circulation parameters governing public egress loops, dedicated feeder corridors, and emergency fleet reserves.
+          </p>
+<div class="space-y-space-sm">
+<!-- Asset 1: Articulated Buses -->
+<div class="flex items-center justify-between p-space-sm border border-surface-container-high bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-primary">Articulated Matchday Buses (120 Pax)</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Active Loop: 18 | Standby Depot: 7</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">UNITS</span>
+<input class="w-20 bg-surface-container-lowest border border-surface-container-high px-2 py-1 font-mono-data text-mono-data text-right font-medium text-primary focus:border-primary outline-none" max="50" min="10" type="number" value="25"/>
+</div>
+</div>
+<!-- Asset 2: Contracted Fleet Cabs -->
+<div class="flex items-center justify-between p-space-sm border border-surface-container-high bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-primary">Contracted Shuttle Cabs (4-6 Seater)</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Active Pickups: 32 | Staged Queue: 18</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">UNITS</span>
+<input class="w-20 bg-surface-container-lowest border border-surface-container-high px-2 py-1 font-mono-data text-mono-data text-right font-medium text-primary focus:border-primary outline-none" max="100" min="20" type="number" value="50"/>
+</div>
+</div>
+<!-- Asset 3: Metro Feeder Taxis -->
+<div class="flex items-center justify-between p-space-sm border border-surface-container-high bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-primary">Metro Line 3 Feeder Taxis</span>
+<span class="font-mono-data text-[11px] text-on-surface-variant">Active: 14 | South Rank: 6</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">UNITS</span>
+<input class="w-20 bg-surface-container-lowest border border-surface-container-high px-2 py-1 font-mono-data text-mono-data text-right font-medium text-primary focus:border-primary outline-none" max="40" min="5" type="number" value="20"/>
+</div>
+</div>
+<!-- Pacing Control -->
+<div class="p-space-sm border border-surface-container-high bg-surface-container-lowest flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="font-label-micro text-label-micro uppercase text-on-surface-variant">INBOUND SHUTTLE HEADWAY PACING</span>
+<span class="font-mono-data text-body-sm font-semibold text-primary" id="headwayVal">3.5 min / coach</span>
+</div>
+<input class="w-full accent-primary h-1 bg-surface-container-high cursor-pointer" max="8.0" min="1.5" oninput="document.getElementById('headwayVal').innerText = this.value + ' min / coach'" step="0.5" type="range" value="3.5"/>
+<div class="flex justify-between font-mono-data text-[10px] text-on-surface-variant">
+<span>1.5m (Aggressive)</span>
+<span>8.0m (Conserving)</span>
+</div>
+</div>
+</div>
+<div class="p-space-sm bg-surface-container border border-surface-container-high flex items-center justify-between">
+<span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface font-semibold">TOTAL MOBILITY CAP</span>
+<span class="font-mono-data text-body-sm text-primary font-semibold">4,800 PASSENGERS / HOUR</span>
+</div>
+</div>
+</section>
+</div>
+<!-- SECTION 6: EMERGENCY PROTOCOLS & OVERRIDE MATRIX (HIGH-GRAVITY EXECUTIVE SECTION) -->
+<section class="w-full bg-surface-container-lowest border-2 border-error p-space-lg flex flex-col gap-space-md relative overflow-hidden">
+<!-- Top hatched pattern bar -->
+<div class="absolute top-0 left-0 right-0 h-1.5 bg-error"></div>
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-error text-[24px]">crisis_alert</span>
+<div class="flex flex-col">
+<h2 class="font-headline-sm text-headline-sm text-error font-bold uppercase tracking-tight">SECTION 06 // EMERGENCY PROTOCOLS &amp; FAILSAFE OVERRIDE</h2>
+<span class="font-mono-data text-[11px] text-on-surface-variant">PROTOCOL LOCKOUT ACTIVE · DUAL CRYPTOGRAPHIC AUTHORIZATION REQUIRED</span>
+</div>
+</div>
+<span class="px-space-sm py-1 border border-error text-error font-mono-data text-[11px] uppercase tracking-wider font-semibold">
+          STATUS: NOMINAL READINESS · LOCKOUT ACTIVE
+        </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface max-w-4xl">
+        Activating stadium-wide evacuation protocol irreversibly transitions turnstiles to freewheel egress, supersedes local audio mixers, transmits immediate automated high-priority panic packets to the Mumbai Municipal Fire &amp; Police Dispatch Centers, and flashes mandatory exit pathways across all interior jumbotrons.
+      </p>
+<!-- Failsafe Checklist Matrix -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-sm bg-error-container/20 p-space-md border border-error/30">
+<label class="flex items-start gap-space-sm cursor-pointer">
+<input checked="" class="mt-0.5 w-4 h-4 accent-error cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Auto-unlock all 14 perimeter magnetic emergency turnstiles &amp; blast gates</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">Relays wired to failsafe NC loop (0.12s response)</span>
+</div>
+</label>
+<label class="flex items-start gap-space-sm cursor-pointer">
+<input checked="" class="mt-0.5 w-4 h-4 accent-error cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Override all 6 digital stadium jumbotrons with exit routing maps</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">Direct NDI HDMI matrix bypass controller</span>
+</div>
+</label>
+<label class="flex items-start gap-space-sm cursor-pointer">
+<input checked="" class="mt-0.5 w-4 h-4 accent-error cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Push emergency audio evacuation tone &amp; broadcast over STADIA PA system</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">Dante Network Master priority interrupt</span>
+</div>
+</label>
+<label class="flex items-start gap-space-sm cursor-pointer">
+<input checked="" class="mt-0.5 w-4 h-4 accent-error cursor-pointer" type="checkbox"/>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Dispatch high-priority panic telemetry to Mumbai Police HQ &amp; Fire Command</span>
+<span class="font-mono-data text-[10px] text-on-surface-variant">Encrypted satellite link + cellular multi-WAN push</span>
+</div>
+</label>
+</div>
+<!-- Emergency Activation Master Bar -->
+<div class="flex flex-col md:flex-row items-center justify-between gap-space-md pt-space-xs">
+<div class="flex items-center gap-space-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">key</span>
+<span class="font-mono-data text-[11px]">Requires Executive Commander cryptographic token: <strong>E. Vance [ID: EV-8891]</strong></span>
+</div>
+<button class="w-full md:w-auto px-space-lg py-3 bg-error hover:bg-on-error-container text-on-error font-label-micro text-label-micro uppercase tracking-widest font-bold transition-all shadow-md flex items-center justify-center gap-space-xs border border-on-error" id="emergencyTriggerBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+          [ ⚠️ ACTIVATE EMERGENCY STADIUM EVACUATION MODE ]
+        </button>
+</div>
+</section>
+<!-- IMMUTABLE AUDIT FOOTER STRIP -->
+<div class="w-full py-space-md border-t border-surface-container-high flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm text-on-surface-variant font-mono-data text-[11px]">
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-1">
+<span>STADIA CONFIGURATION ENGINE v4.19</span>
+<span class="text-surface-container-high">|</span>
+<span>MESH SYNC: 100% (124 NODES ONLINE)</span>
+<span class="text-surface-container-high">|</span>
+<span>AUDIT HASH: 8f9a-c12e-44bc-0091</span>
+<span class="text-surface-container-high">|</span>
+<span>GPS LOCK: 18.9389° N, 72.8258° E</span>
+</div>
+<div>
+<span>LAST COMMIT: 19:15:02 IST BY E. VANCE</span>
+</div>
+</div>
+</div>
+<!-- EMERGENCY MODAL CONFIRMATION DIALOG -->
+<div class="fixed inset-0 z-50 bg-primary/70 backdrop-blur-sm hidden flex items-center justify-center p-space-md" id="emergencyModal">
+<div class="bg-surface-container-lowest border-2 border-error w-full max-w-xl p-space-lg flex flex-col gap-space-md shadow-2xl">
+<div class="flex items-center gap-space-sm border-b border-error pb-space-sm">
+<span class="material-symbols-outlined text-error text-[32px]">warning</span>
+<div class="flex flex-col">
+<h3 class="font-headline-sm text-headline-sm text-error font-bold uppercase tracking-tight">CRITICAL SAFETY INTERLOCK: CONFIRM EVACUATION</h3>
+<span class="font-mono-data text-[11px] text-on-surface-variant">LEVEL-1 MASTER VENUE EVACUATION OVERRIDE</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface">
+        You are about to issue a stadium-wide evacuation order for <strong>48,500 attendees</strong>. This action is registered to Commander E. Vance and cannot be silently cancelled.
+      </p>
+<div class="bg-surface-container-low p-space-md border border-surface-container-high flex flex-col gap-space-xs font-mono-data text-[12px]">
+<div class="flex justify-between">
+<span class="text-on-surface-variant">SIGNING OFFICER:</span>
+<span class="text-primary font-semibold">E. Vance (Executive Dir &amp; Incident Commander)</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">TIMESTAMP:</span>
+<span class="text-primary">20:14:08 IST · 26 Sep 2026</span>
+</div>
+<div class="flex justify-between">
+<span class="text-on-surface-variant">BROADCAST TARGETS:</span>
+<span class="text-error font-semibold">14 TURNSTILES · 6 JUMBATRON · PA AUDIO</span>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-micro text-label-micro uppercase text-on-surface-variant" for="confirmationInput">TYPE "EVACUATE" TO DISENGAGE HARDWARE INTERLOCK:</label>
+<input class="w-full bg-surface border border-error px-space-sm py-2 font-mono-data text-mono-data text-error uppercase focus:outline-none" id="confirmationInput" placeholder="EVACUATE" type="text"/>
+</div>
+<div class="flex items-center justify-end gap-space-sm pt-space-xs border-t border-surface-container-high">
+<button class="px-space-md py-2 border border-surface-container-high hover:border-primary text-primary font-label-micro text-label-micro uppercase tracking-wider" id="cancelModalBtn" type="button">
+          CANCEL / ABORT
+        </button>
+<button class="px-space-lg py-2 bg-error hover:bg-on-error-container text-on-error font-label-micro text-label-micro uppercase tracking-wider font-bold transition-colors" id="confirmEvacuateBtn" type="button">
+          CONFIRM &amp; EXECUTE EVACUATION
+        </button>
+</div>
+</div>
+</div>
+<!-- CLIENT-SIDE MICRO-INTERACTIONS SCRIPT -->
+<script>
+    (function initEventControlWorkstation() {
+      // Toast notification utility
+      const toast = document.getElementById('toastNotification');
+      const toastMessage = document.getElementById('toastMessage');
+
+      function showToast(msg) {
+        if (!toast) return;
+        toastMessage.textContent = msg;
+        toast.classList.remove('translate-x-full');
+        setTimeout(() => {
+          toast.classList.add('translate-x-full');
+        }, 4000);
+      }
+
+      // Tab switcher interaction
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabButtons.forEach(b => {
+            b.classList.remove('border-primary', 'font-semibold', 'text-primary');
+            b.classList.add('border-transparent', 'text-on-surface-variant');
+          });
+          btn.classList.remove('border-transparent', 'text-on-surface-variant');
+          btn.classList.add('border-primary', 'font-semibold', 'text-primary');
+          const target = btn.getAttribute('data-target');
+          showToast(`Focused operational matrix view: [${btn.innerText.trim()}]`);
+        });
+      });
+
+      // Commit & Broadcast button
+      const commitBtn = document.getElementById('commitParamsBtn');
+      if (commitBtn) {
+        commitBtn.addEventListener('click', () => {
+          commitBtn.classList.add('opacity-75');
+          commitBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">refresh</span> [ BROADCASTING... ]';
+          setTimeout(() => {
+            commitBtn.classList.remove('opacity-75');
+            commitBtn.innerHTML = '<span class="material-symbols-outlined text-[16px] text-secondary">sync_saved_locally</span> [ + COMMIT &amp; BROADCAST PARAMETERS ]';
+            showToast('✓ Matchday parameters cryptographically signed & broadcast to 124 venue nodes.');
+          }, 850);
+        });
+      }
+
+      // Update Threshold Rule Matrix button
+      const updateRulesBtn = document.getElementById('updateThresholdsBtn');
+      if (updateRulesBtn) {
+        updateRulesBtn.addEventListener('click', () => {
+          showToast('Updated optical radar and turnstile flow triggers for Gates A, B, VIP & Transit P3.');
+        });
+      }
+
+      // Export schema action
+      const exportBtn = document.getElementById('exportSchemaBtn');
+      if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+          showToast('JSON Topology Schema (v4.19) prepared. Download stream initialized.');
+        });
+      }
+
+      // Dynamic total calculation for staffing inputs
+      const resourceInputs = document.querySelectorAll('.resource-input');
+      const globalStaffCounter = document.getElementById('globalStaffAllocated');
+      
+      resourceInputs.forEach(input => {
+        input.addEventListener('change', () => {
+          let sum = 0;
+          resourceInputs.forEach(inp => {
+            sum += parseInt(inp.value, 10) || 0;
+          });
+          if (globalStaffCounter) {
+            globalStaffCounter.textContent = sum;
+          }
+          showToast(`Allocated ground force recalculated: ${sum} personnel.`);
+        });
+      });
+
+      // Emergency Interlock Modal Handling
+      const emergencyBtn = document.getElementById('emergencyTriggerBtn');
+      const emergencyModal = document.getElementById('emergencyModal');
+      const cancelModalBtn = document.getElementById('cancelModalBtn');
+      const confirmEvacuateBtn = document.getElementById('confirmEvacuateBtn');
+      const confirmationInput = document.getElementById('confirmationInput');
+
+      if (emergencyBtn && emergencyModal) {
+        emergencyBtn.addEventListener('click', () => {
+          emergencyModal.classList.remove('hidden');
+          if (confirmationInput) {
+            confirmationInput.value = '';
+            confirmationInput.focus();
+          }
+        });
+      }
+
+      if (cancelModalBtn && emergencyModal) {
+        cancelModalBtn.addEventListener('click', () => {
+          emergencyModal.classList.add('hidden');
+        });
+      }
+
+      if (confirmEvacuateBtn && confirmationInput) {
+        confirmEvacuateBtn.addEventListener('click', () => {
+          if (confirmationInput.value.trim().toUpperCase() === 'EVACUATE') {
+            emergencyModal.classList.add('hidden');
+            showToast('⚠️ CRITICAL OVERRIDE EXECUTED: All 14 blast gates disengaged. PA alarm tone broadcast.');
+            if (emergencyBtn) {
+              emergencyBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">lock_open</span> [ EVACUATION ACTIVE // GATES UNLOCKED ]';
+              emergencyBtn.classList.replace('bg-error', 'bg-primary');
+            }
+          } else {
+            confirmationInput.classList.add('bg-error-container');
+            confirmationInput.focus();
+          }
+        });
+      }
+    })();
+  </script>
+</div></main><footer class="fixed bottom-0 left-0 w-full h-8 z-40 bg-surface border-t border-surface-container-high flex items-center justify-between px-gutter font-mono-data text-mono-data text-on-surface-variant"><div class="flex items-center gap-space-md"><span class="font-label-micro text-label-micro uppercase tracking-wider text-on-surface font-medium">STADIA CONTROL CORE</span><span class="text-surface-container-high">|</span><span>TELEMETRY CADENCE: 1s</span><span class="text-surface-container-high">|</span><span>OPERATIONS PROTOCOL v4.19</span></div><div class="flex items-center gap-space-xs"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span><span class="uppercase font-medium text-on-surface">SYSTEMS SYNCHRONIZED · ZERO CRITICAL FAULTS</span></div></footer></body></html>

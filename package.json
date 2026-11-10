@@ -2,25 +2,25 @@
   "name": "fwwc-india-platform",
   "private": true,
   "version": "1.0.0",
-  "description": "FIFA Women's World Cup India — Hospitality & Crowd Orchestration Platform",
+  "description": "FIFA Women's World Cup India â€” Hospitality & Crowd Orchestration Platform",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "server:dev": "npm --prefix server run dev",
-    "client:dev": "npm --prefix client run dev"
+    "test": "node --test tests/*.test.mjs"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
-    "concurrently": "^9.1.2",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.0.0"
   },
   "dependencies": {
+    "gsap": "^3.15.0",
     "leaflet": "^1.9.4",
     "next": "^15.1.0",
     "qrcode": "^1.5.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "three": "^0.186.1"
   }
 }

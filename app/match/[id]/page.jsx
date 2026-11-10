@@ -1,199 +1,177 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Navbar from '../../../components/Navbar';
-import Footer from '../../../components/Footer';
-import SeatMap from '../../../components/SeatMap';
-import { Calendar, Clock, MapPin, Ticket, Shield, ArrowRight, ArrowLeft } from '../../../components/Icons';
+import { useApi, api } from '../../../lib/api.js';
+import { getEventById } from '../../../lib/eventsData.js';
+import { BLOCKS_DATA } from '../../../lib/stadiaData.js';
+import SeatMap from '../../../components/SeatMap.jsx';
+import SeatPicker from '../../../components/SeatPicker.jsx';
+import { kickoffLong, inr } from '../../../lib/format.js';
+import { Ticket, Lock } from '../../../components/Icons.jsx';
 
 export default function MatchDetailPage() {
   const params = useParams();
+  const id = params?.id;
   const router = useRouter();
-  const matchId = params.id;
+  const { data: apiData, loading, error } = useApi(() => api.matchSeats(id), [id]);
+  const [block, setBlock] = useState(null);
 
-  const [matchData, setMatchData] = useState(null);
-  const [blocks, setBlocks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedBlock, setSelectedBlock] = useState('C1');
-  const [selectedSeat, setSelectedSeat] = useState('C12');
+  // Check fallback from local event registry (for newly created organizer events)
+  const localEvent = typeof window !== 'undefined' ? getEventById(id) : null;
 
-  useEffect(() => {
-    async function loadSeatData() {
-      try {
-        const res = await fetch(`/api/matches/${matchId}/seats`);
-        if (res.ok) {
-          const data = await res.json();
-          setMatchData(data.match);
-          setBlocks(data.blocks || []);
-          if (data.blocks?.length > 0) {
-            setSelectedBlock(data.blocks[0].block_name);
-            setSelectedSeat('B04');
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching seat layout:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    if (matchId) {
-      loadSeatData();
-    }
-  }, [matchId]);
+  let match = apiData?.match;
+  let blocks = apiData?.blocks;
 
-  const activeBlock = blocks.find((b) => b.block_name === selectedBlock);
-  const price = activeBlock?.price || 2500;
+  if (!match && localEvent) {
+    match = {
+      id: localEvent.id,
+      home_team: localEvent.title,
+      away_team: localEvent.subtitle || 'Live Event Experience',
+      kickoff_time: `${localEvent.date}T19:30:00.000Z`,
+      venue: `${localEvent.venue}, ${localEvent.city}`,
+      status: localEvent.status,
+    };
+    blocks = BLOCKS_DATA.map(b => ({
+      ...b,
+      price: (b.block_name.startsWith('E') || b.block_name.startsWith('F')) ? (localEvent.vipPrice || 8500) : (localEvent.basePrice || 1500),
+      available: Math.max(12, b.capacity - b.sold),
+    }));
+  }
 
-  const dateObj = matchData ? new Date(matchData.kickoff_time) : new Date();
-  const formattedDate = dateObj.toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric'
-  });
-  const formattedTime = dateObj.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: true
-  });
+  if (loading && !localEvent) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
+        <div className="h-64 animate-pulse rounded-2xl bg-neutral-900" />
+      </div>
+    );
+  }
 
-  return (
-    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] flex flex-col font-sans transition-colors">
-      <Navbar />
-
-      <main className="flex-1 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full py-8 pb-32">
-        {/* Back Link */}
-        <div className="mb-6">
+  // Handle Draft state: hidden from public fans
+  if (localEvent && (localEvent.status || '').toLowerCase() === 'draft') {
+    return (
+      <div className="mx-auto max-w-2xl px-4 py-20 text-center sm:px-6 space-y-4">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-500/40 bg-amber-500/10 text-amber-400">
+          <Lock className="h-7 w-7" />
+        </div>
+        <h1 className="text-2xl font-black text-white">Event in Staged Draft Mode</h1>
+        <p className="text-sm text-neutral-400 leading-relaxed">
+          &quot;{localEvent.title}&quot; has been created by the Executive Organizer but has not yet been put live to fans.
+        </p>
+        <div className="pt-4 flex items-center justify-center gap-3">
           <Link
             href="/matches"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--text-muted)] hover:text-[var(--terracotta-primary)] transition font-medium"
+            className="rounded-full border border-neutral-700 bg-[#121217] px-5 py-2.5 text-xs font-bold text-neutral-300 hover:bg-neutral-800"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to All Matches</span>
+            ← Public Matches Directory
           </Link>
         </div>
+      </div>
+    );
+  }
 
-        {/* Match Header Hero Card */}
-        {matchData && (
-          <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-6 mb-8 shadow-soft">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-              
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="rounded bg-[var(--terracotta-tint)] px-2.5 py-0.5 text-xs font-mono font-bold text-[var(--terracotta-text)] border border-[var(--terracotta-border)]">
-                    MATCH {matchData.id} · GROUP STAGE
-                  </span>
-                  <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-semibold">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    SEATS OPEN FOR ALLOCATION
-                  </span>
-                </div>
+  if (!match || !blocks) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-16 text-center sm:px-6">
+        <p className="text-lg text-slate-300">{error?.message || 'Match or Event not found'}</p>
+        <Link href="/matches" className="mt-4 inline-block font-bold text-emerald-400">
+          ← Back to matches
+        </Link>
+      </div>
+    );
+  }
 
-                <h1 className="text-2xl sm:text-4xl font-black text-[var(--text-primary)] font-mono tracking-tight">
-                  {matchData.home_team} <span className="text-[var(--text-muted)] font-light">vs</span> {matchData.away_team}
-                </h1>
+  const totalSeats = blocks?.reduce((a, b) => a + b.capacity, 0) || 1;
+  const soldTotal = blocks?.reduce((a, b) => a + b.sold, 0) || 0;
+  const soldOut = blocks?.filter((b) => b.available <= 0).length || 0;
 
-                <div className="flex flex-wrap items-center gap-4 text-xs font-mono text-[var(--text-secondary)] pt-1">
-                  <div className="flex items-center gap-1.5">
-                    <Calendar className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-                    <span>{formattedDate}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-[var(--text-muted)]" />
-                    <span>{formattedTime} IST</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-[var(--terracotta-primary)]" />
-                    <span>{matchData.venue}</span>
-                  </div>
-                </div>
-              </div>
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 fade-up">
+      <Link href="/matches" className="text-sm font-semibold text-slate-400 hover:text-white">
+        ← All matches
+      </Link>
 
-              {/* Ingress status badge */}
-              <div className="rounded-xl border border-[var(--terracotta-border)] bg-[var(--terracotta-tint)] p-4 max-w-xs space-y-1">
-                <div className="flex items-center gap-1.5 text-xs font-mono font-bold text-[var(--terracotta-text)]">
-                  <Shield className="w-3.5 h-3.5" />
-                  <span>SMART INGRESS ACTIVE</span>
-                </div>
-                <p className="text-[11px] text-[var(--text-secondary)] leading-relaxed">
-                  Your seat automatically reserves optimal gate turnstile and synchronized parking/shuttle slots.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Stadium Seat Map Visual */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-black text-[var(--text-primary)] font-mono flex items-center gap-2">
-              <Ticket className="w-4 h-4 text-[var(--terracotta-primary)]" />
-              <span>Interactive Stadium Seat Selection</span>
-            </h2>
-            <span className="text-xs font-mono text-[var(--text-muted)]">
-              Pick Block → Select Specific Seat
-            </span>
-          </div>
-
-          <SeatMap
-            blocks={blocks}
-            selectedBlock={selectedBlock}
-            onSelectBlock={(blockName) => setSelectedBlock(blockName)}
-            selectedSeat={selectedSeat}
-            onSelectSeat={(seatCode) => setSelectedSeat(seatCode)}
-          />
+      <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-neutral-300">
+            {kickoffLong(match.kickoff_time)}
+          </p>
+          <h1 className="mt-1 text-3xl font-black text-white sm:text-4xl">
+            {match.home_team} <span className="text-slate-500">vs</span> {match.away_team}
+          </h1>
+          <p className="mt-1 text-sm text-slate-400">{match.venue} · {match.status}</p>
         </div>
-      </main>
-
-      {/* Sticky Bottom Booking Confirmation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-[var(--border-subtle)] bg-[var(--bg-surface)]/95 backdrop-blur-xl px-4 sm:px-6 lg:px-8 py-3.5 shadow-soft">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          
-          <div className="flex items-center gap-4 w-full sm:w-auto">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--terracotta-tint)] border border-[var(--terracotta-border)] text-[var(--terracotta-text)] font-mono font-bold text-sm">
-              {selectedBlock || 'A1'}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-black text-[var(--text-primary)] font-mono">
-                  Block {selectedBlock} · Seat {selectedSeat || 'Unpicked'}
-                </span>
-                <span className="rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[10px] font-mono text-emerald-700 dark:text-emerald-400 font-bold">
-                  RESERVED
-                </span>
-              </div>
-              <span className="text-xs text-[var(--text-muted)] font-mono">
-                Includes Smart Gate Sync &amp; Deconfliction Router
-              </span>
-            </div>
+        <div className="flex gap-4 text-center">
+          <div className="rounded-xl border border-slate-800 bg-[#0e0e12] px-4 py-2">
+            <div className="text-lg font-black text-white">{Math.round((soldTotal / totalSeats) * 100)}%</div>
+            <div className="text-[10px] font-medium uppercase tracking-wide text-slate-500">Sold</div>
           </div>
-
-          <div className="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto">
-            <div className="text-right">
-              <span className="text-xs text-[var(--text-muted)] font-mono block">Total (1 Fan)</span>
-              <span className="text-xl font-black text-[var(--text-primary)] font-mono">
-                ₹{price.toLocaleString()}
-              </span>
-            </div>
-
-            <button
-              onClick={() => {
-                if (selectedBlock && selectedSeat) {
-                  router.push(`/checkout/${matchId}/${selectedBlock}/${selectedSeat}`);
-                }
-              }}
-              className="flex items-center gap-2 rounded-xl bg-[var(--terracotta-primary)] hover:bg-[var(--terracotta-hover)] px-6 py-3 text-xs sm:text-sm font-bold text-white shadow-soft transition active:scale-95 whitespace-nowrap"
-            >
-              <span>Continue to Travel &amp; Ingress Setup</span>
-              <ArrowRight className="w-4 h-4 text-white" />
-            </button>
+          <div className="rounded-xl border border-slate-800 bg-[#0e0e12] px-4 py-2">
+            <div className="text-lg font-black text-white">{blocks.length - soldOut}</div>
+            <div className="text-[10px] font-medium uppercase tracking-wide text-slate-500">Blocks open</div>
           </div>
         </div>
       </div>
 
-      <Footer />
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
+        <SeatMap blocks={blocks} selectedId={block?.id} onSelect={setBlock} />
+
+        <div>
+          {!block ? (
+            <div className="rounded-2xl border border-neutral-800 bg-[#0e0e12] p-6 text-center space-y-4">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center border border-neutral-500 bg-neutral-900 text-white">
+                <Ticket className="h-6 w-6" />
+              </div>
+              <div>
+                <p className="font-extrabold text-white text-base">Select a Stadium Block to View Seats</p>
+                <p className="mt-1 text-xs text-neutral-400">
+                  Choose your pitch view. Prices range from {inr(Math.min(...blocks.map((b) => b.price)))} to {inr(Math.max(...blocks.map((b) => b.price)))}.
+                </p>
+              </div>
+
+              <div className="border-t border-neutral-700 pt-4 text-left">
+                <span className="text-[10px] font-mono uppercase font-bold text-neutral-300 tracking-wider">How this demo works</span>
+                <p className="mt-2 text-xs leading-relaxed text-neutral-400">Choose a block and seat, enter your details, and generate a pass you can reopen from My Pass. This reservation does not grant real venue entry.</p>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-slate-700/60 bg-[#0e0e12] p-5">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold text-white">Block {block.block_name}</h2>
+                <button onClick={() => setBlock(null)} className="text-xs font-semibold text-slate-400 hover:text-white">
+                  change block
+                </button>
+              </div>
+              <div className="mt-2 grid grid-cols-3 gap-2 text-center">
+                <div className="rounded-lg bg-white/5 p-2">
+                  <div className="text-sm font-black text-white">{block.available}</div>
+                  <div className="text-[10px] text-slate-500">seats left</div>
+                </div>
+                <div className="rounded-lg bg-white/5 p-2">
+                  <div className="text-sm font-black text-emerald-400">{inr(block.price)}</div>
+                  <div className="text-[10px] text-slate-500">per seat</div>
+                </div>
+                <div className="rounded-lg bg-white/5 p-2">
+                  <div className="text-sm font-black text-white">{block.sold}</div>
+                  <div className="text-[10px] text-slate-500">already sold</div>
+                </div>
+              </div>
+              <p className="mt-3 text-xs text-slate-400">
+                ↓ Live seat map for this block — click any seat to select it
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {block && (
+        <SeatPicker
+          block={block}
+          onClose={() => setBlock(null)}
+          onConfirm={(seat) => router.push(`/checkout/${match.id}/${block.id}/${seat}`)}
+        />
+      )}
     </div>
   );
 }
