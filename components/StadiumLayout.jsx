@@ -35,19 +35,19 @@ const DIVIDERS = Array.from({ length: 16 }, (_, i) => i * 22.5).map((deg) => ({
 
 export default function StadiumLayout() {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-slate-700/50 bg-slate-900/80 p-5 shadow-2xl backdrop-blur-md">
+    <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-[#0e0e12] p-5 shadow-2xl backdrop-blur-md">
       {/* Panel header */}
       <div className="relative z-10 flex items-center justify-between gap-2">
         <div>
-          <p className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Stadium Layout Schematic</p>
+          <p className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 font-mono">Stadium Layout Schematic</p>
           <p className="mt-0.5 text-xs font-bold text-white">DY Patil Stadium · Nerul, Navi Mumbai</p>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" /> Gates A–H
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-400">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" /> Gates A–H
         </span>
       </div>
 
-      <svg viewBox="0 0 560 560" className="relative z-10 mt-3 w-full max-w-[480px] mx-auto" role="img" aria-label="DY Patil Stadium layout with eight gates split into local and outstation corridors">
+      <svg viewBox="0 0 560 560" className="relative z-10 mt-3 w-full max-w-[480px] mx-auto" role="img" aria-label="DY Patil Stadium layout with eight gates split into local and outstation arrival routes">
         <defs>
           <path id="arc-local" d="M 52 280 A 228 228 0 0 1 508 280" fill="none" />
           <path id="arc-outstation" d="M 52 284 A 228 228 0 0 0 508 284" fill="none" />
@@ -60,12 +60,12 @@ export default function StadiumLayout() {
         {/* Outer boundary */}
         <circle cx={CX} cy={CY} r="242" fill="none" stroke="rgba(56,189,248,0.25)" strokeWidth="1.5" strokeDasharray="6 6" />
 
-        {/* Corridor Arcs */}
+        {/* Route Arcs */}
         <text fontSize="14" fontWeight="800" letterSpacing="3" fill="#38bdf8">
-          <textPath href="#arc-local" startOffset="50%" textAnchor="middle">LOCAL CORRIDOR · NORTH / WEST</textPath>
+          <textPath href="#arc-local" startOffset="50%" textAnchor="middle">LOCAL ARRIVAL ROUTE · NORTH / WEST</textPath>
         </text>
         <text fontSize="14" fontWeight="800" letterSpacing="3" fill="#fb7185">
-          <textPath href="#arc-outstation" startOffset="50%" textAnchor="middle">OUTSTATION CORRIDOR · EAST / SOUTH</textPath>
+          <textPath href="#arc-outstation" startOffset="50%" textAnchor="middle">OUTSTATION ARRIVAL ROUTE · EAST / SOUTH</textPath>
         </text>
 
         {/* Stand Bowl */}

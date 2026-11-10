@@ -5,24 +5,33 @@ import Link from 'next/link';
 import { Calendar, Clock, MapPin, Ticket, ChevronRight, Users } from './Icons';
 import CapacityBar from './CapacityBar';
 
-// Flag or crest lookup
-const TEAM_FLAGS = {
-  India: '🇮🇳',
-  Australia: '🇦🇺',
-  Brazil: '🇧🇷',
-  Japan: '🇯🇵',
-  USA: '🇺🇸',
-  England: '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
-  Spain: '🇪🇸',
-  France: '🇫🇷',
-  Germany: '🇩🇪',
-  Nigeria: '🇳🇬',
-  Canada: '🇨🇦',
-  Netherlands: '🇳🇱',
-  Sweden: '🇸🇪',
-  'Winner SF1': '🏆',
-  'Winner SF2': '🏆',
+// FIFA 3-letter country codes
+const TEAM_CODES = {
+  India: 'IND',
+  Australia: 'AUS',
+  Brazil: 'BRA',
+  Japan: 'JPN',
+  USA: 'USA',
+  England: 'ENG',
+  Spain: 'ESP',
+  France: 'FRA',
+  Germany: 'GER',
+  Nigeria: 'NGA',
+  Canada: 'CAN',
+  Netherlands: 'NED',
+  Sweden: 'SWE',
+  'Winner SF1': 'SF1',
+  'Winner SF2': 'SF2',
 };
+
+function TeamBadge({ name }) {
+  const code = TEAM_CODES[name] || name?.slice(0, 3)?.toUpperCase() || 'FC';
+  return (
+    <div className="mb-2 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl border border-neutral-800 bg-neutral-900/90 text-xs sm:text-sm font-black font-mono tracking-wider text-emerald-400 shadow-inner group-hover:border-emerald-500/50 group-hover:bg-emerald-950/20 transition-all">
+      {code}
+    </div>
+  );
+}
 
 export default function MatchCard({ match, compact = false }) {
   if (!match) return null;
@@ -41,9 +50,6 @@ export default function MatchCard({ match, compact = false }) {
 
   const totalCapacity = 55000;
   const sold = match.tickets_sold || 0;
-
-  const homeFlag = TEAM_FLAGS[match.home_team] || '⚽';
-  const awayFlag = TEAM_FLAGS[match.away_team] || '⚽';
 
   return (
     <div className="group relative flex flex-col justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)] p-5 shadow-soft transition-all duration-200 hover:-translate-y-1 hover:border-[var(--terracotta-primary)] hover:shadow-md">
@@ -73,7 +79,7 @@ export default function MatchCard({ match, compact = false }) {
           
           {/* Home team */}
           <div className="col-span-2 flex flex-col items-center sm:items-start text-center sm:text-left">
-            <span className="text-3xl sm:text-4xl mb-1 filter drop-shadow-sm">{homeFlag}</span>
+            <TeamBadge name={match.home_team} />
             <span className="text-sm sm:text-base font-extrabold text-[var(--text-primary)] tracking-tight group-hover:text-[var(--terracotta-primary)] transition-colors">
               {match.home_team}
             </span>
@@ -92,7 +98,7 @@ export default function MatchCard({ match, compact = false }) {
 
           {/* Away team */}
           <div className="col-span-2 flex flex-col items-center sm:items-end text-center sm:text-right">
-            <span className="text-3xl sm:text-4xl mb-1 filter drop-shadow-sm">{awayFlag}</span>
+            <TeamBadge name={match.away_team} />
             <span className="text-sm sm:text-base font-extrabold text-[var(--text-primary)] tracking-tight group-hover:text-[var(--terracotta-primary)] transition-colors">
               {match.away_team}
             </span>

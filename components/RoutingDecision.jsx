@@ -38,25 +38,25 @@ export default function RoutingDecision() {
       roi: 'Zero spillover onto arterial highway · 14.8 tonnes CO2 saved from idling',
     },
     gate: {
-      title: 'Predictive Gate Turnstile Balancing',
+      title: 'Predictive Entry Gate Balancing',
       before: {
-        target: 'Gate C (East Concourse)',
+        target: 'Gate C (East Walkway)',
         metric: '22 min Queue Time',
-        detail: '14,200 ticket holders assigned · 38 turnstiles at 96% throughput',
+        detail: '14,200 ticket holders assigned · 38 entry gates at 96% capacity',
         status: 'critical',
       },
       decision: {
-        action: 'In-App Turnstile Fast-Track Reroute to Gate D & Gate B',
+        action: 'In-App Fast-Track Reroute to Gate D & Gate B',
         reassigned: '3,800 Fans',
-        targetTo: 'Gate D (Underutilized South Concourse)',
+        targetTo: 'Gate D (Open South Walkway)',
       },
       after: {
         target: 'Gate C Queue: 6 mins',
-        metric: 'Gate D Throughput: 74%',
-        detail: 'Even ingress distribution achieved 45 mins prior to kickoff',
+        metric: 'Gate D Flow Rate: 74%',
+        detail: 'Even crowd arrival achieved 45 mins prior to kickoff',
         status: 'resolved',
       },
-      roi: '100% on-time spectator stadium entry · Zero bottleneck crush points',
+      roi: '100% on-time fan stadium entry · Zero crowded pinch points',
     },
     hotel: {
       title: 'Peripheral Lodging Absorption',
@@ -92,7 +92,7 @@ export default function RoutingDecision() {
           <div className="flex items-center gap-2 mb-1">
             <span className="flex h-2 w-2 rounded-full bg-[var(--terracotta-primary)] animate-ping" />
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-[var(--terracotta-text)]">
-              AUTONOMOUS DECONFLICTION ENGINE
+              SMART CROWD &amp; ROUTE BALANCER
             </span>
           </div>
           <h3 className="text-lg font-black text-[var(--text-primary)] font-mono">
@@ -155,7 +155,7 @@ export default function RoutingDecision() {
         <div className="relative rounded-xl border border-[var(--terracotta-border)] bg-[var(--terracotta-tint)] p-4 space-y-2 shadow-soft">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono font-bold uppercase text-[var(--terracotta-text)]">
-              02 · STADIA DECONFLICTION
+              02 · SMART REROUTE
             </span>
             <Zap className="w-4 h-4 text-[var(--terracotta-primary)]" />
           </div>
@@ -163,7 +163,7 @@ export default function RoutingDecision() {
             {current.decision.action}
           </h4>
           <div className="text-xl font-mono font-bold text-[var(--terracotta-text)]">
-            Diverted: {current.decision.reassigned}
+            Rerouted: {current.decision.reassigned}
           </div>
           <p className="text-xs text-[var(--text-secondary)] font-mono">
             → Destination: {current.decision.targetTo}
@@ -174,7 +174,7 @@ export default function RoutingDecision() {
         <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-mono font-bold uppercase text-emerald-600 dark:text-emerald-400">
-              03 · STEADY-STATE ACHIEVED
+              03 · CROWD FLOW SMOOTH
             </span>
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           </div>
@@ -194,7 +194,7 @@ export default function RoutingDecision() {
       <div className="flex items-center gap-3 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-elevated)] px-4 py-3 text-xs font-mono text-[var(--text-secondary)]">
         <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
         <div>
-          <strong className="text-[var(--text-primary)]">OPERATIONAL ROI: </strong>
+          <strong className="text-[var(--text-primary)]">BENEFIT &amp; RESULT: </strong>
           <span>{current.roi}</span>
         </div>
       </div>

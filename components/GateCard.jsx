@@ -46,7 +46,7 @@ export default function GateCard({ gate, onRerouteClick }) {
               {gate.name || `Gate ${gate.gate_id}`}
             </h4>
             <span className="text-[10px] text-[var(--text-muted)] font-mono">
-              {gate.sector || 'Main Concourse'}
+              {gate.sector || 'Main Walkway'}
             </span>
           </div>
         </div>
@@ -87,7 +87,7 @@ export default function GateCard({ gate, onRerouteClick }) {
           </button>
         ) : (
           <span className="text-[10px] text-[var(--text-muted)]">
-            {gate.turnstiles || '12/12'} Turnstiles
+            {gate.turnstiles || '12/12'} Entry Gates
           </span>
         )}
       </div>
